@@ -1,0 +1,14 @@
+functions urt_mem
+# URT - Unified Real-Time Interface
+version version 0.1.0
+author Shahbaz Youssefi
+keyword real-time
+keyword middleware
+keyword interface
+shortcut index
+shortcut globals
+shortcut constants
+previous functions urt_mem
+next functions urt_error
+
+Functions of this module handle private and shared sync lock allocation, free and access.

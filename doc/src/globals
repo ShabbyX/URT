@@ -1,0 +1,16 @@
+globals
+# URT - Unified Real-Time Interface
+version version 0.1.0
+author Shahbaz Youssefi
+keyword real-time
+keyword middleware
+keyword interface
+shortcut index
+shortcut constants
+
+urt_time
+urt_thread
+urt_mem
+urt_lock
+urt_error
+urt_log

@@ -1,0 +1,28 @@
+functions urt_time
+# URT - Unified Real-Time Interface
+version version 0.1.0
+author Shahbaz Youssefi
+keyword real-time
+keyword middleware
+keyword interface
+shortcut index
+shortcut globals
+shortcut constants
+previous index
+next functions urt_thread
+
+Functions of this module handle timing information.
+
+TYPE urt_time: int64_t
+	Value of time in nanoseconds
+
+	This type represents time from an unknown origin in nanoseconds resolution. Alternatively, it may denote a duration
+	in time.
+
+FUNCTION urt_get_time: (): urt_time
+	Get current time
+
+	This function retrieves the current time (from an unknown origin).
+
+	OUTPUT
+		Current time in nanoseconds

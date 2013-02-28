@@ -1,0 +1,37 @@
+functions urt_log
+# URT - Unified Real-Time Interface
+version version 0.1.0
+author Shahbaz Youssefi
+keyword real-time
+keyword middleware
+keyword interface
+shortcut index
+shortcut globals
+shortcut constants
+previous functions urt_error
+next index
+
+Functions of this module handle logging.
+
+FUNCTION urt_log: (fmt, ...): void
+	Log message
+
+	This function logs a message, `printf` style.  In debug mode, it would prepend the log with the file name (at most the last 25 characters)
+	and the line number of the log. In release mode, it will simply logs the message.
+
+	Based on architecture:
+
+	- Linux: The log is written to `stderr`
+	- RTAI (kernel space): The log is written using `rt_printk`
+	- RTAI (user space): TODO
+	- Other: TODO
+
+	INPUT fmt
+		`printf`-style format string
+	INPUT ...
+		Parameters of the format
+
+FUNCTION urt_dbg: (fmt, ...): void
+	Log debug message
+
+	This function is the same as `[#urt_log]` in debug mode. In release mode, it does nothing.

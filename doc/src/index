@@ -1,0 +1,26 @@
+index
+# URT - Unified Real-Time Interface
+version version 0.1.0
+author Shahbaz Youssefi
+keyword real-time
+keyword middleware
+keyword interface
+shortcut globals
+shortcut constants
+
+# Introduction
+
+Unified Real-Time Interface (URT) is a simple interface to various real-time systems currently in existence. That is,
+the same application could be ported to different real-time back-ends, such as RTAI, QNX, VxWorks etc. Additionally,
+a non-real-time Linux back-end is also provided to facilitate testing and development on non-real-time platforms, using
+tools such as valgrind that may not be compatible with certain real-time features.
+
+## Modules
+
+Currently, URT is in a very early development stage. Therefore, the functions in these modules may radically change.
+Please refer to the documentation on each module for their respective functions.
+
+- [Time module](urt_time)
+- [Thread module](urt_thread)
+- [Memory module](urt_mem)
+- [Lock module](urt_lock)
