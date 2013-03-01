@@ -1,0 +1,72 @@
+include Makefile.config
+include Makefile.common
+
+.PHONY: all
+all: config_headers version_header
+
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
+  URT_SYS_DEF := \#define URT_SYS_LINUX\n
+else
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
+  URT_SYS_DEF := \#ifdef __KERNEL__\n\#define URT_SYS_RTAI_KERNEL\n\#else\n\#define URT_SYS_RTAI_USER\n\#endif\n
+else
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-kernel-only)
+  URT_SYS_DEF := \#define URT_SYS_RTAI_KERNEL\n
+else
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-user-only)
+  URT_SYS_DEF := \#define URT_SYS_RTAI_USER\n
+else
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
+  URT_SYS_DEF := \#define URT_SYS_QNX\n
+else
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
+  URT_SYS_DEF := \#define URT_SYS_VXWORKS\n
+endif
+endif
+endif
+endif
+endif
+endif
+
+CONFIG_HEADER := $(subst \n ,\n,"\#ifndef URT_CONFIG_H\n\
+				\#define URT_CONFIG_H\n\
+				\n\
+				$(URT_SYS_DEF)\
+				\n\
+				\#endif\n")
+
+INTERNAL_CONFIG_HEADER := $(subst \n ,\n,"\#ifndef URT_INTERNAL_CONFIG_H\n\
+					\#define URT_INTERNAL_CONFIG_H\n\
+					\n\
+					\#define URT_MAX_OBJECTS $(URT_CONFIG_MAX_SHARED_OBJECTS)\n\
+					\#define URT_LOCK_STOP_MAX_DELAY $(URT_CONFIG_LOCK_STOP_MAX_DEALY)\n\
+					\n\
+					\#endif\n")
+
+
+.PHONY: config_headers
+config_headers:
+	@$(PRINTF) $(CONFIG_HEADER) > include/urt_config.h
+	@$(PRINTF) $(INTERNAL_CONFIG_HEADER) > src/urt_internal_config.h
+
+VERSION_BUILD := $(shell wc -l src/build.txt 2>&1 | cut -d " " -f 1)
+
+VERSION_HEADER := $(subst \n ,\n,"\#ifndef URT_VERSION_H\n\
+				\#define URT_VERSION_H\n\
+				\n\
+				\#define URT_STRINGIFY_(x)\t\#x\n\
+				\#define URT_STRINGIFY(x)\tURT_STRINGIFY_(x)\n\
+				\#define URT_VERSION_MAJOR\t$(URT_VERSION_MAJOR)\n\
+				\#define URT_VERSION_MINOR\t$(URT_VERSION_MINOR)\n\
+				\#define URT_VERSION_REVISION\t$(URT_VERSION_REVISION)\n\
+				\#define URT_VERSION_BUILD\t$(URT_VERSION_BUILD)\n\
+				\#define URT_VERSION\t\tURT_STRINGIFY(URT_VERSION_MAJOR)\\\".\\\"\\\\\n\
+				\t\t\t\tURT_STRINGIFY(URT_VERSION_MINOR)\\\".\\\"\\\\\n\
+				\t\t\t\tURT_STRINGIFY(URT_VERSION_REVISION)\\\".\\\"\\\\\n\
+				\t\t\t\tURT_STRINGIFY(URT_VERSION_BUILD)\n\
+				\n\
+				\#endif\n")
+
+.PHONY: version_header
+version_header:
+	@$(PRINTF) $(VERSION_HEADER) > include/urt_version.h

@@ -17,19 +17,29 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UNIFIED_RT_H
-#define UNIFIED_RT_H
+#ifndef URT_LOG_H
+#define URT_LOG_H
 
-#include "urt_version.h"
-#include "urt_config.h"
+#include <stdio.h>
+#include <urt_stdtypes.h>
+#include <urt_compiler.h>
 
-#include "urt_setup.h"
-#include "urt_utils.h"
-#include <urt_time.h>
-#include <urt_thread.h>
-#include <urt_mem.h>
-#include <urt_lock.h>
-#include <urt_error.h>
-#include <urt_log.h>
+URT_DECL_BEGIN
+
+#ifndef NDEBUG
+# define urt_log(...)									\
+	do {										\
+		fprintf(stderr, "%s:%u: ",						\
+			__FILE__ + (sizeof(__FILE__) < 25)?0:(sizeof(__FILE__) - 25)	\
+			__LINE__);							\
+		fprintf(stderr, __VA_ARGS__);						\
+	} while (0)
+# define urt_dbg(...) urt_log(__VA_ARGS__)
+#else
+# define urt_log(...) fprintf(stderr, __VA_ARGS__)
+# define urt_dbg(...) ((void)0)
+#endif
+
+URT_DECL_END
 
 #endif

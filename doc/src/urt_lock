@@ -1,4 +1,4 @@
-functions urt_mem
+functions urt_lock
 # URT - Unified Real-Time Interface
 version version 0.1.0
 author Shahbaz Youssefi
@@ -12,3 +12,18 @@ previous functions urt_mem
 next functions urt_error
 
 Functions of this module handle private and shared sync lock allocation, free and access.
+
+TYPE urt_sem: opaque
+	A type representing a semaphore
+
+	A type representing a semaphore. The actual type depends on the real-time back-end.
+
+FUNCTION urt_sem_new: (init_value: unsigned int): urt_sem *
+	Create a new semaphore
+
+	This function creates and returns a new semaphore. This semaphore is unnamed and cannot be shared with other processes.
+
+	INPUT init_value
+		Initial value of the semaphore
+	OUTPUT
+		A new semaphore, or `NULL` if not possible.

@@ -21,9 +21,19 @@
 #define URT_COMPILER_H
 
 #ifdef __GNUC__
-# define URT_PRINTF_STYLE(format_index, args_index) __attribute__ ((format (printf, format_index, args_index)))
+# define URT_ATTR_PRINTF(format_index, args_index) __attribute__ ((format (printf, format_index, args_index)))
+# define URT_ATTR_MALLOC __attribute__((malloc))
+# define URT_ATTR_WARN_UNUSED __attribute__((warn_unused_result))
+# define URT_ATTR_PURE __attribute__((pure))
+# define URT_LIKELY(x) __builtin_expect(!!(x), 1)
+# define URT_UNLIKELY(x) __builtin_expect(!!(x), 0)
 #else
-# define URT_PRINTF_STYLE(format_index, args_index)
+# define URT_ATTR_PRINTF(format_index, args_index)
+# define URT_ATTR_MALLOC
+# define URT_ATTR_WARN_UNUSED
+# define URT_ATTR_PURE
+# define URT_LIKELY(x) (x)
+# define URT_UNLIKELY(x) (x)
 #endif
 
 #ifdef __cplusplus

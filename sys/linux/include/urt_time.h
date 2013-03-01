@@ -17,19 +17,28 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UNIFIED_RT_H
-#define UNIFIED_RT_H
+#ifndef URT_TIME_H
+#define URT_TIME_H
 
-#include "urt_version.h"
-#include "urt_config.h"
+#include <time.h>
+#include <urt_stdtypes.h>
+#include <urt_compiler.h>
 
-#include "urt_setup.h"
-#include "urt_utils.h"
-#include <urt_time.h>
-#include <urt_thread.h>
-#include <urt_mem.h>
-#include <urt_lock.h>
-#include <urt_error.h>
-#include <urt_log.h>
+URT_DECL_BEGIN
+
+typedef int64_t urt_time;
+
+static inline urt_time urt_get_time(void)
+{
+	struct timespec t;
+#ifdef CLOCK_MONOTONIC_RAW
+	clock_gettime(CLOCK_MONOTONIC_RAW, &t);
+#else
+	clock_gettime(CLOCK_MONOTONIC, &t);
+#endif
+	return t.tv_sec * 1000000000ll + t.tv_nsec;
+}
+
+URT_DECL_END
 
 #endif

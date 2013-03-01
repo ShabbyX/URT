@@ -17,19 +17,20 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UNIFIED_RT_H
-#define UNIFIED_RT_H
+#ifndef URT_CONSTS_H
+#define URT_CONSTS_H
 
-#include "urt_version.h"
-#include "urt_config.h"
+#define URT_NAME_LEN 6
 
-#include "urt_setup.h"
-#include "urt_utils.h"
-#include <urt_time.h>
-#include <urt_thread.h>
-#include <urt_mem.h>
-#include <urt_lock.h>
-#include <urt_error.h>
-#include <urt_log.h>
+#define URT_SUCCESS 0
+#define URT_FAIL -1
+#define URT_NO_MEM -2
+#define URT_NOT_LOCKED -3
+#define URT_TIMEOUT -4
+#define URT_BAD_NAME -5
+#define URT_BAD_VALUE -6
+#define URT_EXISTS -7
+#define URT_NO_OBJ -8		/* returned if trying to attach to a name that is not shared */
+#define URT_INTR -9		/* call was interrupted due to signal */
 
 #endif

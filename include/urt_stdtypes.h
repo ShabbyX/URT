@@ -17,19 +17,16 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UNIFIED_RT_H
-#define UNIFIED_RT_H
+#ifndef URT_STDTYPES_H
+#define URT_STDTYPES_H
 
-#include "urt_version.h"
 #include "urt_config.h"
 
-#include "urt_setup.h"
-#include "urt_utils.h"
-#include <urt_time.h>
-#include <urt_thread.h>
-#include <urt_mem.h>
-#include <urt_lock.h>
-#include <urt_error.h>
-#include <urt_log.h>
+#if defined(URT_SYS_LINUX) || defined(URT_SYS_QNX) || defined(URT_SYS_VXWORKS) || defined(URT_SYS_RTAI_USER)
+# include <stdbool.h>
+# include <stdint.h>
+#elif defined(URT_SYS_RTAI_KERNEL)
+# include <kernel.h>
+#endif
 
 #endif

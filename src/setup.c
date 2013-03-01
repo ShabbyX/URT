@@ -17,19 +17,31 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UNIFIED_RT_H
-#define UNIFIED_RT_H
+#include <urt_common.h>
+#include "reserved.h"
+#include "urt_internal.h"
 
-#include "urt_version.h"
-#include "urt_config.h"
+urt_sem *urt_global_sem;
+urt_internal *urt_global_mem;
 
-#include "urt_setup.h"
-#include "urt_utils.h"
-#include <urt_time.h>
-#include <urt_thread.h>
-#include <urt_mem.h>
-#include <urt_lock.h>
-#include <urt_error.h>
-#include <urt_log.h>
+int urt_init(void)
+{
+	/*
+	 * TODO
+	 * - Get global lock (start name with `$`)
+	 * - Get global memory (start name with `$`)
+	 * - Initialize global memory
+	 */
+	return URT_FAIL;
+}
 
-#endif
+void urt_free(void)
+{
+	/* TODO */
+}
+
+void urt_recover(void)
+{
+	/* TODO: get the global lock, try_lock and then unluck it */
+	/* since it's a mutex, just unlocking it would be ok too */
+}

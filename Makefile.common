@@ -2,6 +2,11 @@
 
 SHELL := /bin/bash
 
+URT_VERSION_MAJOR := 0
+URT_VERSION_MINOR := 1
+URT_VERSION_REVISION := 0
+URT_VERSION := $(URT_VERSION_MAJOR).$(URT_VERSION_MINOR).$(URT_VERSION_REVISION)
+
 # If IGNORE_BUILD_OPTIONS is defined, ignore this section.
 # This is useful for having the other part of the file defined, while skipping this part
 ifndef IGNORE_BUILD_OPTIONS
@@ -28,11 +33,15 @@ ifndef IGNORE_BUILD_OPTIONS
   # Set platform variables
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
     MAKE_LINUX = y
+    URT_SYS_DIR = linux
     URT_CFLAGS += $(CC_D) URT_SYS_LINUX
+    URT_LDFLAGS += -lrt
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
     MAKE_RTAI_KERNEL = y
     MAKE_RTAI_USER = y
+    URT_SYS_DIR = rtai-user
+    URT_SYS_DIR_KERNEL = rtai-kernel
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
     URT_CFLAGS += $(CC_D) URT_SYS_RTAI_USER $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --lxrt-cflags)
     URT_LDFLAGS +=  $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --lxrt-ldflags)
@@ -41,22 +50,26 @@ ifndef IGNORE_BUILD_OPTIONS
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-kernel-only)
     MAKE_RTAI_KERNEL = y
+    URT_SYS_DIR_KERNEL = rtai-kernel
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
     URT_CFLAGS_KERNEL += $(CC_D) URT_SYS_RTAI_KERNEL $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --module-cflags)
     URT_KERNEL_SYMBOLS += $(RTAI_HOME)/modules/Module.symvers
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-user-only)
     MAKE_RTAI_USER = y
+    URT_SYS_DIR = rtai-user
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
     URT_CFLAGS += $(CC_D) URT_SYS_RTAI_USER $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --lxrt-cflags)
     URT_LDFLAGS +=  $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --lxrt-ldflags)
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
     MAKE_QNX = y
+    URT_SYS_DIR = qnx
     URT_CFLAGS += $(CC_D) URT_SYS_QNX
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
     MAKE_VXWORKS = y
+    URT_SYS_DIR = vxworks
     URT_CFLAGS += $(CC_D) URT_SYS_VXWORKS
   endif
   endif
@@ -74,9 +87,11 @@ ifndef IGNORE_BUILD_OPTIONS
     URT_CFLAGS_KERNEL += $(CC_O) $(CC_D) NDEBUG
   endif
 
-  URT_CFLAGS += $(CC_Wall) $(CC_PIC)
+  URT_CFLAGS += $(CC_Wall)
   URT_CFLAGS_KERNEL += $(CC_Wall)
   URT_LDFLAGS += $(LD_PIC)
+
+  URT_SHARED_CFLAGS := $(URT_CFLAGS) $(CC_PIC)
 endif
 
 # Disable colors if called from vim

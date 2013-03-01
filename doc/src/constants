@@ -9,9 +9,21 @@ shortcut index
 shortcut globals
 
 Constants in the skin are divided in 3 groups:
+- Limits
 - Return Values
 - Flag Values
 - Meta
+
+CONST_GROUP Limits
+	Limits to certain sizes
+
+	These constants are limits to various features of URT.
+
+	CONSTANT URT_NAME_LEN: 6
+		Maximum length of a name
+
+		This is the maximum length of a name used for sharing objects. URT never reads or writes more than this many characters on names.
+		This means that the name does not need to be NUL-terminated. It also means that URT does not NUL-terminate the name.
 
 CONST_GROUP Return Values
 	Possible return values from the functions in the interface

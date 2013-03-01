@@ -17,19 +17,10 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UNIFIED_RT_H
-#define UNIFIED_RT_H
+#ifndef URT_RESERVED_H
+#define URT_RESERVED_H
 
-#include "urt_version.h"
-#include "urt_config.h"
-
-#include "urt_setup.h"
-#include "urt_utils.h"
-#include <urt_time.h>
-#include <urt_thread.h>
-#include <urt_mem.h>
-#include <urt_lock.h>
-#include <urt_error.h>
-#include <urt_log.h>
+#define URT_GLOBAL_LOCK_NAME "$URTGL"
+#define URT_GLOBAL_MEM_NAME "$URTGM"
 
 #endif

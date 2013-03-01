@@ -17,37 +17,11 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_LINUX_H
-#define URT_LINUX_H
+#ifndef URT_NAMES_H
+#define URT_NAMES_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include "urt_compiler.h"
+#include <urt_consts.h>
 
-URT_DECL_BEGIN
-
-/* Module: time */
-/* Module: threads */
-/* Module: memory */
-/* Module: locks */
-
-/* Module: error */
-
-/* Module: log */
-#ifndef NDEBUG
-# define urt_log(...)									\
-	do {										\
-		fprintf(stderr, "%s:%u: ",						\
-			__FILE__ + (sizeof(__FILE__) < 25)?0:(sizeof(__FILE__) - 25)	\
-			__LINE__);							\
-		fprintf(stderr, __VA_ARGS__);						\
-	} while (0)
-# define urt_dbg(...) urt_log(__VA_ARGS__)
-#else
-# define urt_log(...) fprintf(stderr, __VA_ARGS__)
-# define urt_dbg(...) ((void)0)
-#endif
-
-URT_DECL_END
+int urt_convert_name(char to[URT_NAME_LENGTH + 2], const char from[URT_NAME_LENGTH]);
 
 #endif

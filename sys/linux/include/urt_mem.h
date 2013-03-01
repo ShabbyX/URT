@@ -17,19 +17,22 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UNIFIED_RT_H
-#define UNIFIED_RT_H
+#ifndef URT_MEM_H
+#define URT_MEM_H
 
-#include "urt_version.h"
-#include "urt_config.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <urt_stdtypes.h>
+#include <urt_compiler.h>
 
-#include "urt_setup.h"
-#include "urt_utils.h"
-#include <urt_time.h>
-#include <urt_thread.h>
-#include <urt_mem.h>
-#include <urt_lock.h>
-#include <urt_error.h>
-#include <urt_log.h>
+URT_DECL_BEGIN
+
+static inline URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *urt_mem_alloc(size_t size) { return malloc(size); }
+static inline void urt_mem_free(void *mem) { free(mem); }
+
+URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *urt_shmem_alloc(const char *name, size_t size);
+void urt_shmem_free(void *mem);
+
+URT_DECL_END
 
 #endif

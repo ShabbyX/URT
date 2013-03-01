@@ -8,7 +8,7 @@ keyword interface
 shortcut index
 shortcut globals
 shortcut constants
-previous index
+previous functions urt
 next functions urt_thread
 
 Functions of this module handle timing information.
@@ -22,7 +22,7 @@ TYPE urt_time: int64_t
 FUNCTION urt_get_time: (): urt_time
 	Get current time
 
-	This function retrieves the current time (from an unknown origin).
+	This function retrieves the current time (from an unknown origin) in nanoseconds.
 
 	OUTPUT
 		Current time in nanoseconds

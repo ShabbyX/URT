@@ -1,0 +1,53 @@
+functions urt
+# URT - Unified Real-Time Interface
+version version 0.1.0
+author Shahbaz Youssefi
+keyword real-time
+keyword middleware
+keyword interface
+shortcut index
+shortcut globals
+shortcut constants
+previous index
+next functions urt_time
+
+These functions setup URT itself.
+
+FUNCTION urt_init: (): int
+	Initialize URT
+
+	This function initializes URT. It must be called before any other function can be called (except `[#urt_recover]`).
+
+	OUTPUT
+		Returns one of the following:
+
+		- `[#URT_SUCCESS](constants)` if successful
+		- TODO
+
+FUNCTION urt_free: (): void
+	Free URT
+
+	This function frees resources allocated by URT. It must be called before program exit.
+
+FUNCTION urt_recover: (): void
+	Recover from bad state due to crash
+
+	If a program crashes, it may leave some internal shared entities, such as locks in a bad state. This function
+	will try to recover from such cases. The function may not be able to completely recover the system if the
+	damage is too severe, though.
+
+	It is important for this function to be called when no users of URT are present. Otherwise, it is impossible to
+	understand whether the current state of the system is due to a normal usage of URT by another user or a previous
+	crash. Therefore, calling this function while another user is present may likely corrupt the system.
+
+	Note: `urt_init` should **not** need to be called before this function.
+
+FUNCTION urt_get_free_name: (name: char[6]): int
+	Get and reserve and unused name
+
+	This function finds an unused name, fills it in **`name`** and reserves it.
+
+	INPUT name
+		A new name available to be used as a shared object name
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)` based on whether a name was available or not.
