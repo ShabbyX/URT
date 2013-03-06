@@ -22,6 +22,6 @@
 
 #include <urt_consts.h>
 
-int urt_convert_name(char to[URT_NAME_LENGTH + 2], const char from[URT_NAME_LENGTH]);
+int urt_convert_name(char to[URT_NAME_LEN + 2], const char from[URT_NAME_LEN]);
 
 #endif

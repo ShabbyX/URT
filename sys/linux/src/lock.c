@@ -168,7 +168,6 @@ exit_no_name:
 exit_fail:
 	if (ro)
 		urt_deregister(ro);
-exit_fail:
 	return NULL;
 }
 
@@ -194,7 +193,7 @@ int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
 			t += URT_LOCK_STOP_MAX_DELAY;
 			tp.tv_sec = t / 1000000000ll;
 			tp.tv_nsec = t % 1000000000ll;
-		} while ((res = sem_timedwait(sem, &tp)) == -1 && errno == ETIMEDOUT)
+		} while ((res = sem_timedwait(sem, &tp)) == -1 && errno == ETIMEDOUT);
 	}
 	else
 		/* if sem_wait interrupted, retry */

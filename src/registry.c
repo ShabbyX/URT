@@ -17,6 +17,8 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <urt_string.h>
+#include <urt_log.h>
 #include "urt_internal.h"
 
 static bool _name_eq(const char *n1, const char *n2)
@@ -47,36 +49,36 @@ void urt_init_registry(void)
 {
 	unsigned int i;
 
-	if (urt_global_mem.initialized)
+	if (urt_global_mem->initialized)
 		return;
-	urt_global_mem.initialized = true;
+	urt_global_mem->initialized = true;
 
-	urt_global_mem.objects_max_index = 0;
+	urt_global_mem->objects_max_index = 0;
 	for (i = 0; i < URT_MAX_OBJECTS; ++i)
-		urt_global_mem.objects[i] = (urt_registered_object){
+		urt_global_mem->objects[i] = (urt_registered_object){
 			.name[0] = '\0',
 			.reserved = false,
 			.count = 0,
 			.address = NULL
 		};
 
-	urt_global_mem.next_free_name[0] = '_';
-	urt_global_mem.next_free_name[1] = '_';
-	urt_global_mem.next_free_name[2] = '_';
-	urt_global_mem.next_free_name[3] = '_';
-	urt_global_mem.next_free_name[4] = '_';
-	urt_global_mem.next_free_name[5] = '$';
+	urt_global_mem->next_free_name[0] = '_';
+	urt_global_mem->next_free_name[1] = '_';
+	urt_global_mem->next_free_name[2] = '_';
+	urt_global_mem->next_free_name[3] = '_';
+	urt_global_mem->next_free_name[4] = '_';
+	urt_global_mem->next_free_name[5] = '$';
 }
 
 static urt_registered_object *_find_by_name(const char *name)
 {
 	unsigned int i;
 	urt_registered_object *ro = NULL;
-	unsigned int max_index = urt_global_mem.objects_max_index;
+	unsigned int max_index = urt_global_mem->objects_max_index;
 
 	for (i = 0; i <= max_index; ++i)
 	{
-		ro = &urt_global_mem.objects[i];
+		ro = &urt_global_mem->objects[i];
 		if ((ro->reserved || ro->count != 0) && _name_eq(ro->name, name))
 			break;
 	}
@@ -90,11 +92,11 @@ static urt_registered_object *_find_by_addr(void *address)
 {
 	unsigned int i;
 	urt_registered_object *ro = NULL;
-	unsigned int max_index = urt_global_mem.objects_max_index;
+	unsigned int max_index = urt_global_mem->objects_max_index;
 
 	for (i = 0; i <= max_index; ++i)
 	{
-		ro = &urt_global_mem.objects[i];
+		ro = &urt_global_mem->objects[i];
 		if ((ro->reserved || ro->count != 0) && ro->address == address)
 			break;
 	}
@@ -118,7 +120,7 @@ urt_registered_object *urt_reserve_name(const char *name)
 	/* find a free space for the name */
 	for (i = 0; i < URT_MAX_OBJECTS; ++i)
 	{
-		obj = &urt_global_mem.objects[i];
+		obj = &urt_global_mem->objects[i];
 		if (!obj->reserved && obj->count == 0)
 			break;
 	}
@@ -127,8 +129,8 @@ urt_registered_object *urt_reserve_name(const char *name)
 
 	obj->reserved = true;
 	_name_cpy(obj->name, name);
-	if (i > urt_global_mem.objects_max_index)
-		urt_global_mem.objects_max_index = i;
+	if (i > urt_global_mem->objects_max_index)
+		urt_global_mem->objects_max_index = i;
 
 	urt_sem_post(urt_global_sem);
 
@@ -147,17 +149,17 @@ void urt_inc_name_count(urt_registered_object *ro)
 
 static inline void _dec_count_common(urt_registered_object *ro)
 {
-	unsigned int index = ro - urt_global_mem.objects;
+	unsigned int index = ro - urt_global_mem->objects;
 	if (URT_LIKELY(ro->count > 0))
 		--ro->count;
 	ro->reserved = false;
 	/* if removing max_index used, lower max_index used */
-	if (URT_UNLIKELY(index == urt_global_mem.objects_max_index))
+	if (URT_UNLIKELY(index == urt_global_mem->objects_max_index))
 	{
-		while (index > 0 && !urt_global_mem.objects[index].reserved
-			&& urt_global_mem.objects[index].count == 0)
+		while (index > 0 && !urt_global_mem->objects[index].reserved
+			&& urt_global_mem->objects[index].count == 0)
 			--index;
-		urt_global_mem.objects_max_index = index;
+		urt_global_mem->objects_max_index = index;
 	}
 }
 
@@ -181,7 +183,6 @@ void urt_deregister_name(const char *name)
 
 void urt_deregister_addr(void *address)
 {
-	unsigned int i;
 	urt_registered_object *ro = NULL;
 
 	urt_sem_wait(urt_global_sem);
@@ -225,7 +226,7 @@ int urt_get_free_name(char *name)
 
 	urt_sem_wait(urt_global_sem);
 
-	if (URT_UNLIKELY(urt_global_mem.names_exhausted))
+	if (URT_UNLIKELY(urt_global_mem->names_exhausted))
 		/*
 		 * If ever needed, add a contingency plan.
 		 * For example retry from the beginning, checking against
@@ -234,7 +235,7 @@ int urt_get_free_name(char *name)
 		 */
 		goto exit_fail;
 
-	next_name = urt_global_mem.next_free_name;
+	next_name = urt_global_mem->next_free_name;
 	strncpy(name, next_name, URT_NAME_LEN);
 
 	for (i = 5; i >= 0; --i)
@@ -265,7 +266,7 @@ int urt_get_free_name(char *name)
 
 	if (URT_UNLIKELY(i < 0))
 	{
-		urt_global_mem.names_exhausted = true;
+		urt_global_mem->names_exhausted = true;
 		goto exit_fail;
 	}
 

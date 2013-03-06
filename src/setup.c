@@ -18,6 +18,7 @@
  */
 
 #include <urt_setup.h>
+#include <urt_mem.h>
 #include "reserved.h"
 #include "urt_internal.h"
 
@@ -46,7 +47,7 @@ int urt_init(void)
 	/* get global memory */
 	urt_global_mem = urt_shmem_attach(URT_GLOBAL_MEM_NAME, &error);
 	if (urt_global_mem == NULL)
-		urt_global_mem = urt_shmem_alloc(sizeof(*urt_global_mem), &error);
+		urt_global_mem = urt_shmem_alloc(URT_GLOBAL_MEM_NAME, sizeof(*urt_global_mem), &error);
 	if (urt_global_mem == NULL)
 		goto exit_no_mem;
 

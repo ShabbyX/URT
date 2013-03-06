@@ -1,3 +1,3 @@
-.PHONY: all
-all:
-	@$(MAKE) --no-print-directory -C ../build
+.PHONY: all clean
+all clean:
+	@$(MAKE) --no-print-directory -C ../build $@

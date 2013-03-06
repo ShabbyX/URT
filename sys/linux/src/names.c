@@ -20,12 +20,12 @@
 #include <urt_compiler.h>
 #include "names.h"
 
-int urt_convert_name(char to[URT_NAME_LENGTH + 2], const char from[URT_NAME_LENGTH])
+int urt_convert_name(char to[URT_NAME_LEN + 2], const char from[URT_NAME_LEN])
 {
 	unsigned int i;
 
 	to[0] = '/';
-	for (i = 0; i < URT_NAME_LENGTH; ++i)
+	for (i = 0; i < URT_NAME_LEN; ++i)
 		if (from[i] >= 'a' && from[i] <= 'z')
 			to[i + 1] = from[i] - 'a' + 'A';
 		else if (!((from[i] >= 'A' && from[i] <= 'Z')

@@ -5,8 +5,6 @@ BASE := $(abspath $(CURDIR)/..)
 INC_BUILD := ./increase_build
 BUILD_FILE := build.txt
 
-include Makefile.build
-
 .PHONY: all dep clean
 all:
 # TODO: proper ifeq for different builds and messages
@@ -19,6 +17,8 @@ ifeq ($(URT_CONFIG_DEVELOPER_MODE), y)
 endif
 clean:
 	-$(RM) static/*.o shared/*.o kernel/*.o liburt.a liburt*.so urt.ko
+
+include Makefile.build
 dep: Makefile.dep
 Makefile.dep: $(LIB_SRC)
 	$(CC) $(CFLAGS) $(CC_M) $^ > Makefile.dep
@@ -28,4 +28,4 @@ $(BUILD_FILE): static/liburt.a
 	$(INC_BUILD) $@
 # TODO: -lrt is probably platform dependent
 $(INC_BUILD): increase_build.c
-	$(CC) $(CC_o) $@ $< -lrt
+	$(CC_LD) $(CC_o) $@ $< -lrt

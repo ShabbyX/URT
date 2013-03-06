@@ -1,9 +1,9 @@
 SYS := $(BASE)/sys/$(URT_SYS_DIR)
-CFLAGS += -I$(BASE)/include -I$(SYS)/include $(URT_CFLAGS) $(EXTRA_CFLAGS)
-SHARED_CFLAGS += -I$(BASE)/include -I$(SYS)/include $(URT_SHARED_CFLAGS) $(EXTRA_CFLAGS)
+CFLAGS += -I$(BASE)/include -I$(SYS)/include -I$(BASE)/src $(URT_CFLAGS) $(EXTRA_CFLAGS)
+SHARED_CFLAGS += -I$(BASE)/include -I$(SYS)/include -I$(BASE)/src $(URT_SHARED_CFLAGS) $(EXTRA_CFLAGS)
 LDFLAGS += $(URT_LDFLAGS) $(EXTRA_LDFLAGS)
 
 VPATH := $(BASE)/src:$(SYS)/src
 include $(BASE)/src/Makefile.src
 include $(SYS)/Makefile.src
-LIB_OBJECTS := $(LIB_SRC:.c=.o)
+LIB_OBJ := $(LIB_SRC:.c=.o)

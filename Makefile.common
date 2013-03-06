@@ -15,6 +15,7 @@ ifndef IGNORE_BUILD_OPTIONS
     CC := gcc -c
     AR := ar rcs
     LD := gcc
+    CC_LD := gcc
     CC_I := -I
     CC_L := -L
     CC_l := -l
