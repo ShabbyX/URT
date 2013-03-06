@@ -27,3 +27,6 @@ FUNCTION urt_sem_new: (init_value: unsigned int): urt_sem *
 		Initial value of the semaphore
 	OUTPUT
 		A new semaphore, or `NULL` if not possible.
+
+
+TODO

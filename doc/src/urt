@@ -47,6 +47,11 @@ FUNCTION urt_get_free_name: (name: char[6]): int
 
 	This function finds an unused name, fills it in **`name`** and reserves it.
 
+	Currently, the function generates unique names that cannot be used by the user. This makes the function faster, but also implies
+	that it is limited to slightly less than 70 million names before failing. It has been decided that such a number will not be reached
+	in any application. If it does, please file a report to extend the function. In any case, one can try asking for an object with names
+	generated in a loop and try until a free name is found.
+
 	INPUT name
 		A new name available to be used as a shared object name
 	OUTPUT

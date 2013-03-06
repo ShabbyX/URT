@@ -36,11 +36,16 @@ typedef struct urt_registered_object
 typedef struct urt_internal
 {
 	urt_registered_object objects[URT_MAX_OBJECTS];
+	unsigned int objects_max_index;	/* maximum index of `objects` that is used */
+	char next_free_name[URT_NAME_LEN];	/* see implementation of urt_get_free_name */
+	bool names_exhausted;		/* whether free names are exhausted */
+	bool initialized;		/* whether registry is already initialized */
 } urt_internal;
 
 extern urt_sem *urt_global_sem;
 extern urt_internal *urt_global_mem;
 
+void urt_init_registry(void);
 urt_registered_object *urt_reserve_name(const char *name);
 void urt_inc_name_count(urt_registered_object *ro);
 void urt_dec_name_count(urt_registered_object *ro);

@@ -21,27 +21,65 @@
 #include "reserved.h"
 #include "urt_internal.h"
 
-urt_sem *urt_global_sem;
-urt_internal *urt_global_mem;
+urt_sem *urt_global_sem = NULL;
+urt_internal *urt_global_mem = NULL;
+static bool _initialized_by_me = false;
 
 int urt_init(void)
 {
-	/*
-	 * TODO
-	 * - Get global lock (start name with `$`)
-	 * - Get global memory (start name with `$`)
-	 * - Initialize global memory
-	 */
-	return URT_FAIL;
+	int error = URT_SUCCESS;
+
+	/* get global lock */
+	if (urt_global_sem != NULL || urt_global_mem != NULL)
+		return URT_ALREADY;
+	urt_global_sem = urt_shsem_attach(URT_GLOBAL_LOCK_NAME, &error);
+	if (urt_global_sem == NULL)
+	{
+		urt_global_sem = urt_shsem_new(URT_GLOBAL_LOCK_NAME, 1, &error);
+		_initialized_by_me = true;
+	}
+	if (urt_global_sem == NULL)
+		goto exit_no_sem;
+
+	urt_sem_wait(urt_global_sem);
+
+	/* get global memory */
+	urt_global_mem = urt_shmem_attach(URT_GLOBAL_MEM_NAME, &error);
+	if (urt_global_mem == NULL)
+		urt_global_mem = urt_shmem_alloc(sizeof(*urt_global_mem), &error);
+	if (urt_global_mem == NULL)
+		goto exit_no_mem;
+
+	urt_init_registry();
+
+exit_no_mem:
+	urt_sem_post(urt_global_sem);
+exit_no_sem:
+	return error;
 }
 
 void urt_free(void)
 {
-	/* TODO */
+	if (_initialized_by_me)
+	{
+		_initialized_by_me = false;
+		urt_shmem_free(urt_global_mem);
+		urt_shsem_delete(urt_global_sem);
+	}
+	else
+	{
+		urt_shmem_detach(urt_global_mem);
+		urt_shsem_detach(urt_global_sem);
+	}
 }
 
 void urt_recover(void)
 {
-	/* TODO: get the global lock, try_lock and then unluck it */
-	/* since it's a mutex, just unlocking it would be ok too */
+	urt_sem *global_sem = urt_shsem_attach(URT_GLOBAL_LOCK_NAME);
+	if (global_sem == NULL)
+		return;
+
+	urt_sem_try_wait(global_sem);
+	urt_sem_post(global_sem);
+	urt_shsem_detach(global_sem);
 }

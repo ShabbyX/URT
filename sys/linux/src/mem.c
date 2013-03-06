@@ -17,21 +17,19 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_CONSTS_H
-#define URT_CONSTS_H
+#include <stdlib.h>
+#include <errno.h>
+#include <urt_internal_config.h>
+#include <urt_internal.h>
+#include <urt_mem.h>
+#include "names.h"
 
-#define URT_NAME_LEN 6
+void *(urt_mem_alloc)(size_t size, int *error, ...)
+{
+	void *mem = malloc(size);
+	if (URT_UNLIKELY(mem == NULL))
+		if (error)
+			*error = URT_NOT_MEM;
+	return mem;
+}
 
-#define URT_SUCCESS 0
-#define URT_FAIL -1
-#define URT_NO_MEM -2
-#define URT_NOT_LOCKED -3
-#define URT_TIMEOUT -4
-#define URT_BAD_NAME -5
-#define URT_BAD_VALUE -6
-#define URT_EXISTS -7
-#define URT_NO_OBJ -8		/* returned if trying to attach to a name that is not shared */
-#define URT_INTR -9		/* call was interrupted due to signal */
-#define URT_ALREADY -10		/* returned if operations is already done (e.g. urt_init) */
-
-#endif
