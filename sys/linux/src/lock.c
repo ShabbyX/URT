@@ -115,9 +115,14 @@ exit_fail:
 
 void urt_shsem_delete(urt_sem *sem)
 {
+	urt_registered_object *ro;
+
 	sem_close(sem);
-	sem_unlink(sem);
-	urt_deregister_addr(sem);
+	ro = urt_get_object_by_addr(sem);
+	if (ro == NULL)
+		return;
+	sem_unlink(ro->name);
+	urt_deregister(ro);
 }
 
 urt_sem *(urt_shsem_attach)(const char *name, int *error, ...)
@@ -129,15 +134,14 @@ urt_sem *(urt_shsem_attach)(const char *name, int *error, ...)
 	if (URT_UNLIKELY(urt_convert_name(n, name) != URT_SUCCESS))
 		goto exit_bad_name;
 
-	ro = urt_reserve_name(name);
+	ro = urt_get_object_by_name(name);
 	if (URT_UNLIKELY(ro == NULL))
-		goto exit_used_name;
+		goto exit_no_name;
 
 	sem = sem_open(n, 0);	/* TODO: I expect 0 for mode to only try to attach and not create. Must be tested */
 	if (URT_UNLIKELY(sem == SEM_FAILED))
 		goto exit_bad_open;
 
-	ro->address = sem;
 	urt_inc_name_count(ro);
 
 	return sem;
@@ -158,9 +162,9 @@ exit_bad_name:
 	if (error)
 		*error= URT_BAD_NAME;
 	goto exit_fail;
-exit_used_name:
+exit_no_name:
 	if (error)
-		*error = URT_EXISTS;
+		*error = URT_NO_NAME;
 exit_fail:
 	if (ro)
 		urt_deregister(ro);

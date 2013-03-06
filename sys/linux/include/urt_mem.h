@@ -34,7 +34,7 @@ URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *urt_shmem_alloc(const char *name, siz
 #define urt_shmem_attach(...) urt_shmem_attach(__VA_ARGS__, (int *)NULL)
 URT_ATTR_WARN_UNUSED void *(urt_shmem_attach)(const char *name, int *error, ...);
 void urt_shmem_detach(void *mem);
-void urt_shmem_free(void *mem);
+static inline void urt_shmem_free(void *mem) { urt_shmem_detach(mem); }
 
 URT_DECL_END
 

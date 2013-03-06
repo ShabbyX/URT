@@ -22,16 +22,17 @@
 
 #define URT_NAME_LEN 6
 
-#define URT_SUCCESS 0
-#define URT_FAIL -1
-#define URT_NO_MEM -2
-#define URT_NOT_LOCKED -3
-#define URT_TIMEOUT -4
-#define URT_BAD_NAME -5
-#define URT_BAD_VALUE -6
-#define URT_EXISTS -7
+#define URT_SUCCESS 0		/* success! */
+#define URT_FAIL -1		/* fail for various reasons */
+#define URT_NO_MEM -2		/* not enough memory */
+#define URT_NOT_LOCKED -3	/* try lock didn't lock */
+#define URT_TIMEOUT -4		/* timed locks timed out */
+#define URT_BAD_NAME -5		/* invalid name */
+#define URT_BAD_VALUE -6	/* value out of range */
+#define URT_EXISTS -7		/* object with that name already exists */
 #define URT_NO_OBJ -8		/* returned if trying to attach to a name that is not shared */
 #define URT_INTR -9		/* call was interrupted due to signal */
 #define URT_ALREADY -10		/* returned if operations is already done (e.g. urt_init) */
+#define URT_NO_NAME -11		/* no such name (e.g. in attach functions)
 
 #endif
