@@ -15,7 +15,8 @@ urt_config.h: Makefile.config
 	@$(MAKE) --no-print-directory -f Makefile.generate all
 
 library:
-	@$(MAKE) --no-print-directory -C src
+	@$(MAKE) --no-print-directory -C build dep
+	@$(MAKE) --no-print-directory -C build
 doc:
 	@$(MAKE) --no-print-directory -C doc
 
@@ -26,5 +27,5 @@ install uninstall:
 .PHONY: clean
 clean:
 	-@$(MAKE) --no-print-directory -f Makefile.generate clean
-	-@$(MAKE) --no-print-directory -C src clean
+	-@$(MAKE) --no-print-directory -C build clean
 	#-@$(MAKE) --no-print-directory -C doc clean

@@ -24,6 +24,7 @@ ifndef IGNORE_BUILD_OPTIONS
     CC_g := -g
     CC_Wall := -Wall
     CC_PIC := -fPIC
+    CC_M := -MM -MG
     CC_o := -o
     AR_o :=
     LD_PIC := -shared -fPIC
@@ -34,7 +35,7 @@ ifndef IGNORE_BUILD_OPTIONS
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
     MAKE_LINUX = y
     URT_SYS_DIR = linux
-    URT_CFLAGS += $(CC_D) URT_SYS_LINUX
+    URT_CFLAGS +=
     URT_LDFLAGS += -lrt
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
@@ -43,34 +44,34 @@ ifndef IGNORE_BUILD_OPTIONS
     URT_SYS_DIR = rtai-user
     URT_SYS_DIR_KERNEL = rtai-kernel
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
-    URT_CFLAGS += $(CC_D) URT_SYS_RTAI_USER $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --lxrt-cflags)
+    URT_CFLAGS += $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --lxrt-cflags)
     URT_LDFLAGS +=  $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --lxrt-ldflags)
-    URT_CFLAGS_KERNEL += $(CC_D) URT_SYS_RTAI_KERNEL $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --module-cflags)
+    URT_CFLAGS_KERNEL += $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --module-cflags)
     URT_KERNEL_SYMBOLS += $(RTAI_HOME)/modules/Module.symvers
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-kernel-only)
     MAKE_RTAI_KERNEL = y
     URT_SYS_DIR_KERNEL = rtai-kernel
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
-    URT_CFLAGS_KERNEL += $(CC_D) URT_SYS_RTAI_KERNEL $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --module-cflags)
+    URT_CFLAGS_KERNEL += $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --module-cflags)
     URT_KERNEL_SYMBOLS += $(RTAI_HOME)/modules/Module.symvers
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-user-only)
     MAKE_RTAI_USER = y
     URT_SYS_DIR = rtai-user
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
-    URT_CFLAGS += $(CC_D) URT_SYS_RTAI_USER $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --lxrt-cflags)
+    URT_CFLAGS += $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --lxrt-cflags)
     URT_LDFLAGS +=  $(shell $(CONFIG_SKIN_RTAI_CONFIG_TOOL) --lxrt-ldflags)
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
     MAKE_QNX = y
     URT_SYS_DIR = qnx
-    URT_CFLAGS += $(CC_D) URT_SYS_QNX
+    URT_CFLAGS +=
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
     MAKE_VXWORKS = y
     URT_SYS_DIR = vxworks
-    URT_CFLAGS += $(CC_D) URT_SYS_VXWORKS
+    URT_CFLAGS +=
   endif
   endif
   endif

@@ -17,7 +17,7 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <urt_common.h>
+#include <urt_setup.h>
 #include "reserved.h"
 #include "urt_internal.h"
 

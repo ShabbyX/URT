@@ -1,0 +1,1 @@
+LIB_SRC += setup.c registry.c
