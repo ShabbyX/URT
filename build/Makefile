@@ -16,7 +16,10 @@ ifeq ($(URT_CONFIG_DEVELOPER_MODE), y)
 	@$(MAKE) --no-print-directory $(BUILD_FILE)
 endif
 clean:
-	-$(RM) static/*.o shared/*.o kernel/*.o liburt.a liburt*.so urt.ko
+	@$(MAKE) --no-print-directory -C static clean
+	@$(MAKE) --no-print-directory -C shared clean
+	@$(MAKE) --no-print-directory -C kernel clean
+	-$(RM) Makefile.dep
 
 include Makefile.build
 dep: Makefile.dep

@@ -61,5 +61,7 @@ urt_registered_object *urt_get_object_by_addr(void *address);
 /* global sem and mem registry skip */
 urt_sem *urt_global_sem_get(const char *name, int *error);
 void *urt_global_mem_get(const char *name, size_t size, int *error);
+void urt_global_sem_free(const char *name);
+void urt_global_mem_free(const char *name);
 
 #endif

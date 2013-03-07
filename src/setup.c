@@ -53,8 +53,8 @@ exit_no_sem:
 
 void urt_free(void)
 {
-	urt_shmem_free(urt_global_mem);
-	urt_shsem_delete(urt_global_sem);
+	urt_global_mem_free(URT_GLOBAL_MEM_NAME);
+	urt_global_sem_free(URT_GLOBAL_LOCK_NAME);
 }
 
 void urt_recover(void)
@@ -65,5 +65,5 @@ void urt_recover(void)
 
 	urt_sem_try_wait(global_sem);
 	urt_sem_post(global_sem);
-	urt_shsem_delete(global_sem);
+	urt_global_sem_free(URT_GLOBAL_LOCK_NAME);
 }

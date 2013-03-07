@@ -62,7 +62,7 @@ void urt_sem_delete(urt_sem *sem)
 
 static urt_sem *_shsem_common(const char *name, unsigned int init_value, int *error, int flags)
 {
-	char n[8];
+	char n[URT_SYS_NAME_LEN];
 	urt_sem *sem = NULL;
 
 	if (URT_UNLIKELY(urt_convert_name(n, name) != URT_SUCCESS))
@@ -131,15 +131,26 @@ exit_fail:
 	return NULL;
 }
 
+void urt_global_sem_free(const char *name)
+{
+	char n[URT_SYS_NAME_LEN];
+
+	sem_close(urt_global_sem);
+	if (urt_convert_name(n, name) == URT_SUCCESS)
+		sem_unlink(n);
+}
+
 void urt_shsem_delete(urt_sem *sem)
 {
+	char n[URT_SYS_NAME_LEN];
 	urt_registered_object *ro;
 
 	sem_close(sem);
 	ro = urt_get_object_by_addr(sem);
 	if (ro == NULL)
 		return;
-	sem_unlink(ro->name);
+	if (urt_convert_name(n, ro->name) == URT_SUCCESS)
+		sem_unlink(n);
 	urt_deregister(ro);
 }
 

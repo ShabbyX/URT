@@ -20,7 +20,7 @@
 #include <urt_compiler.h>
 #include "names.h"
 
-int urt_convert_name(char to[URT_NAME_LEN + 2], const char from[URT_NAME_LEN])
+int urt_convert_name(char to[URT_SYS_NAME_LEN], const char from[URT_NAME_LEN])
 {
 	unsigned int i;
 

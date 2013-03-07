@@ -9,13 +9,14 @@
 VPATH = include src
 
 .PHONY: all config library doc tests
-all: config library doc tests
+all: config library tests doc
 
 GENERATED_FILES := urt_config.h urt_internal_config.h urt_version.h
 
 config: $(GENERATED_FILES)
 $(GENERATED_FILES): Makefile.config
 	@$(MAKE) --no-print-directory -f Makefile.generate all
+	@$(MAKE) --no-print-directory clean
 
 library: $(GENERATED_FILES)
 	@$(MAKE) --no-print-directory -C build dep
@@ -34,4 +35,3 @@ install uninstall:
 clean:
 	-@$(MAKE) --no-print-directory -f Makefile.generate clean
 	-@$(MAKE) --no-print-directory -C build clean
-	#-@$(MAKE) --no-print-directory -C doc clean

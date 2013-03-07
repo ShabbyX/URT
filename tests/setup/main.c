@@ -17,13 +17,41 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_NAMES_H
-#define URT_NAMES_H
+#include <urt.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-#include <urt_consts.h>
+int main()
+{
+	int ret;
+	int exit_status = 0;
+	urt_sem *sem = NULL;
 
-#define URT_SYS_NAME_LEN (URT_NAME_LEN + 2)
+	urt_log("starting test...\n");
+	ret = urt_init();
+	if (ret)
+	{
+		urt_log("init returned %d\n", ret);
+		exit_status = EXIT_FAILURE;
+		goto exit_no_init;
+	}
+	sem = urt_shsem_new("TSTSEM", 1);
+	if (sem == NULL)
+	{
+		urt_log("no shared sem\n");
+		exit_status = EXIT_FAILURE;
+		goto exit_no_sem;
+	}
+	urt_log("sem allocated\n");
+	urt_log("Sleeping for 10 seconds...\n");
+	usleep(10000000);
+	urt_shsem_delete(sem);
+exit_no_sem:
+	urt_free();
+	urt_log("test done\n");
 
-int urt_convert_name(char to[URT_SYS_NAME_LEN], const char from[URT_NAME_LEN]);
-
-#endif
+	goto exit_done;
+exit_no_init:
+exit_done:
+	return exit_status;
+}

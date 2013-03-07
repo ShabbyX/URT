@@ -39,7 +39,7 @@ void *(urt_mem_alloc)(size_t size, int *error, ...)
 
 static void *_shmem_common(const char *name, size_t size, int *error, int flags)
 {
-	char n[8];
+	char n[URT_SYS_NAME_LEN];
 	int fd = -1;
 	void *mem = NULL;
 
@@ -161,13 +161,23 @@ exit_fail:
 	return NULL;
 }
 
+void urt_global_mem_free(const char *name)
+{
+	char n[URT_SYS_NAME_LEN];
+
+	if (urt_convert_name(n, name) == URT_SUCCESS)
+		shm_unlink(n);
+}
+
 void urt_shmem_detach(void *mem)
 {
+	char n[URT_SYS_NAME_LEN];
 	urt_registered_object *ro;
 
 	ro = urt_get_object_by_addr(mem);
 	if (ro == NULL)
 		return;
-	shm_unlink(ro->name);
+	if (urt_convert_name(n, ro->name) == URT_SUCCESS)
+		shm_unlink(n);
 	urt_deregister(ro);
 }
