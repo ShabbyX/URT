@@ -30,7 +30,7 @@ URT_DECL_BEGIN
 # define urt_log(...)									\
 	do {										\
 		fprintf(stderr, "%s:%u: ",						\
-			__FILE__ + (sizeof(__FILE__) < 25)?0:(sizeof(__FILE__) - 25)	\
+			__FILE__ + (sizeof(__FILE__) < 25?0:sizeof(__FILE__) - 25),	\
 			__LINE__);							\
 		fprintf(stderr, __VA_ARGS__);						\
 	} while (0)

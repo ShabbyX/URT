@@ -9,8 +9,6 @@ shortcut index
 shortcut constants
 
 urt_time
-urt_thread
 urt_mem
 urt_lock
-urt_error
 urt_log

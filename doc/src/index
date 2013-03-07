@@ -29,5 +29,5 @@ Please refer to the documentation on each module for their respective functions.
 ## Shared Resources
 
 Shared resources in URT are identified by at-most-6-character names, comprising of capital letters (`'A'-'Z'`), digits (`'0'-'9'`)
-and underscore (`'_'`). At most 6 characters are read from the name string. Therefore, a 6-character name doesn't need to be
+and underscore (`'\_'`). At most 6 characters are read from the name string. Therefore, a 6-character name doesn't need to be
 NUL-terminated. If NUL or an invalid character is reached before the 6 characters, the name is truncated to that length.

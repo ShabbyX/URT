@@ -13,7 +13,7 @@ next index
 
 Functions of this module handle logging.
 
-FUNCTION urt_log: (fmt, ...): void
+FUNCTION urt_log: (fmt: const char *, ...: vararg): void
 	Log message
 
 	This function logs a message, `printf` style.  In debug mode, it would prepend the log with the file name (at most the last 25 characters)
@@ -31,7 +31,12 @@ FUNCTION urt_log: (fmt, ...): void
 	INPUT ...
 		Parameters of the format
 
-FUNCTION urt_dbg: (fmt, ...): void
+FUNCTION urt_dbg: (fmt: const char *, ...: vararg): void
 	Log debug message
 
 	This function is the same as `[#urt_log]` in debug mode. In release mode, it does nothing.
+
+	INPUT fmt
+		See `[#urt_log]`
+	INPUT ...
+		See `[#urt_log]`

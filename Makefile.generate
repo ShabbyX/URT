@@ -1,7 +1,7 @@
 include Makefile.config
 include Makefile.common
 
-.PHONY: all
+.PHONY: all clean
 all: config_headers version_header
 
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
@@ -27,6 +27,10 @@ endif
 endif
 endif
 endif
+
+clean:
+	-$(RM) include/urt_config.h src/urt_internal_config.h
+	-$(RM) include/urt_version.h
 
 CONFIG_HEADER := $(subst \n ,\n,"\#ifndef URT_CONFIG_H\n\
 				\#define URT_CONFIG_H\n\

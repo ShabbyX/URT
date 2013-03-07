@@ -223,6 +223,7 @@ int urt_get_free_name(char *name)
 {
 	int i;
 	char *next_name;
+	char digit;
 
 	urt_sem_wait(urt_global_sem);
 
@@ -240,8 +241,8 @@ int urt_get_free_name(char *name)
 
 	for (i = 5; i >= 0; --i)
 	{
-		char digit = next_name[i];
 		bool finished = true;
+		digit = next_name[i];
 
 		if (digit == '_')
 			digit = '0';

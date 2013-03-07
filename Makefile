@@ -5,16 +5,18 @@
 # install: installs the software
 # uninstall: uninstalls the software
 
-VPATH = include
+VPATH = include src
 
 .PHONY: all config library doc
 all: config library doc
 
-config: urt_config.h
-urt_config.h: Makefile.config
+GENERATED_FILES := urt_config.h urt_internal_config.h urt_version.h
+
+config: $(GENERATED_FILES)
+$(GENERATED_FILES): Makefile.config
 	@$(MAKE) --no-print-directory -f Makefile.generate all
 
-library:
+library: $(GENERATED_FILES)
 	@$(MAKE) --no-print-directory -C build dep
 	@$(MAKE) --no-print-directory -C build
 doc:
