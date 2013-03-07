@@ -16,7 +16,7 @@ Makefile.dep: main.c
 	$(CC) $(CFLAGS) $(CC_M) $^ > Makefile.dep
 
 $(TARGET): main.o $(BASE)/build/static/liburt.a
-	$(LD) $(LD_o) $(TARGET) $(filter-out %.a,$^) $(LDFLAGS)
+	$(LD) $(LD_o) $@ $(filter-out %.a,$^) $(LDFLAGS)
 %.o: %.c
 	$(CC) $(CFLAGS) $(CC_o) $@ $<
 

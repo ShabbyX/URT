@@ -11,6 +11,7 @@
 # Executables
 increase_build
 test
+wait
 
 # Temp files
 *.swp
