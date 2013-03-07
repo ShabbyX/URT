@@ -24,7 +24,6 @@
 
 urt_sem *urt_global_sem = NULL;
 urt_internal *urt_global_mem = NULL;
-static bool _initialized_by_me = false;
 
 int urt_init(void)
 {
@@ -33,21 +32,14 @@ int urt_init(void)
 	/* get global lock */
 	if (urt_global_sem != NULL || urt_global_mem != NULL)
 		return URT_ALREADY;
-	urt_global_sem = urt_shsem_attach(URT_GLOBAL_LOCK_NAME, &error);
-	if (urt_global_sem == NULL)
-	{
-		urt_global_sem = urt_shsem_new(URT_GLOBAL_LOCK_NAME, 1, &error);
-		_initialized_by_me = true;
-	}
+	urt_global_sem = urt_global_sem_get(URT_GLOBAL_LOCK_NAME, &error);
 	if (urt_global_sem == NULL)
 		goto exit_no_sem;
 
 	urt_sem_wait(urt_global_sem);
 
 	/* get global memory */
-	urt_global_mem = urt_shmem_attach(URT_GLOBAL_MEM_NAME, &error);
-	if (urt_global_mem == NULL)
-		urt_global_mem = urt_shmem_alloc(URT_GLOBAL_MEM_NAME, sizeof(*urt_global_mem), &error);
+	urt_global_mem = urt_global_mem_get(URT_GLOBAL_MEM_NAME, sizeof(*urt_global_mem), &error);
 	if (urt_global_mem == NULL)
 		goto exit_no_mem;
 
@@ -61,26 +53,17 @@ exit_no_sem:
 
 void urt_free(void)
 {
-	if (_initialized_by_me)
-	{
-		_initialized_by_me = false;
-		urt_shmem_free(urt_global_mem);
-		urt_shsem_delete(urt_global_sem);
-	}
-	else
-	{
-		urt_shmem_detach(urt_global_mem);
-		urt_shsem_detach(urt_global_sem);
-	}
+	urt_shmem_free(urt_global_mem);
+	urt_shsem_delete(urt_global_sem);
 }
 
 void urt_recover(void)
 {
-	urt_sem *global_sem = urt_shsem_attach(URT_GLOBAL_LOCK_NAME);
+	urt_sem *global_sem = urt_global_sem_get(URT_GLOBAL_LOCK_NAME, NULL);
 	if (global_sem == NULL)
 		return;
 
 	urt_sem_try_wait(global_sem);
 	urt_sem_post(global_sem);
-	urt_shsem_detach(global_sem);
+	urt_shsem_delete(global_sem);
 }

@@ -91,9 +91,9 @@ ifndef IGNORE_BUILD_OPTIONS
 
   URT_CFLAGS += $(CC_Wall)
   URT_CFLAGS_KERNEL += $(CC_Wall)
-  URT_LDFLAGS += $(LD_PIC)
 
   URT_SHARED_CFLAGS := $(URT_CFLAGS) $(CC_PIC)
+  URT_SHARED_LDFLAGS := $(URT_LDFLAGS) $(LD_PIC)
 endif
 
 # Disable colors if called from vim

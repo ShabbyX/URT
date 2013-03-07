@@ -33,112 +33,45 @@ void *(urt_mem_alloc)(size_t size, int *error, ...)
 	void *mem = malloc(size);
 	if (URT_UNLIKELY(mem == NULL))
 		if (error)
-			*error = URT_NOT_MEM;
+			*error = URT_NO_MEM;
 	return mem;
 }
 
-void *(urt_shmem_alloc)(const char *name, size_t size, int *error, ...)
+static void *_shmem_common(const char *name, size_t size, int *error, int flags)
 {
 	char n[8];
 	int fd = -1;
 	void *mem = NULL;
-	urt_registered_object *ro = NULL;
 
 	if (URT_UNLIKELY(urt_convert_name(n, name) != URT_SUCCESS))
 		goto exit_bad_name;
 
-	ro = urt_reserve_name(name);
-	if (URT_UNLIKELY(ro == NULL))
-		goto exit_used_name;
-
-	fd = shm_open(n, O_RDWR | O_CREAT | O_EXCL, S_IRWXU | S_IRWXG | S_IRWXO);
+	fd = shm_open(n, O_RDWR | flags /*O_CREAT | O_EXCL*/, S_IRWXU | S_IRWXG | S_IRWXO);
 	if (URT_UNLIKELY(fd == -1))
 		goto exit_bad_open;
 
-	if (URT_UNLIKELY(ftruncate(fd, size) == -1))
-		goto exit_bad_truncate;
+	if (flags & O_CREAT)
+	{
+		if (URT_UNLIKELY(ftruncate(fd, size) == -1))
+			goto exit_bad_truncate;
+	}
+	else
+	{
+		struct stat ms;
+		if (URT_UNLIKELY(fstat(fd, &ms) == -1))
+			goto exit_bad_stat;
+		size = ms.st_size;
+	}
 
 	mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	if (UNLIKELY(mem == MAP_FAILED))
+	if (URT_UNLIKELY(mem == MAP_FAILED))
 		goto exit_bad_map;
-
-	ro->address = mem;
-	urt_inc_name_count(ro);
 
 	close(fd);
 
 	return mem;
 exit_bad_open:
 exit_bad_truncate:
-exit_bad_map:
-	if (error)
-	{
-		switch (errno)
-		{
-		case EEXIST:
-			*error = URT_EXISTS;
-			break;
-		case EINVAL:
-			*error = URT_BAD_VALUE;
-			break;
-		case ENOMEM:
-			*error = URT_NO_MEM;
-			break;
-		default:
-			*error = URT_FAIL;
-		}
-	}
-	goto exit_fail;
-exit_bad_name:
-	if (error)
-		*error= URT_BAD_NAME;
-	goto exit_fail;
-exit_used_name:
-	if (error)
-		*error = URT_EXISTS;
-exit_fail:
-	if (ro)
-		urt_deregister(ro);
-	if (fd != -1)
-	{
-		close(fd);
-		shm_unlink(n);
-	}
-	return NULL;
-}
-
-void *(urt_shmem_attach)(const char *name, int *error, ...)
-{
-	char n[8];
-	int fd = -1;
-	void *mem = NULL;
-	urt_registered_object *ro = NULL;
-	struct stat ms;
-
-	if (URT_UNLIKELY(urt_convert_name(n, name) != URT_SUCCESS))
-		goto exit_bad_name;
-
-	ro = urt_get_object_by_name(name);
-	if (URT_UNLIKELY(ro == NULL))
-		goto exit_no_name;
-
-	fd = shm_open(n, O_RDWR, 0);
-	if (URT_UNLIKELY(fd == -1))
-		goto exit_bad_open;
-
-	if (URT_UNLIKELY(fstat(fd, &ms) == -1))
-		goto exit_bad_stat;
-
-	mem = mmap(NULL, ms.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	if (UNLIKELY(mem == MAP_FAILED))
-		goto exit_bad_map;
-
-	urt_inc_name_count(ro);
-
-	close(fd);
-
-	return mem;
-exit_bad_open:
 exit_bad_stat:
 exit_bad_map:
 	if (error)
@@ -163,17 +96,68 @@ exit_bad_name:
 	if (error)
 		*error= URT_BAD_NAME;
 	goto exit_fail;
+exit_fail:
+	if (fd != -1)
+	{
+		close(fd);
+		shm_unlink(n);
+	}
+	return NULL;
+}
+
+void *urt_global_mem_get(const char *name, size_t size, int *error)
+{
+	return _shmem_common(name, size, error, O_CREAT);
+}
+
+void *(urt_shmem_alloc)(const char *name, size_t size, int *error, ...)
+{
+	void *mem = NULL;
+	urt_registered_object *ro = NULL;
+
+	ro = urt_reserve_name(name);
+	if (URT_UNLIKELY(ro == NULL))
+		goto exit_used_name;
+
+	mem = _shmem_common(name, size, error, O_CREAT | O_EXCL);
+	if (URT_UNLIKELY(mem == NULL))
+		goto exit_fail;
+
+	ro->address = mem;
+	urt_inc_name_count(ro);
+
+	return mem;
+exit_used_name:
+	if (error)
+		*error = URT_EXISTS;
+exit_fail:
+	if (ro)
+		urt_deregister(ro);
+	return NULL;
+}
+
+void *(urt_shmem_attach)(const char *name, int *error, ...)
+{
+	void *mem = NULL;
+	urt_registered_object *ro = NULL;
+
+	ro = urt_get_object_by_name(name);
+	if (URT_UNLIKELY(ro == NULL))
+		goto exit_no_name;
+
+	mem = _shmem_common(name, 0, error, 0);
+	if (URT_UNLIKELY(mem == NULL))
+		goto exit_fail;
+
+	urt_inc_name_count(ro);
+
+	return mem;
 exit_no_name:
 	if (error)
 		*error = URT_NO_NAME;
 exit_fail:
 	if (ro)
 		urt_deregister(ro);
-	if (fd != -1)
-	{
-		close(fd);
-		shm_unlink(n);
-	}
 	return NULL;
 }
 

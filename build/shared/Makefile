@@ -12,6 +12,6 @@ include ../Makefile.dep
 
 liburt-$(URT_VERSION).so: $(LIB_OBJ)
 	-$(RM) liburt*.so
-	$(LD) $(LDFLAGS) $(LD_o) $@ $^
+	$(LD) $(SHARED_LDFLAGS) $(LD_o) $@ $^
 %.o: %.c
 	@$(CC) $(SHARED_CFLAGS) $(CC_o) $@ $< > /dev/null 2>&1

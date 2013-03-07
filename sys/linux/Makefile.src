@@ -1,1 +1,1 @@
-LIB_SRC += lock.c names.c
+LIB_SRC += lock.c mem.c names.c

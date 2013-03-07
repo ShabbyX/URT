@@ -2,6 +2,7 @@ SYS := $(BASE)/sys/$(URT_SYS_DIR)
 CFLAGS += -I$(BASE)/include -I$(SYS)/include -I$(BASE)/src $(URT_CFLAGS) $(EXTRA_CFLAGS)
 SHARED_CFLAGS += -I$(BASE)/include -I$(SYS)/include -I$(BASE)/src $(URT_SHARED_CFLAGS) $(EXTRA_CFLAGS)
 LDFLAGS += $(URT_LDFLAGS) $(EXTRA_LDFLAGS)
+SHARED_LDFLAGS += $(URT_SHARED_LDFLAGS) $(EXTRA_LDFLAGS)
 
 VPATH := $(BASE)/src:$(SYS)/src
 include $(BASE)/src/Makefile.src

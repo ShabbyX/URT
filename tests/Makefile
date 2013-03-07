@@ -9,6 +9,11 @@ all:
 		$(ECHO) "$(SUB_STATUS_COLOR)$$i$(DEFAULT_COLOR)"; \
 		$(MAKE) --no-print-directory -C $$i; \
 	done
+.PHONY: dep
+dep:
+	@for i in $(TESTS); do \
+		$(MAKE) --no-print-directory -C $$i dep; \
+	done
 .PHONY: tests valgrind
 tests:
 	@for i in $(TESTS); do \

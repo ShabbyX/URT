@@ -60,25 +60,17 @@ void urt_sem_delete(urt_sem *sem)
 	urt_mem_free(sem);
 }
 
-urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, ...)
+static urt_sem *_shsem_common(const char *name, unsigned int init_value, int *error, int flags)
 {
 	char n[8];
 	urt_sem *sem = NULL;
-	urt_registered_object *ro = NULL;
 
 	if (URT_UNLIKELY(urt_convert_name(n, name) != URT_SUCCESS))
 		goto exit_bad_name;
 
-	ro = urt_reserve_name(name);
-	if (URT_UNLIKELY(ro == NULL))
-		goto exit_used_name;
-
-	sem = sem_open(n, O_CREAT | O_EXCL, S_IRWXU | S_IRWXG | S_IRWXO, init_value);
+	sem = sem_open(n, flags, S_IRWXU | S_IRWXG | S_IRWXO, init_value);
 	if (URT_UNLIKELY(sem == SEM_FAILED))
 		goto exit_bad_open;
-
-	ro->address = sem;
-	urt_inc_name_count(ro);
 
 	return sem;
 exit_bad_open:
@@ -104,6 +96,32 @@ exit_bad_name:
 	if (error)
 		*error= URT_BAD_NAME;
 	goto exit_fail;
+exit_fail:
+	return NULL;
+}
+
+urt_sem *urt_global_sem_get(const char *name, int *error)
+{
+	return _shsem_common(name, 1, error, O_CREAT);
+}
+
+urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, ...)
+{
+	urt_sem *sem = NULL;
+	urt_registered_object *ro = NULL;
+
+	ro = urt_reserve_name(name);
+	if (URT_UNLIKELY(ro == NULL))
+		goto exit_used_name;
+
+	sem = _shsem_common(name, init_value, error, O_CREAT | O_EXCL);
+	if (URT_UNLIKELY(sem == NULL))
+		goto exit_fail;
+
+	ro->address = sem;
+	urt_inc_name_count(ro);
+
+	return sem;
 exit_used_name:
 	if (error)
 		*error = URT_EXISTS;
@@ -127,41 +145,20 @@ void urt_shsem_delete(urt_sem *sem)
 
 urt_sem *(urt_shsem_attach)(const char *name, int *error, ...)
 {
-	char n[8];
 	urt_sem *sem = NULL;
 	urt_registered_object *ro = NULL;
-
-	if (URT_UNLIKELY(urt_convert_name(n, name) != URT_SUCCESS))
-		goto exit_bad_name;
 
 	ro = urt_get_object_by_name(name);
 	if (URT_UNLIKELY(ro == NULL))
 		goto exit_no_name;
 
-	sem = sem_open(n, 0);	/* TODO: I expect 0 for mode to only try to attach and not create. Must be tested */
-	if (URT_UNLIKELY(sem == SEM_FAILED))
-		goto exit_bad_open;
+	sem = _shsem_common(name, 0, error, 0);	/* TODO: I expect 0 for flags to only try to attach and not create. Must be tested */
+	if (URT_UNLIKELY(sem == NULL))
+		goto exit_fail;
 
 	urt_inc_name_count(ro);
 
 	return sem;
-exit_bad_open:
-	if (error)
-	{
-		switch (errno)
-		{
-		case ENOMEM:
-			*error = URT_NO_MEM;
-			break;
-		default:
-			*error = URT_NO_OBJ;
-		}
-	}
-	goto exit_fail;
-exit_bad_name:
-	if (error)
-		*error= URT_BAD_NAME;
-	goto exit_fail;
 exit_no_name:
 	if (error)
 		*error = URT_NO_NAME;
