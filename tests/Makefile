@@ -1,7 +1,7 @@
 include ../Makefile.config
 include ../Makefile.common
 
-TESTS := setup
+TESTS := setup sem mem
 
 .PHONY: all
 all:

@@ -12,6 +12,7 @@
 increase_build
 test
 wait
+add
 
 # Temp files
 *.swp

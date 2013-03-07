@@ -25,31 +25,58 @@ int main()
 {
 	int exit_status = 0;
 	int ret;
-	urt_sem *sem = NULL;
+	urt_sem *req = NULL;
+	urt_sem *res = NULL;
+	int *mem = NULL;
 
-	urt_log("wait: spawned\n");
+	urt_log("add: spawned\n");
 
 	ret = urt_init();	/* tests race condition for urt_init */
-	usleep(100000);		/* wait for main to create semaphore */
+	usleep(100000);		/* add for main to create semaphores and shared memory */
 	if (ret)
 	{
-		urt_log("wait: init returned %d\n", ret);
+		urt_log("add: init returned %d\n", ret);
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
-	sem = urt_shsem_attach("TSTSEM");
-	if (sem == NULL)
+	req = urt_shsem_attach("TSTREQ");
+	res = urt_shsem_attach("TSTRES");
+	if (req == NULL || res == NULL)
 	{
-		urt_log("wait: no shared sem\n");
+		urt_log("add: no shared sem\n");
 		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
-	urt_log("wait: sem attached\n");
-	urt_sem_wait(sem);
-	urt_shsem_detach(sem);
+	urt_log("add: sem attached\n");
+	mem = urt_shmem_attach("TSTMEM");
+	if (mem == NULL)
+	{
+		urt_log("add: no shared mem\n");
+		exit_status = EXIT_FAILURE;
+		goto exit_no_mem;
+	}
+	urt_log("add: mem attached\n");
+	urt_sem_wait(req);
+	mem[0] += 1;
+	urt_sem_post(req);
+	urt_sem_wait(req);
+	mem[1] += 2;
+	urt_sem_post(req);
+	urt_sem_wait(req);
+	mem[2] += 3;
+	urt_sem_post(req);
+	urt_sem_wait(req);
+	mem[3] += -1;
+	urt_sem_post(res);
+	urt_shmem_detach(mem);
+exit_no_mem:
+	if (req)
+		urt_shsem_detach(req);
+	if (res)
+		urt_shsem_detach(res);
 exit_no_sem:
 	urt_free();
-	urt_log("wait: test done\n");
+	urt_log("add: test done\n");
 
 exit_no_init:
 	return exit_status;

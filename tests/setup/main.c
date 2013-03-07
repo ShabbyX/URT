@@ -50,8 +50,6 @@ exit_no_sem:
 	urt_free();
 	urt_log("test done\n");
 
-	goto exit_done;
 exit_no_init:
-exit_done:
 	return exit_status;
 }

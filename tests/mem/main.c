@@ -28,14 +28,16 @@ int main()
 	int ret;
 	int exit_status = 0;
 	int i;
-	urt_sem *sem = NULL;
+	int *mem = NULL;
+	urt_sem *req = NULL;
+	urt_sem *res = NULL;
 
 	urt_log("main: starting test...\n");
 
 	for (i = 0; i < 20; ++i)
 		if (fork() == 0)
 		{
-			execl("./wait", "./wait", (void *)NULL);
+			execl("./add", "./add", (void *)NULL);
 			_Exit(EXIT_FAILURE);
 		}
 
@@ -46,21 +48,41 @@ int main()
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
-	sem = urt_shsem_new("TSTSEM", 5);
-	if (sem == NULL)
+	req = urt_shsem_new("TSTREQ", 0);
+	res = urt_shsem_new("TSTRES", 0);
+	if (req == NULL || res == NULL)
 	{
 		urt_log("main: no shared sem\n");
 		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
 	urt_log("main: sem allocated\n");
-	urt_log("main: waiting for 3 seconds\n");
-	usleep(3000000);
-	for (i = 0; i < 15; ++i)
-		urt_sem_post(sem);
+	mem = urt_shmem_alloc("TSTMEM", 4 * sizeof(*mem));
+	if (mem == NULL)
+	{
+		urt_log("main: no shared mem\n");
+		exit_status = EXIT_FAILURE;
+		goto exit_no_mem;
+	}
+	urt_log("main: mem allocated\n");
+	mem[0] = mem[1] = mem[2] = mem[3] = 0;
+	for (i = 0; i < 20; ++i)
+		urt_sem_post(req);
+	for (i = 0; i < 20; ++i)
+		urt_sem_wait(res);
+	if (!(mem[0] == 20 && mem[1] == 40 && mem[2] == 60 && mem[3] == -20))
+	{
+		urt_log("main: bad synchronization (wrong results)");
+		exit_status = EXIT_FAILURE;
+	}
 	for (i = 0; i < 20; ++i)
 		wait(NULL);
-	urt_shsem_delete(sem);
+	urt_shmem_free(mem);
+exit_no_mem:
+	if (req)
+		urt_shsem_delete(req);
+	if (res)
+		urt_shsem_delete(res);
 exit_no_sem:
 	urt_free();
 	urt_log("main: test done\n");
