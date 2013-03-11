@@ -115,9 +115,9 @@ void *(urt_shmem_alloc)(const char *name, size_t size, int *error, ...)
 	void *mem = NULL;
 	urt_registered_object *ro = NULL;
 
-	ro = urt_reserve_name(name);
+	ro = urt_reserve_name(name, error);
 	if (URT_UNLIKELY(ro == NULL))
-		goto exit_used_name;
+		goto exit_fail;
 
 	mem = _shmem_common(name, size, error, O_CREAT | O_EXCL);
 	if (URT_UNLIKELY(mem == NULL))
@@ -127,9 +127,6 @@ void *(urt_shmem_alloc)(const char *name, size_t size, int *error, ...)
 	urt_inc_name_count(ro);
 
 	return mem;
-exit_used_name:
-	if (error)
-		*error = URT_EXISTS;
 exit_fail:
 	if (ro)
 		urt_deregister(ro);

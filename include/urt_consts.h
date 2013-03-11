@@ -34,5 +34,6 @@
 #define URT_INTR -9		/* call was interrupted due to signal */
 #define URT_ALREADY -10		/* returned if operations is already done (e.g. urt_init) */
 #define URT_NO_NAME -11		/* no such name (e.g. in attach functions) */
+#define URT_MAX_REACHED -12	/* maximum number of names/objects reached */
 
 #endif

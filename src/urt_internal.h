@@ -47,7 +47,7 @@ extern urt_internal *urt_global_mem;
 
 /* registry manipulation */
 void urt_init_registry(void);
-urt_registered_object *urt_reserve_name(const char *name);
+urt_registered_object *urt_reserve_name(const char *name, int *error);
 void urt_inc_name_count(urt_registered_object *ro);
 void urt_dec_name_count(urt_registered_object *ro);
 static inline void urt_deregister(urt_registered_object *ro) { urt_dec_name_count(ro); }

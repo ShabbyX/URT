@@ -110,9 +110,9 @@ urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, 
 	urt_sem *sem = NULL;
 	urt_registered_object *ro = NULL;
 
-	ro = urt_reserve_name(name);
+	ro = urt_reserve_name(name, error);
 	if (URT_UNLIKELY(ro == NULL))
-		goto exit_used_name;
+		goto exit_fail;
 
 	sem = _shsem_common(name, init_value, error, O_CREAT | O_EXCL);
 	if (URT_UNLIKELY(sem == NULL))
@@ -122,9 +122,6 @@ urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, 
 	urt_inc_name_count(ro);
 
 	return sem;
-exit_used_name:
-	if (error)
-		*error = URT_EXISTS;
 exit_fail:
 	if (ro)
 		urt_deregister(ro);
