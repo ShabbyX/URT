@@ -28,6 +28,7 @@
 URT_DECL_BEGIN
 
 typedef sem_t urt_sem;
+typedef urt_sem urt_mutex;
 
 /* unnamed semaphore */
 #define urt_sem_new(...) urt_sem_new(__VA_ARGS__, (int *)NULL)
@@ -48,6 +49,26 @@ int (urt_sem_wait)(urt_sem *sem, bool *stop, ...);
 int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait);
 int urt_sem_try_wait(urt_sem *sem);
 void urt_sem_post(urt_sem *sem);
+
+/* unnamed mutex */
+#define urt_mutex_new(...) urt_sem_new(__VA_ARGS__)
+#define urt_mutex_delete(m) urt_sem_delete(m)
+
+/* shared mutex */
+#define urt_shmutex_new(...) urt_shsem_new(__VA_ARGS__)
+#define urt_shmutex_delete(m) urt_shsem_delete(m)
+#define urt_shmutex_attach(...) urt_shsem_attach(__VA_ARGS__)
+#define urt_shmutex_detach(m) urt_shmutex_detach(m)
+
+/* common mutex operations */
+#define urt_mutex_lock(...) urt_sem_wait(__VA_ARGS__)
+#define urt_mutex_timed_lock(m, t) urt_sem_timed_wait(m, t)
+#define urt_mutex_try_lock(m) urt_sem_try_lock(m)
+#define urt_mutex_unlock(m) urt_sem_post(m)
+
+/* unnamed rwlock */
+/* shared rwlock */
+/* common rwlock operations */
 
 URT_DECL_END
 
