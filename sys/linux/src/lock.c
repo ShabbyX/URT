@@ -135,20 +135,6 @@ void urt_global_sem_free(const char *name)
 		sem_unlink(n);
 }
 
-void urt_shsem_delete(urt_sem *sem)
-{
-	char n[URT_SYS_NAME_LEN];
-	urt_registered_object *ro;
-
-	sem_close(sem);
-	ro = urt_get_object_by_addr(sem);
-	if (ro == NULL)
-		return;
-	if (urt_convert_name(n, ro->name) == URT_SUCCESS)
-		sem_unlink(n);
-	urt_deregister(ro);
-}
-
 urt_sem *(urt_shsem_attach)(const char *name, int *error, ...)
 {
 	urt_sem *sem = NULL;
@@ -178,6 +164,20 @@ void urt_shsem_detach(urt_sem *sem)
 {
 	sem_close(sem);
 	urt_deregister_addr(sem);
+}
+
+void urt_shsem_delete(urt_sem *sem)
+{
+	char n[URT_SYS_NAME_LEN];
+	urt_registered_object *ro;
+
+	sem_close(sem);
+	ro = urt_get_object_by_addr(sem);
+	if (ro == NULL)
+		return;
+	if (urt_convert_name(n, ro->name) == URT_SUCCESS)
+		sem_unlink(n);
+	urt_deregister(ro);
 }
 
 int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
@@ -312,6 +312,11 @@ exit_fail:
 #endif
 }
 
+urt_rwlock *(urt_shrwlock_attach)(const char *name, int *error, ...)
+{
+	return urt_shmem_attach(name, error);
+}
+
 static void _delete_rwlock_callback(void *mem)
 {
 	urt_rwlock *rwl = mem;
@@ -321,20 +326,129 @@ static void _delete_rwlock_callback(void *mem)
 			break;
 }
 
-void urt_shrwlock_delete(urt_rwlock *rwl)
+void urt_shrwlock_detach(urt_rwlock *rwl)
 {
 	if (URT_UNLIKELY(rwl == NULL))
 		return;
 	urt_shmem_detach_with_callback(rwl, _delete_rwlock_callback);
 }
 
-urt_rwlock *(urt_shrwlock_attach)(const char *name, int *error, ...);
-void urt_shrwlock_detach(urt_rwlock *rwl);
-int (urt_rwlock_rdlock)(urt_rwlock *rwl, bool *stop, ...);
-int (urt_rwlock_wrlock)(urt_rwlock *rwl, bool *stop, ...);
-int urt_rwlock_timed_rdlock(urt_rwlock *rwl, urt_time max_wait);
-int urt_rwlock_timed_wrlock(urt_rwlock *rwl, urt_time max_wait);
-int urt_rwlock_try_rdlock(urt_rwlock *rwl);
-int urt_rwlock_try_wrlock(urt_rwlock *rwl);
-int urt_rwlock_rdunlock(urt_rwlock *rwl);
-int urt_rwlock_wrunlock(urt_rwlock *rwl);
+int (urt_rwlock_rdlock)(urt_rwlock *rwl, bool *stop, ...)
+{
+	int res;
+	if (stop)
+	{
+		struct timespec tp;
+		urt_time t = urt_get_time();
+
+		do
+		{
+			if (URT_UNLIKELY(*stop))
+				return URT_NOT_LOCKED;
+
+			t += URT_LOCK_STOP_MAX_DELAY;
+			tp.tv_sec = t / 1000000000ll;
+			tp.tv_nsec = t % 1000000000ll;
+		} while ((res = pthread_rwlock_timedrdlock(rwl, &tp)) == ETIMEDOUT);
+	}
+	else
+		res = pthread_rwlock_rdlock(rwl);
+
+	if (URT_LIKELY(res == 0))
+		return URT_SUCCESS;
+	return URT_FAIL;
+}
+
+int (urt_rwlock_wrlock)(urt_rwlock *rwl, bool *stop, ...)
+{
+	int res;
+	if (stop)
+	{
+		struct timespec tp;
+		urt_time t = urt_get_time();
+
+		do
+		{
+			if (URT_UNLIKELY(*stop))
+				return URT_NOT_LOCKED;
+
+			t += URT_LOCK_STOP_MAX_DELAY;
+			tp.tv_sec = t / 1000000000ll;
+			tp.tv_nsec = t % 1000000000ll;
+		} while ((res = pthread_rwlock_timedwrlock(rwl, &tp)) == ETIMEDOUT);
+	}
+	else
+		res = pthread_rwlock_rdlock(rwl);
+
+	if (URT_LIKELY(res == 0))
+		return URT_SUCCESS;
+	return URT_FAIL;
+}
+
+int urt_rwlock_timed_rdlock(urt_rwlock *rwl, urt_time max_wait)
+{
+	int res;
+	struct timespec tp;
+	urt_time t = urt_get_time();
+
+	t += max_wait;
+	tp.tv_sec = t / 1000000000ll;
+	tp.tv_nsec = t % 1000000000ll;
+
+	res = pthread_rwlock_timedrdlock(rwl, &tp);
+
+	if (res == 0)
+		return URT_SUCCESS;
+	else if (res == ETIMEDOUT)
+		return URT_TIMEOUT;
+	return URT_FAIL;
+}
+
+int urt_rwlock_timed_wrlock(urt_rwlock *rwl, urt_time max_wait)
+{
+	int res;
+	struct timespec tp;
+	urt_time t = urt_get_time();
+
+	t += max_wait;
+	tp.tv_sec = t / 1000000000ll;
+	tp.tv_nsec = t % 1000000000ll;
+
+	res = pthread_rwlock_timedwrlock(rwl, &tp);
+
+	if (res == 0)
+		return URT_SUCCESS;
+	else if (res == ETIMEDOUT)
+		return URT_TIMEOUT;
+	return URT_FAIL;
+}
+
+int urt_rwlock_try_rdlock(urt_rwlock *rwl)
+{
+	int res = pthread_rwlock_tryrdlock(rwl);
+	if (res == 0)
+		return URT_SUCCESS;
+	else if (res == EBUSY)
+		return URT_NOT_LOCKED;
+	return URT_FAIL;
+}
+
+int urt_rwlock_try_wrlock(urt_rwlock *rwl)
+{
+	int res = pthread_rwlock_trywrlock(rwl);
+	if (res == 0)
+		return URT_SUCCESS;
+	else if (res == EBUSY)
+		return URT_NOT_LOCKED;
+	return URT_FAIL;
+}
+
+int urt_rwlock_rdunlock(urt_rwlock *rwl)
+{
+	return pthread_rwlock_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
+}
+
+int urt_rwlock_wrunlock(urt_rwlock *rwl)
+{
+	return pthread_rwlock_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
+}
