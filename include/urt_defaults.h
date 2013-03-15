@@ -51,7 +51,7 @@
 #define urt_rwlock_new_(n, ...) urt_rwlock_new(__VA_ARGS__)
 #define urt_shrwlock_new(...) urt_shrwlock_new(__VA_ARGS__, (int *)NULL)
 #define urt_shrwlock_attach(...) urt_shrwlock_attach(__VA_ARGS__, (int *)NULL)
-#define urt_rwlock_rdlock(...) urt_rwlock_rdlock(__VA_ARGS__, (bool *)NULL)
-#define urt_rwlock_wrlock(...) urt_rwlock_wrlock(__VA_ARGS__, (bool *)NULL)
+#define urt_rwlock_read_lock(...) urt_rwlock_read_lock(__VA_ARGS__, (bool *)NULL)
+#define urt_rwlock_write_lock(...) urt_rwlock_write_lock(__VA_ARGS__, (bool *)NULL)
 
 #endif

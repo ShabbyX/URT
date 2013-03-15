@@ -76,14 +76,14 @@ void urt_shrwlock_detach(urt_rwlock *rwl);
 static inline void urt_shrwlock_delete(urt_rwlock *rwl) { urt_shrwlock_detach(rwl); }
 
 /* common rwlock operations */
-int (urt_rwlock_rdlock)(urt_rwlock *rwl, bool *stop, ...);
-int (urt_rwlock_wrlock)(urt_rwlock *rwl, bool *stop, ...);
-int urt_rwlock_timed_rdlock(urt_rwlock *rwl, urt_time max_wait);
-int urt_rwlock_timed_wrlock(urt_rwlock *rwl, urt_time max_wait);
-int urt_rwlock_try_rdlock(urt_rwlock *rwl);
-int urt_rwlock_try_wrlock(urt_rwlock *rwl);
-int urt_rwlock_rdunlock(urt_rwlock *rwl);
-int urt_rwlock_wrunlock(urt_rwlock *rwl);
+int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...);
+int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...);
+int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait);
+int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait);
+int urt_rwlock_try_read_lock(urt_rwlock *rwl);
+int urt_rwlock_try_write_lock(urt_rwlock *rwl);
+int urt_rwlock_read_unlock(urt_rwlock *rwl);
+int urt_rwlock_write_unlock(urt_rwlock *rwl);
 
 URT_DECL_END
 

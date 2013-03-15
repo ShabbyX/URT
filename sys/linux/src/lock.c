@@ -333,7 +333,7 @@ void urt_shrwlock_detach(urt_rwlock *rwl)
 	urt_shmem_detach_with_callback(rwl, _delete_rwlock_callback);
 }
 
-int (urt_rwlock_rdlock)(urt_rwlock *rwl, bool *stop, ...)
+int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 {
 	int res;
 	if (stop)
@@ -359,7 +359,7 @@ int (urt_rwlock_rdlock)(urt_rwlock *rwl, bool *stop, ...)
 	return URT_FAIL;
 }
 
-int (urt_rwlock_wrlock)(urt_rwlock *rwl, bool *stop, ...)
+int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 {
 	int res;
 	if (stop)
@@ -378,14 +378,14 @@ int (urt_rwlock_wrlock)(urt_rwlock *rwl, bool *stop, ...)
 		} while ((res = pthread_rwlock_timedwrlock(rwl, &tp)) == ETIMEDOUT);
 	}
 	else
-		res = pthread_rwlock_rdlock(rwl);
+		res = pthread_rwlock_wrlock(rwl);
 
 	if (URT_LIKELY(res == 0))
 		return URT_SUCCESS;
 	return URT_FAIL;
 }
 
-int urt_rwlock_timed_rdlock(urt_rwlock *rwl, urt_time max_wait)
+int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)
 {
 	int res;
 	struct timespec tp;
@@ -404,7 +404,7 @@ int urt_rwlock_timed_rdlock(urt_rwlock *rwl, urt_time max_wait)
 	return URT_FAIL;
 }
 
-int urt_rwlock_timed_wrlock(urt_rwlock *rwl, urt_time max_wait)
+int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 {
 	int res;
 	struct timespec tp;
@@ -423,7 +423,7 @@ int urt_rwlock_timed_wrlock(urt_rwlock *rwl, urt_time max_wait)
 	return URT_FAIL;
 }
 
-int urt_rwlock_try_rdlock(urt_rwlock *rwl)
+int urt_rwlock_try_read_lock(urt_rwlock *rwl)
 {
 	int res = pthread_rwlock_tryrdlock(rwl);
 	if (res == 0)
@@ -433,7 +433,7 @@ int urt_rwlock_try_rdlock(urt_rwlock *rwl)
 	return URT_FAIL;
 }
 
-int urt_rwlock_try_wrlock(urt_rwlock *rwl)
+int urt_rwlock_try_write_lock(urt_rwlock *rwl)
 {
 	int res = pthread_rwlock_trywrlock(rwl);
 	if (res == 0)
@@ -443,12 +443,12 @@ int urt_rwlock_try_wrlock(urt_rwlock *rwl)
 	return URT_FAIL;
 }
 
-int urt_rwlock_rdunlock(urt_rwlock *rwl)
+int urt_rwlock_read_unlock(urt_rwlock *rwl)
 {
 	return pthread_rwlock_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
 }
 
-int urt_rwlock_wrunlock(urt_rwlock *rwl)
+int urt_rwlock_write_unlock(urt_rwlock *rwl)
 {
 	return pthread_rwlock_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
 }
