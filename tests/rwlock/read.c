@@ -54,10 +54,13 @@ int main()
 	urt_log("read: timed read lock for 4 second\n");
 	ret = urt_rwlock_timed_read_lock(rwl, 4000000000ll);
 	urt_log("read: timed read lock returned: %d\n", ret);
-	urt_log("read: waiting for 1s\n");
-	urt_sleep(1000000000);
-	urt_log("read: read unlock\n");
-	urt_rwlock_read_unlock(rwl);
+	urt_log("read: waiting for 3s\n");
+	urt_sleep(3000000000ll);
+	if (ret == 0)
+	{
+		urt_log("read: read unlock\n");
+		urt_rwlock_read_unlock(rwl);
+	}
 	urt_shrwlock_detach(rwl);
 exit_no_rwl:
 	urt_free();

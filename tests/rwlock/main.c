@@ -31,7 +31,7 @@ int main()
 
 	urt_log("main: starting test...\n");
 
-	for (i = 0; i < 5; ++i)
+	for (i = 0; i < 4; ++i)
 		if (fork() == 0)
 		{
 			execl("./read", "./read", (void *)NULL);
@@ -58,10 +58,13 @@ int main()
 	urt_sleep(3000000000ll);
 	urt_log("main: write unlock\n");
 	urt_rwlock_write_unlock(rwl);
-	urt_sleep(100000000);
+	urt_sleep(1000000000ll);
 	urt_log("main: waiting for write lock\n");
-	urt_rwlock_write_lock(rwl);
+	ret = urt_rwlock_write_lock(rwl);
+	urt_log("main: write lock returned: %d\n", ret);
 	urt_shrwlock_delete(rwl);
+	for (i = 0; i < 4; ++i)
+		wait(NULL);
 exit_no_rwl:
 	urt_free();
 	urt_log("main: test done\n");

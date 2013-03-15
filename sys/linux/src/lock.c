@@ -302,7 +302,7 @@ urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...)
 	if (URT_UNLIKELY(rwl == NULL))
 		goto exit_fail;
 
-	if (URT_UNLIKELY(_shrwlock_common(rwl, error, PTHREAD_PROCESS_PRIVATE)))
+	if (URT_UNLIKELY(_shrwlock_common(rwl, error, PTHREAD_PROCESS_SHARED)))
 		goto exit_bad_init;
 
 	return rwl;
