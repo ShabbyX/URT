@@ -5,25 +5,28 @@ BASE := $(abspath $(CURDIR)/..)
 INC_BUILD := ./increase_build
 BUILD_FILE := build.txt
 
-.PHONY: all dep clean
-all:
-# TODO: proper ifeq for different builds and messages
-	@$(PRINTF) "$(STATUS_COLOR)Building URT API...$(DEFAULT_COLOR)\n"
-	@$(MAKE) --no-print-directory -C static $(HIGHLIGHT)
-	@$(MAKE) --no-print-directory -C shared $(HIGHLIGHT)
 ifeq ($(URT_CONFIG_DEVELOPER_MODE), y)
-	@$(MAKE) --no-print-directory $(INC_BUILD)
-	@$(MAKE) --no-print-directory $(BUILD_FILE)
+  INC_BUILD_DEP := $(INC_BUILD) $(BUILD_FILE)
 endif
+
+.PHONY: all modules dep clean
+all: modules $(INC_BUILD_DEP)
+	@$(SHELL_NOOP)
 clean:
 	@$(MAKE) --no-print-directory -C static clean
 	@$(MAKE) --no-print-directory -C shared clean
 	@$(MAKE) --no-print-directory -C kernel clean
 	-$(RM) Makefile.dep
+modules:
+# TODO: proper ifeq for different builds and messages
+	@$(PRINTF) "$(STATUS_COLOR)Building URT API...$(DEFAULT_COLOR)\n"
+	@$(MAKE) --no-print-directory -C static $(HIGHLIGHT)
+	@$(MAKE) --no-print-directory -C shared $(HIGHLIGHT)
 
 include Makefile.build
 dep: Makefile.dep
-Makefile.dep: $(LIB_SRC)
+	@$(SHELL_NOOP)
+Makefile.dep: $(LIB_SRC) $(LIB_HDR)
 	$(CC) $(CFLAGS) $(CC_M) $^ > Makefile.dep
 
 # TODO: target that build_file depends on would be based on what is being built

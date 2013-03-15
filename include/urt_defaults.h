@@ -28,6 +28,12 @@
  * These functions are originally defined with variadic arguments.
  */
 
+/*
+ * Note: ##__VA_ARGS__ is a gcc feature.  If this feature is not supported by
+ * any of the other supported compilers, I should find a more standard way of
+ * doing this.
+ */
+
 /* Thread module */
 
 /* Memory module */

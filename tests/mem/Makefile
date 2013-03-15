@@ -3,18 +3,23 @@ include ../../Makefile.common
 
 BASE := $(abspath $(CURDIR)/../..)
 include $(BASE)/build/Makefile.build
-#LDFLAGS += -L$(BASE)/build/shared -lurt-$(URT_VERSION)
 LDFLAGS := -L$(BASE)/build/shared -lurt-$(URT_VERSION) $(LDFLAGS)
 TARGET := test
 TARGET2 := add
 
 .PHONY: all dep clean
 all: $(TARGET) $(TARGET2)
+	@$(SHELL_NOOP)
 clean:
 	-$(RM) $(TARGET) $(TARGET2) *.o Makefile.dep
 dep: Makefile.dep
-Makefile.dep: main.c add.c
-	$(CC) $(CFLAGS) $(CC_M) $^ > Makefile.dep
+	@$(SHELL_NOOP)
+LIB_HDR :=
+include $(BASE)/include/Makefile.src
+include $(SYS)/include/Makefile.src
+VPATH := $(BASE)/include:$(SYS)/include
+Makefile.dep: main.c add.c $(LIB_HDR)
+	$(CC) $(CFLAGS) $(CC_M) $(filter-out %.h,$^) > Makefile.dep
 
 $(TARGET): main.o $(BASE)/build/shared/liburt-$(URT_VERSION).so
 	$(LD) $(LD_o) $@ $(filter-out %.so,$^) $(LDFLAGS)

@@ -50,11 +50,6 @@ int urt_sem_try_wait(urt_sem *sem);
 void urt_sem_post(urt_sem *sem);
 
 /* unnamed mutex */
-/*
- * Note: ##__VA_ARGS__ is a gcc feature.  If this feature is not supported by
- * any of the other supported compilers, I should find a more standard way of
- * doing this.
- */
 #define urt_mutex_new(...) urt_sem_new(1, ##__VA_ARGS__)
 #define urt_mutex_delete(m) urt_sem_delete(m)
 
@@ -89,7 +84,6 @@ int urt_rwlock_try_rdlock(urt_rwlock *rwl);
 int urt_rwlock_try_wrlock(urt_rwlock *rwl);
 int urt_rwlock_rdunlock(urt_rwlock *rwl);
 int urt_rwlock_wrunlock(urt_rwlock *rwl);
-
 
 URT_DECL_END
 

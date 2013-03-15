@@ -3,6 +3,7 @@ include ../../Makefile.common
 
 .PHONY: all clean
 all: liburt-$(URT_VERSION).so
+	@$(SHELL_NOOP)
 clean:
 	-$(RM) liburt*.so *.o
 

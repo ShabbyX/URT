@@ -1,1 +1,2 @@
 LIB_SRC += lock.c mem.c names.c
+LIB_HDR += names.h

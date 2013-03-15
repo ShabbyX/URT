@@ -1,3 +1,6 @@
+include ../Makefile.config
+include ../Makefile.common
+
 DOC_THIS := ../../personal/DocThis/docthis
 RM := rm -f
 MKDIR := mkdir -p
@@ -12,15 +15,19 @@ SOURCE_FILES_DEF := $(addprefix src/, $(SOURCE_FILES))
 ALL_FILES_DEF := $(addprefix src/, $(ALL_FILES))
 TEX_MAKE_FILES := $(addprefix $(TEX_DIR)/, documentation.tex Makefile Makefile.obj Makefile.cvt Makefile.cln)
 
-.PHONY: all
-all: $(TEX_MAKE_FILES) $(HTML_FILES) $(HTML_DIR)/globals.html $(TEX_FILES) $(TEX_DIR)/globals.tex
+.PHONY: all files
+all:
 ifeq ($(URT_CONFIG_BUILD_DOC), y)
 	@$(PRINTF) "$(STATUS_COLOR)Building documentation...$(DEFAULT_COLOR)\n"
 	$(DOC_THIS) +css
 	-$(MKDIR) $(HTML_DIR)/files
 	-$(MKDIR) $(TEX_DIR)/files
 	@$(MAKE) --no-print-directory -C generated/tex
+else
+	@$(SHELL_NOOP)
 endif
+files: $(TEX_MAKE_FILES) $(HTML_FILES) $(HTML_DIR)/globals.html $(TEX_FILES) $(TEX_DIR)/globals.tex
+	@$(SHELL_NOOP)
 $(HTML_DIR)/%.html $(TEX_DIR)/%.tex: src/%
 	$(DOC_THIS) $< +html +tex
 $(HTML_DIR)/globals.html $(TEX_DIR)/globals.tex: src/globals $(SOURCE_FILES_DEF)

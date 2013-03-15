@@ -20,7 +20,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <urt_internal_config.h>
 #include <urt_internal.h>
 #include <urt_lock.h>
 #include <urt_mem.h>

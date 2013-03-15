@@ -23,7 +23,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <urt_internal_config.h>
 #include <urt_internal.h>
 #include <urt_mem.h>
 #include "names.h"

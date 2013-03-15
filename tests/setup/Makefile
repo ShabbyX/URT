@@ -9,11 +9,17 @@ TARGET := test
 
 .PHONY: all dep clean
 all: $(TARGET)
+	@$(SHELL_NOOP)
 clean:
 	-$(RM) $(TARGET) *.o Makefile.dep
 dep: Makefile.dep
-Makefile.dep: main.c
-	$(CC) $(CFLAGS) $(CC_M) $^ > Makefile.dep
+	@$(SHELL_NOOP)
+LIB_HDR :=
+include $(BASE)/include/Makefile.src
+include $(SYS)/include/Makefile.src
+VPATH := $(BASE)/include:$(SYS)/include
+Makefile.dep: main.c $(LIB_HDR)
+	$(CC) $(CFLAGS) $(CC_M) $(filter-out %.h,$^) > Makefile.dep
 
 $(TARGET): main.o $(BASE)/build/static/liburt.a
 	$(LD) $(LD_o) $@ $(filter-out %.a,$^) $(LDFLAGS)

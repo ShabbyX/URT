@@ -3,6 +3,7 @@ include ../../Makefile.common
 
 .PHONY: all clean
 all: liburt.a
+	@$(SHELL_NOOP)
 clean:
 	-$(RM) liburt.a *.o
 

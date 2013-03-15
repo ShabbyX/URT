@@ -4,7 +4,9 @@ SHARED_CFLAGS += -I$(BASE)/include -I$(SYS)/include -I$(BASE)/src $(URT_SHARED_C
 LDFLAGS += $(URT_LDFLAGS) $(EXTRA_LDFLAGS)
 SHARED_LDFLAGS += $(URT_SHARED_LDFLAGS) $(EXTRA_LDFLAGS)
 
-VPATH := $(BASE)/src:$(SYS)/src
+VPATH := $(BASE)/src:$(SYS)/src:$(BASE)/include:$(SYS)/include
 include $(BASE)/src/Makefile.src
-include $(SYS)/Makefile.src
+include $(BASE)/include/Makefile.src
+include $(SYS)/src/Makefile.src
+include $(SYS)/include/Makefile.src
 LIB_OBJ := $(LIB_SRC:.c=.o)

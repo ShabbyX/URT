@@ -1,6 +1,7 @@
 # include Makefile.config or define IGNORE_BUILD_OPTIONS before including this Makefile
 
 SHELL := /bin/bash
+SHELL_NOOP := :
 
 URT_VERSION_MAJOR := 0
 URT_VERSION_MINOR := 1
