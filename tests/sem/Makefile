@@ -9,7 +9,7 @@ TARGET := test
 TARGET2 := wait
 
 .PHONY: all dep clean
-all: $(TARGET) $(TARGET2)
+all: dep $(TARGET) $(TARGET2)
 	@$(SHELL_NOOP)
 clean:
 	-$(RM) $(TARGET) $(TARGET2) *.o Makefile.dep

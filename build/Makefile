@@ -10,7 +10,7 @@ ifeq ($(URT_CONFIG_DEVELOPER_MODE), y)
 endif
 
 .PHONY: all modules dep clean
-all: modules $(INC_BUILD_DEP)
+all: dep modules $(INC_BUILD_DEP)
 	@$(SHELL_NOOP)
 clean:
 	@$(MAKE) --no-print-directory -C static clean
@@ -27,7 +27,7 @@ include Makefile.build
 dep: Makefile.dep
 	@$(SHELL_NOOP)
 Makefile.dep: $(LIB_SRC) $(LIB_HDR)
-	$(CC) $(CFLAGS) $(CC_M) $^ > Makefile.dep
+	$(CC) $(CFLAGS) $(CC_M) $(filter-out %.h,$^) > Makefile.dep
 
 # TODO: target that build_file depends on would be based on what is being built
 $(BUILD_FILE): static/liburt.a

@@ -8,7 +8,7 @@ LDFLAGS := -L$(BASE)/build/static -lurt $(LDFLAGS)
 TARGET := test
 
 .PHONY: all dep clean
-all: $(TARGET)
+all: dep $(TARGET)
 	@$(SHELL_NOOP)
 clean:
 	-$(RM) $(TARGET) *.o Makefile.dep
