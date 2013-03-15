@@ -26,6 +26,7 @@
 #include <urt_mem.h>
 #include "names.h"
 #include "mem_internal.h"
+#include "time_internal.h"
 
 urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...)
 {
@@ -186,7 +187,7 @@ int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
 	if (stop)
 	{
 		struct timespec tp;
-		urt_time t = urt_get_time();
+		urt_time t = urt_get_time_epoch();
 
 		do
 		{
@@ -211,7 +212,7 @@ int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 {
 	int res;
 	struct timespec tp;
-	urt_time t = urt_get_time();
+	urt_time t = urt_get_time_epoch();
 
 	t += max_wait;
 	tp.tv_sec = t / 1000000000ll;
@@ -339,7 +340,7 @@ int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 	if (stop)
 	{
 		struct timespec tp;
-		urt_time t = urt_get_time();
+		urt_time t = urt_get_time_epoch();
 
 		do
 		{
@@ -365,7 +366,7 @@ int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 	if (stop)
 	{
 		struct timespec tp;
-		urt_time t = urt_get_time();
+		urt_time t = urt_get_time_epoch();
 
 		do
 		{
@@ -389,7 +390,7 @@ int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)
 {
 	int res;
 	struct timespec tp;
-	urt_time t = urt_get_time();
+	urt_time t = urt_get_time_epoch();
 
 	t += max_wait;
 	tp.tv_sec = t / 1000000000ll;
@@ -408,7 +409,7 @@ int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 {
 	int res;
 	struct timespec tp;
-	urt_time t = urt_get_time();
+	urt_time t = urt_get_time_epoch();
 
 	t += max_wait;
 	tp.tv_sec = t / 1000000000ll;
