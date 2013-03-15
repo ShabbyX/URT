@@ -28,9 +28,9 @@
 
 urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...)
 {
-	urt_sem *sem = urt_mem_alloc(sizeof(*sem));
+	urt_sem *sem = urt_mem_new(sizeof(*sem), error);
 	if (URT_UNLIKELY(sem == NULL))
-		goto exit_no_mem;
+		goto exit_fail;
 
 	if (URT_UNLIKELY(sem_init(sem, 0, init_value)))
 		goto exit_bad_init;
@@ -44,11 +44,8 @@ exit_bad_init:
 		else
 			*error= URT_FAIL;
 	}
-	urt_mem_free(sem);
+	urt_mem_delete(sem);
 	goto exit_fail;
-exit_no_mem:
-	if (error)
-		*error = URT_NO_MEM;
 exit_fail:
 	return NULL;
 }
@@ -57,7 +54,7 @@ void urt_sem_delete(urt_sem *sem)
 {
 	if (URT_LIKELY(sem != NULL))
 		sem_destroy(sem);
-	urt_mem_free(sem);
+	urt_mem_delete(sem);
 }
 
 static urt_sem *_shsem_common(const char *name, unsigned int init_value, int *error, int flags)

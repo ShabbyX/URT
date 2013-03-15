@@ -23,19 +23,17 @@
 #include <stdlib.h>
 #include <urt_stdtypes.h>
 #include <urt_compiler.h>
+#include <urt_defaults.h>
 
 URT_DECL_BEGIN
 
-#define urt_mem_alloc(...) urt_mem_alloc(__VA_ARGS__, (int *)NULL)
-URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *(urt_mem_alloc)(size_t size, int *error, ...);
-static inline void urt_mem_free(void *mem) { free(mem); }
+URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *(urt_mem_new)(size_t size, int *error, ...);
+static inline void urt_mem_delete(void *mem) { free(mem); }
 
-#define urt_shmem_alloc(...) urt_shmem_alloc(__VA_ARGS__, (int *)NULL)
-URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *(urt_shmem_alloc)(const char *name, size_t size, int *error, ...);
-#define urt_shmem_attach(...) urt_shmem_attach(__VA_ARGS__, (int *)NULL)
+URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *(urt_shmem_new)(const char *name, size_t size, int *error, ...);
 URT_ATTR_WARN_UNUSED void *(urt_shmem_attach)(const char *name, int *error, ...);
 void urt_shmem_detach(void *mem);
-static inline void urt_shmem_free(void *mem) { urt_shmem_detach(mem); }
+static inline void urt_shmem_delete(void *mem) { urt_shmem_detach(mem); }
 
 URT_DECL_END
 

@@ -28,7 +28,7 @@
 #include <urt_mem.h>
 #include "names.h"
 
-void *(urt_mem_alloc)(size_t size, int *error, ...)
+void *(urt_mem_new)(size_t size, int *error, ...)
 {
 	void *mem = malloc(size);
 	if (URT_UNLIKELY(mem == NULL))
@@ -110,7 +110,7 @@ void *urt_global_mem_get(const char *name, size_t size, int *error)
 	return _shmem_common(name, size, error, O_CREAT);
 }
 
-void *(urt_shmem_alloc)(const char *name, size_t size, int *error, ...)
+void *(urt_shmem_new)(const char *name, size_t size, int *error, ...)
 {
 	void *mem = NULL;
 	urt_registered_object *ro = NULL;

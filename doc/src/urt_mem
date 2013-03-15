@@ -13,7 +13,7 @@ next functions urt_lock
 
 Functions of this module handle private and shared memory allocation, free and access.
 
-FUNCTION urt_mem_alloc: (size: size_t, error: int * = NULL): void *
+FUNCTION urt_mem_new: (size: size_t, error: int * = NULL): void *
 	Allocate memory of given size
 
 	This function allocates memory of a given **`size`**, similar to `malloc`.

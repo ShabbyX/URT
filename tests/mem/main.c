@@ -57,7 +57,7 @@ int main()
 		goto exit_no_sem;
 	}
 	urt_log("main: sem allocated\n");
-	mem = urt_shmem_alloc("TSTMEM", 4 * sizeof(*mem));
+	mem = urt_shmem_new("TSTMEM", 4 * sizeof(*mem));
 	if (mem == NULL)
 	{
 		urt_log("main: no shared mem\n");
@@ -77,7 +77,7 @@ int main()
 	}
 	for (i = 0; i < 20; ++i)
 		wait(NULL);
-	urt_shmem_free(mem);
+	urt_shmem_delete(mem);
 exit_no_mem:
 	if (req)
 		urt_shsem_delete(req);
