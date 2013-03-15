@@ -23,6 +23,7 @@
 #include <time.h>
 #include <urt_stdtypes.h>
 #include <urt_compiler.h>
+#include <unistd.h>
 
 URT_DECL_BEGIN
 
@@ -37,6 +38,21 @@ static inline urt_time urt_get_time(void)
 	clock_gettime(CLOCK_MONOTONIC, &t);
 #endif
 	return t.tv_sec * 1000000000ll + t.tv_nsec;
+}
+
+static inline void urt_sleep(urt_time t)
+{
+	urt_time ts, tu;
+	if (URT_UNLIKELY(t <= 0))
+		return;
+
+	/* Note: on some systems, usleep cannot be called for values greater than 1,000,000 */
+	t = (t + 999) / 1000;	/* round up to micro seconds */
+	ts = t / 1000000;
+	tu = t % 1000000;
+
+	sleep(ts);
+	usleep(tu);
 }
 
 URT_DECL_END

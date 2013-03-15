@@ -18,7 +18,6 @@
  */
 
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <urt.h>
@@ -86,7 +85,6 @@ exit_no_mem:
 exit_no_sem:
 	urt_free();
 	urt_log("main: test done\n");
-
 exit_no_init:
 	return exit_status;
 }

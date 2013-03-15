@@ -19,7 +19,6 @@
 
 #include <urt.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 int main()
 {
@@ -44,12 +43,11 @@ int main()
 	}
 	urt_log("sem allocated\n");
 	urt_log("Sleeping for 10 seconds...\n");
-	usleep(10000000);
+	urt_sleep(10000000000ll);
 	urt_shsem_delete(sem);
 exit_no_sem:
 	urt_free();
 	urt_log("test done\n");
-
 exit_no_init:
 	return exit_status;
 }

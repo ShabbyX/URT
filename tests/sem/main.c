@@ -18,7 +18,6 @@
  */
 
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <urt.h>
@@ -55,7 +54,7 @@ int main()
 	}
 	urt_log("main: sem allocated\n");
 	urt_log("main: waiting for 3 seconds\n");
-	usleep(3000000);
+	urt_sleep(3000000000ll);
 	for (i = 0; i < 15; ++i)
 		urt_sem_post(sem);
 	for (i = 0; i < 20; ++i)
@@ -64,7 +63,6 @@ int main()
 exit_no_sem:
 	urt_free();
 	urt_log("main: test done\n");
-
 exit_no_init:
 	return exit_status;
 }

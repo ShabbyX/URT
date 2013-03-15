@@ -18,7 +18,6 @@
  */
 
 #include <stdlib.h>
-#include <unistd.h>
 #include <urt.h>
 
 int main()
@@ -30,7 +29,7 @@ int main()
 	urt_log("wait: spawned\n");
 
 	ret = urt_init();	/* tests race condition for urt_init */
-	usleep(100000);		/* wait for main to create semaphore */
+	urt_sleep(100000000);		/* wait for main to create semaphore */
 	if (ret)
 	{
 		urt_log("wait: init returned %d\n", ret);
@@ -50,7 +49,6 @@ int main()
 exit_no_sem:
 	urt_free();
 	urt_log("wait: test done\n");
-
 exit_no_init:
 	return exit_status;
 }

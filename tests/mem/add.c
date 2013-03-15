@@ -18,7 +18,6 @@
  */
 
 #include <stdlib.h>
-#include <unistd.h>
 #include <urt.h>
 
 int main()
@@ -32,7 +31,7 @@ int main()
 	urt_log("add: spawned\n");
 
 	ret = urt_init();	/* tests race condition for urt_init */
-	usleep(100000);		/* add for main to create semaphores and shared memory */
+	urt_sleep(100000000);	/* add for main to create semaphores and shared memory */
 	if (ret)
 	{
 		urt_log("add: init returned %d\n", ret);
@@ -77,7 +76,6 @@ exit_no_mem:
 exit_no_sem:
 	urt_free();
 	urt_log("add: test done\n");
-
 exit_no_init:
 	return exit_status;
 }
