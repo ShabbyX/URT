@@ -26,6 +26,7 @@
 #include <urt_internal.h>
 #include <urt_mem.h>
 #include "names.h"
+#include "mem_internal.h"
 
 void *(urt_mem_new)(size_t size, int *error, ...)
 {
@@ -167,12 +168,19 @@ void urt_global_mem_free(const char *name)
 
 void urt_shmem_detach(void *mem)
 {
+	urt_shmem_detach_with_callback(mem, NULL);
+}
+
+void urt_shmem_detach_with_callback(void *mem, void (*f)(void *))
+{
 	char n[URT_SYS_NAME_LEN];
 	urt_registered_object *ro;
 
 	ro = urt_get_object_by_addr(mem);
 	if (ro == NULL)
 		return;
+	if (f && ro->count == 1)
+		f(mem);
 	if (urt_convert_name(n, ro->name) == URT_SUCCESS)
 		shm_unlink(n);
 	urt_deregister(ro);

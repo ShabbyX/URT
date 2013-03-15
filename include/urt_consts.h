@@ -35,5 +35,7 @@
 #define URT_ALREADY -10		/* returned if operations is already done (e.g. urt_init) */
 #define URT_NO_NAME -11		/* no such name (e.g. in attach functions) */
 #define URT_MAX_REACHED -12	/* maximum number of names/objects reached */
+#define URT_AGAIN -13		/* currently impossible operation, but may work on retry */
+#define URT_NO_SUPPORT -14	/* operation is not supported */
 
 #endif

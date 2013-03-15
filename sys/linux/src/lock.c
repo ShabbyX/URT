@@ -19,11 +19,13 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <errno.h>
 #include <urt_internal.h>
 #include <urt_lock.h>
 #include <urt_mem.h>
 #include "names.h"
+#include "mem_internal.h"
 
 urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...)
 {
@@ -237,3 +239,102 @@ void urt_sem_post(urt_sem *sem)
 {
 	sem_post(sem);
 }
+
+static int _shrwlock_common(urt_rwlock *rwl, int *error, int flags)
+{
+	int err;
+	pthread_rwlockattr_t attr;
+
+	pthread_rwlockattr_init(&attr);
+	pthread_rwlockattr_setpshared(&attr, flags);
+
+	if (URT_UNLIKELY(err = pthread_rwlock_init(rwl, &attr)))
+		goto exit_bad_init;
+
+	pthread_rwlockattr_destroy(&attr);
+	return 0;
+exit_bad_init:
+	if (error)
+	{
+		if (err == EAGAIN)
+			*error = URT_AGAIN;
+		else if (err == ENOMEM)
+			*error = URT_NO_MEM;
+		else
+			*error= URT_FAIL;
+	}
+	pthread_rwlockattr_destroy(&attr);
+	return -1;
+}
+
+urt_rwlock *(urt_rwlock_new)(int *error, ...)
+{
+	urt_rwlock *rwl = urt_mem_new(sizeof(*rwl), error);
+	if (URT_UNLIKELY(rwl == NULL))
+		goto exit_fail;
+
+	if (URT_UNLIKELY(_shrwlock_common(rwl, error, PTHREAD_PROCESS_PRIVATE)))
+		goto exit_bad_init;
+
+	return rwl;
+exit_bad_init:
+	urt_mem_delete(rwl);
+exit_fail:
+	return NULL;
+}
+
+void urt_rwlock_delete(urt_rwlock *rwl)
+{
+	if (URT_LIKELY(rwl != NULL))
+		while (pthread_rwlock_destroy(rwl) == EBUSY)
+			if (pthread_rwlock_unlock(rwl))
+				break;
+	urt_mem_delete(rwl);
+}
+
+urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...)
+{
+#if !defined(_POSIX_THREAD_PROCESS_SHARED) || _POSIX_THREAD_PROCESS_SHARED <= 0
+	return URT_NO_SUPPORT;
+#else
+	urt_rwlock *rwl = urt_shmem_new(name, sizeof(*rwl), error);
+	if (URT_UNLIKELY(rwl == NULL))
+		goto exit_fail;
+
+	if (URT_UNLIKELY(_shrwlock_common(rwl, error, PTHREAD_PROCESS_PRIVATE)))
+		goto exit_bad_init;
+
+	return rwl;
+exit_bad_init:
+	urt_shmem_delete(rwl);
+exit_fail:
+	return NULL;
+#endif
+}
+
+static void _delete_rwlock_callback(void *mem)
+{
+	urt_rwlock *rwl = mem;
+
+	while (pthread_rwlock_destroy(rwl) == EBUSY)
+		if (pthread_rwlock_unlock(rwl))
+			break;
+}
+
+void urt_shrwlock_delete(urt_rwlock *rwl)
+{
+	if (URT_UNLIKELY(rwl == NULL))
+		return;
+	urt_shmem_detach_with_callback(rwl, _delete_rwlock_callback);
+}
+
+urt_rwlock *(urt_shrwlock_attach)(const char *name, int *error, ...);
+void urt_shrwlock_detach(urt_rwlock *rwl);
+int (urt_rwlock_rdlock)(urt_rwlock *rwl, bool *stop, ...);
+int (urt_rwlock_wrlock)(urt_rwlock *rwl, bool *stop, ...);
+int urt_rwlock_timed_rdlock(urt_rwlock *rwl, urt_time max_wait);
+int urt_rwlock_timed_wrlock(urt_rwlock *rwl, urt_time max_wait);
+int urt_rwlock_try_rdlock(urt_rwlock *rwl);
+int urt_rwlock_try_wrlock(urt_rwlock *rwl);
+int urt_rwlock_rdunlock(urt_rwlock *rwl);
+int urt_rwlock_wrunlock(urt_rwlock *rwl);
