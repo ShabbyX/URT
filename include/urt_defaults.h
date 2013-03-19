@@ -37,21 +37,21 @@
 /* Thread module */
 
 /* Memory module */
-#define urt_mem_new(...) urt_mem_new(__VA_ARGS__, (int *)NULL)
-#define urt_shmem_new(...) urt_shmem_new(__VA_ARGS__, (int *)NULL)
-#define urt_shmem_attach(...) urt_shmem_attach(__VA_ARGS__, (int *)NULL)
+#define urt_mem_new(...) urt_mem_new(__VA_ARGS__, NULL)
+#define urt_shmem_new(...) urt_shmem_new(__VA_ARGS__, NULL)
+#define urt_shmem_attach(...) urt_shmem_attach(__VA_ARGS__, NULL)
 
 /* Lock module */
-#define urt_sem_new(...) urt_sem_new(__VA_ARGS__, (int *)NULL)
-#define urt_shsem_new(...) urt_shsem_new(__VA_ARGS__, (int *)NULL)
-#define urt_shsem_attach(...) urt_shsem_attach(__VA_ARGS__, (int *)NULL)
-#define urt_sem_wait(...) urt_sem_wait(__VA_ARGS__, (bool *)NULL)
+#define urt_sem_new(...) urt_sem_new(__VA_ARGS__, NULL)
+#define urt_shsem_new(...) urt_shsem_new(__VA_ARGS__, NULL)
+#define urt_shsem_attach(...) urt_shsem_attach(__VA_ARGS__, NULL)
+#define urt_sem_wait(...) urt_sem_wait(__VA_ARGS__, NULL)
 /* a helper macro is used for `, ##__VA_ARGS__` to correctly expand */
-#define urt_rwlock_new(...) urt_rwlock_new_(0, ##__VA_ARGS__, (int *)NULL)
+#define urt_rwlock_new(...) urt_rwlock_new_(0, ##__VA_ARGS__, NULL)
 #define urt_rwlock_new_(n, ...) urt_rwlock_new(__VA_ARGS__)
-#define urt_shrwlock_new(...) urt_shrwlock_new(__VA_ARGS__, (int *)NULL)
-#define urt_shrwlock_attach(...) urt_shrwlock_attach(__VA_ARGS__, (int *)NULL)
-#define urt_rwlock_read_lock(...) urt_rwlock_read_lock(__VA_ARGS__, (bool *)NULL)
-#define urt_rwlock_write_lock(...) urt_rwlock_write_lock(__VA_ARGS__, (bool *)NULL)
+#define urt_shrwlock_new(...) urt_shrwlock_new(__VA_ARGS__, NULL)
+#define urt_shrwlock_attach(...) urt_shrwlock_attach(__VA_ARGS__, NULL)
+#define urt_rwlock_read_lock(...) urt_rwlock_read_lock(__VA_ARGS__, NULL)
+#define urt_rwlock_write_lock(...) urt_rwlock_write_lock(__VA_ARGS__, NULL)
 
 #endif
