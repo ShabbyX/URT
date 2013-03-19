@@ -61,7 +61,7 @@ int main()
 		wait(NULL);
 	urt_shsem_delete(sem);
 exit_no_sem:
-	urt_free();
+	urt_exit();
 	urt_log("main: test done\n");
 exit_no_init:
 	return exit_status;

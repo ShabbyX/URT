@@ -24,7 +24,7 @@ FUNCTION urt_init: (): int
 		- `[#URT_SUCCESS](constants)` if successful
 		- TODO
 
-FUNCTION urt_free: (): void
+FUNCTION urt_exit: (): void
 	Free URT
 
 	This function frees resources allocated by URT. It must be called before program exit.

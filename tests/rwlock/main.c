@@ -66,7 +66,7 @@ int main()
 	for (i = 0; i < 4; ++i)
 		wait(NULL);
 exit_no_rwl:
-	urt_free();
+	urt_exit();
 	urt_log("main: test done\n");
 exit_no_init:
 	return exit_status;

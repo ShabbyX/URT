@@ -63,7 +63,7 @@ int main()
 	}
 	urt_shrwlock_detach(rwl);
 exit_no_rwl:
-	urt_free();
+	urt_exit();
 	urt_log("read: test done\n");
 exit_no_init:
 	return exit_status;

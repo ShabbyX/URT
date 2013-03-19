@@ -74,7 +74,7 @@ exit_no_mem:
 	if (res)
 		urt_shsem_detach(res);
 exit_no_sem:
-	urt_free();
+	urt_exit();
 	urt_log("add: test done\n");
 exit_no_init:
 	return exit_status;

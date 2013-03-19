@@ -51,7 +51,7 @@ exit_no_sem:
 	return error;
 }
 
-void urt_free(void)
+void urt_exit(void)
 {
 	urt_global_mem_free(URT_GLOBAL_MEM_NAME);
 	urt_global_sem_free(URT_GLOBAL_LOCK_NAME);

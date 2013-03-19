@@ -26,7 +26,7 @@
 URT_DECL_BEGIN
 
 int URT_ATTR_WARN_UNUSED urt_init(void);
-void urt_free(void);
+void urt_exit(void);
 void urt_recover(void);
 
 URT_DECL_END
