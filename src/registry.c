@@ -115,11 +115,7 @@ urt_registered_object *urt_reserve_name(const char *name, int *error)
 
 	/* make sure name doesn't exist */
 	if (_find_by_name(name) != NULL)
-	{
-		if (error)
-			*error = URT_EXISTS;
-		goto exit_fail;
-	}
+		goto exit_exists;
 
 	/* find a free space for the name */
 	for (i = 0; i < URT_MAX_OBJECTS; ++i)
@@ -129,11 +125,7 @@ urt_registered_object *urt_reserve_name(const char *name, int *error)
 			break;
 	}
 	if (URT_UNLIKELY(i == URT_MAX_OBJECTS))
-	{
-		if (error)
-			*error = URT_MAX_REACHED;
-		goto exit_fail;
-	}
+		goto exit_max_reached;
 
 	obj->reserved = true;
 	_name_cpy(obj->name, name);
@@ -143,6 +135,13 @@ urt_registered_object *urt_reserve_name(const char *name, int *error)
 	urt_sem_post(urt_global_sem);
 
 	return obj;
+exit_exists:
+	if (error)
+		*error = URT_EXISTS;
+	goto exit_fail;
+exit_max_reached:
+	if (error)
+		*error = URT_MAX_REACHED;
 exit_fail:
 	urt_sem_post(urt_global_sem);
 	return NULL;
