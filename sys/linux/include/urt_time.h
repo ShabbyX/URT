@@ -55,6 +55,18 @@ static inline void urt_sleep(urt_time t)
 	usleep(tu);
 }
 
+static inline urt_time urt_get_exec_time(void)
+{
+#ifdef CLOCK_THREAD_CPUTIME_ID
+	return urt_get_time();
+#else
+	struct timespec t;
+	/* Note: task migration may result in bad exec-time calculation by glibc */
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &t);
+	return t.tv_sec * 1000000000ll + t.tv_nsec;
+#endif
+}
+
 URT_DECL_END
 
 #endif
