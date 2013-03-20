@@ -17,13 +17,13 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_TIME_H
-#define URT_TIME_H
+#ifndef URT_SYS_TIME_H
+#define URT_SYS_TIME_H
 
 #include <time.h>
+#include <unistd.h>
 #include <urt_stdtypes.h>
 #include <urt_compiler.h>
-#include <unistd.h>
 
 URT_DECL_BEGIN
 

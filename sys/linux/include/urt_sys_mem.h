@@ -17,13 +17,14 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_ERROR_H
-#define URT_ERROR_H
+#ifndef URT_SYS_MEM_H
+#define URT_SYS_MEM_H
 
-#include <urt_stdtypes.h>
-#include <urt_compiler.h>
+#include <stdlib.h>
 
 URT_DECL_BEGIN
+
+static inline void urt_mem_delete(void *mem) { free(mem); }
 
 URT_DECL_END
 

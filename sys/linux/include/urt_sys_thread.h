@@ -17,24 +17,12 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_THREAD_H
-#define URT_THREAD_H
+#ifndef URT_SYS_THREAD_H
+#define URT_SYS_THREAD_H
 
 #include <pthread.h>
-#include <urt_stdtypes.h>
-#include <urt_compiler.h>
-#include <urt_time.h>
 
 URT_DECL_BEGIN
-
-typedef struct urt_task_attr
-{
-	urt_time period;
-	urt_time start_time;
-	size_t stack_size;
-	int priority;
-	char uses_fpu;
-} urt_task_attr;
 
 typedef struct urt_task
 {
@@ -53,20 +41,7 @@ static inline bool urt_priority_is_valid(int p)
 	return p == 0;
 }
 
-/*
- * If data is not provided, NULL will be used.
- *
- * If attr is NULL or any of the attributes are set to zero, they will be set to default.
- * If error is to be provided, the attr parameter needs to be provided too, even if it's NULL.
- *
- */
-URT_ATTR_WARN_UNUSED urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data, urt_task_attr *attr, int *error, ...);
-void urt_task_delete(urt_task *task);
-
-int urt_task_start(urt_task *task);
 static inline bool urt_task_is_rt_context(void) { return true; }
-void urt_task_on_start(urt_task *task);
-void urt_task_wait_period(urt_task *task);
 static inline void urt_task_on_stop(urt_task *task) {}
 urt_time urt_task_next_period(urt_task *task);
 static inline urt_time urt_task_period_time_left(urt_task *task) { return urt_task_next_period(task) - urt_get_time(); }

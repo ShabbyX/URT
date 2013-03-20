@@ -17,29 +17,7 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_LOG_H
-#define URT_LOG_H
-
-#include <stdio.h>
-#include <urt_stdtypes.h>
-#include <urt_compiler.h>
-
-URT_DECL_BEGIN
-
-#ifndef NDEBUG
-# define urt_log(...)									\
-	do {										\
-		fprintf(stderr, "%s:%u: ",						\
-			__FILE__ + (sizeof(__FILE__) < 25?0:sizeof(__FILE__) - 25),	\
-			__LINE__);							\
-		fprintf(stderr, __VA_ARGS__);						\
-	} while (0)
-# define urt_dbg(...) urt_log(__VA_ARGS__)
-#else
-# define urt_log(...) fprintf(stderr, __VA_ARGS__)
-# define urt_dbg(...) ((void)0)
-#endif
-
-URT_DECL_END
+#ifndef URT_SYS_ERROR_H
+#define URT_SYS_ERROR_H
 
 #endif

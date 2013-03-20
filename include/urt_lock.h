@@ -20,18 +20,13 @@
 #ifndef URT_LOCK_H
 #define URT_LOCK_H
 
-#include <semaphore.h>
-#include <pthread.h>
 #include <urt_stdtypes.h>
 #include <urt_compiler.h>
 #include <urt_defaults.h>
-#include "urt_time.h"
+#include <urt_time.h>
+#include <urt_sys_lock.h>
 
 URT_DECL_BEGIN
-
-typedef sem_t urt_sem;
-typedef urt_sem urt_mutex;
-typedef pthread_rwlock_t urt_rwlock;
 
 /* unnamed semaphore */
 URT_ATTR_WARN_UNUSED urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...);
@@ -50,20 +45,20 @@ int urt_sem_try_wait(urt_sem *sem);
 void urt_sem_post(urt_sem *sem);
 
 /* unnamed mutex */
-#define urt_mutex_new(...) urt_sem_new(1, ##__VA_ARGS__)
-#define urt_mutex_delete(m) urt_sem_delete(m)
+/* URT_ATTR_WARN_UNUSED urt_mutex *(urt_mutex_new); */
+/* void urt_mutex_delete(urt_mutex *mutex); */
 
 /* shared mutex */
-#define urt_shmutex_new(n, ...) urt_shsem_new(n, 1, ##__VA_ARGS__)
-#define urt_shmutex_attach(...) urt_shsem_attach(__VA_ARGS__)
-#define urt_shmutex_detach(m) urt_shmutex_detach(m)
-#define urt_shmutex_delete(m) urt_shsem_delete(m)
+/* URT_ATTR_WARN_UNUSED urt_mutex *(urt_shmutex_new); */
+/* URT_ATTR_WARN_UNUSED urt_mutex *(urt_shmutex_attach); */
+/* void urt_shmutex_detach(urt_mutex *mutex); */
+/* void urt_shmutex_delete(urt_mutex *mutex); */
 
 /* common mutex operations */
-#define urt_mutex_lock(...) urt_sem_wait(__VA_ARGS__)
-#define urt_mutex_timed_lock(m, t) urt_sem_timed_wait(m, t)
-#define urt_mutex_try_lock(m) urt_sem_try_lock(m)
-#define urt_mutex_unlock(m) urt_sem_post(m)
+/* int (urt_mutex_lock); */
+/* int urt_mutex_timed_lock(urt_mutex *mutex, urt_time max_lock); */
+/* int urt_mutex_try_lock(urt_mutex *mutex); */
+/* void urt_mutex_unlock(urt_mutex *mutex); */
 
 /* unnamed rwlock */
 URT_ATTR_WARN_UNUSED urt_rwlock *(urt_rwlock_new)(int *error, ...);
@@ -73,7 +68,7 @@ void urt_rwlock_delete(urt_rwlock *rwl);
 URT_ATTR_WARN_UNUSED urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...);
 URT_ATTR_WARN_UNUSED urt_rwlock *(urt_shrwlock_attach)(const char *name, int *error, ...);
 void urt_shrwlock_detach(urt_rwlock *rwl);
-static inline void urt_shrwlock_delete(urt_rwlock *rwl) { urt_shrwlock_detach(rwl); }
+/* void urt_shrwlock_delete(urt_rwlock *rwl); */
 
 /* common rwlock operations */
 int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...);

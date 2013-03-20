@@ -20,6 +20,10 @@
 #ifndef URT_STRING_H
 #define URT_STRING_H
 
-#include <string.h>
+#ifdef __KERNEL__
+# include <linux/string.h>
+#else
+# include <string.h>
+#endif
 
 #endif
