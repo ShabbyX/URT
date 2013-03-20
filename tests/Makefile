@@ -1,7 +1,7 @@
 include ../Makefile.config
 include ../Makefile.common
 
-TESTS := setup sem mem
+TESTS := setup sem mem rwlock thread
 
 .PHONY: all
 all:

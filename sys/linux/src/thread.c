@@ -58,7 +58,12 @@ exit_fail:
 	return NULL;
 }
 
-void urt_task_delete(urt_task *task);
+void urt_task_delete(urt_task *task)
+{
+	if (URT_LIKELY(task != NULL))
+		pthread_join(task->tid, NULL);
+	urt_mem_delete(task);
+}
 
 static void *_thread_wrapper(void *t)
 {
