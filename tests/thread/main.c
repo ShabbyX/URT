@@ -33,7 +33,8 @@ static void periodic(urt_task *task, void *data)
 
 	for (i = 0; i < 20; ++i)
 	{
-		urt_log("Periodic: %llu: Time to next period: %llu\n", urt_get_time() - start_time, urt_task_period_time_left(task));
+		urt_log("Periodic: %llu: Time to next period: %llu (exec time: %llu)\n", urt_get_time() - start_time,
+				urt_task_period_time_left(task), urt_get_exec_time());
 		urt_task_wait_period(task);
 		urt_sem_post(sem);
 	}
