@@ -43,28 +43,28 @@ static void *_shmem_common(const char *name, size_t size, int *error, int flags)
 	int fd = -1;
 	void *mem = NULL;
 
-	if (URT_UNLIKELY(urt_convert_name(n, name) != URT_SUCCESS))
+	if (urt_convert_name(n, name) != URT_SUCCESS)
 		goto exit_bad_name;
 
 	fd = shm_open(n, O_RDWR | flags /*O_CREAT | O_EXCL*/, S_IRWXU | S_IRWXG | S_IRWXO);
-	if (URT_UNLIKELY(fd == -1))
+	if (fd == -1)
 		goto exit_bad_open;
 
 	if (flags & O_CREAT)
 	{
-		if (URT_UNLIKELY(ftruncate(fd, size) == -1))
+		if (ftruncate(fd, size) == -1)
 			goto exit_bad_truncate;
 	}
 	else
 	{
 		struct stat ms;
-		if (URT_UNLIKELY(fstat(fd, &ms) == -1))
+		if (fstat(fd, &ms) == -1)
 			goto exit_bad_stat;
 		size = ms.st_size;
 	}
 
 	mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	if (URT_UNLIKELY(mem == MAP_FAILED))
+	if (mem == MAP_FAILED)
 		goto exit_bad_map;
 
 	close(fd);
@@ -116,11 +116,11 @@ void *(urt_shmem_new)(const char *name, size_t size, int *error, ...)
 	urt_registered_object *ro = NULL;
 
 	ro = urt_reserve_name(name, error);
-	if (URT_UNLIKELY(ro == NULL))
+	if (ro == NULL)
 		goto exit_fail;
 
 	mem = _shmem_common(name, size, error, O_CREAT | O_EXCL);
-	if (URT_UNLIKELY(mem == NULL))
+	if (mem == NULL)
 		goto exit_fail;
 
 	ro->address = mem;
@@ -139,11 +139,11 @@ void *(urt_shmem_attach)(const char *name, int *error, ...)
 	urt_registered_object *ro = NULL;
 
 	ro = urt_get_object_by_name(name);
-	if (URT_UNLIKELY(ro == NULL))
+	if (ro == NULL)
 		goto exit_no_name;
 
 	mem = _shmem_common(name, 0, error, 0);
-	if (URT_UNLIKELY(mem == NULL))
+	if (mem == NULL)
 		goto exit_fail;
 
 	urt_inc_name_count(ro);

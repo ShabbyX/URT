@@ -43,7 +43,7 @@ static inline urt_time urt_get_time(void)
 static inline void urt_sleep(urt_time t)
 {
 	urt_time ts, tu;
-	if (URT_UNLIKELY(t <= 0))
+	if (t <= 0)
 		return;
 
 	/* Note: on some systems, usleep cannot be called for values greater than 1,000,000 */

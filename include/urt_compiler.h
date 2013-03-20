@@ -25,6 +25,7 @@
 # define URT_ATTR_MALLOC __attribute__((malloc))
 # define URT_ATTR_WARN_UNUSED __attribute__((warn_unused_result))
 # define URT_ATTR_PURE __attribute__((pure))
+/* Note: don't use LIKELY/UNLIKELY macros when all the `if` does is a goto */
 # define URT_LIKELY(x) __builtin_expect(!!(x), 1)
 # define URT_UNLIKELY(x) __builtin_expect(!!(x), 0)
 #else

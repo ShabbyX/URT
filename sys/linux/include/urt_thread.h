@@ -20,6 +20,7 @@
 #ifndef URT_THREAD_H
 #define URT_THREAD_H
 
+#include <pthread.h>
 #include <urt_stdtypes.h>
 #include <urt_compiler.h>
 #include <urt_time.h>

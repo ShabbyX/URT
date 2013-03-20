@@ -31,10 +31,10 @@
 urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...)
 {
 	urt_sem *sem = urt_mem_new(sizeof(*sem), error);
-	if (URT_UNLIKELY(sem == NULL))
+	if (sem == NULL)
 		goto exit_fail;
 
-	if (URT_UNLIKELY(sem_init(sem, 0, init_value)))
+	if (sem_init(sem, 0, init_value))
 		goto exit_bad_init;
 
 	return sem;
@@ -64,11 +64,11 @@ static urt_sem *_shsem_common(const char *name, unsigned int init_value, int *er
 	char n[URT_SYS_NAME_LEN];
 	urt_sem *sem = NULL;
 
-	if (URT_UNLIKELY(urt_convert_name(n, name) != URT_SUCCESS))
+	if (urt_convert_name(n, name) != URT_SUCCESS)
 		goto exit_bad_name;
 
 	sem = sem_open(n, flags, S_IRWXU | S_IRWXG | S_IRWXO, init_value);
-	if (URT_UNLIKELY(sem == SEM_FAILED))
+	if (sem == SEM_FAILED)
 		goto exit_bad_open;
 
 	return sem;
@@ -110,11 +110,11 @@ urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, 
 	urt_registered_object *ro = NULL;
 
 	ro = urt_reserve_name(name, error);
-	if (URT_UNLIKELY(ro == NULL))
+	if (ro == NULL)
 		goto exit_fail;
 
 	sem = _shsem_common(name, init_value, error, O_CREAT | O_EXCL);
-	if (URT_UNLIKELY(sem == NULL))
+	if (sem == NULL)
 		goto exit_fail;
 
 	ro->address = sem;
@@ -142,11 +142,11 @@ urt_sem *(urt_shsem_attach)(const char *name, int *error, ...)
 	urt_registered_object *ro = NULL;
 
 	ro = urt_get_object_by_name(name);
-	if (URT_UNLIKELY(ro == NULL))
+	if (ro == NULL)
 		goto exit_no_name;
 
 	sem = _shsem_common(name, 0, error, 0);	/* TODO: I expect 0 for flags to only try to attach and not create. Must be tested */
-	if (URT_UNLIKELY(sem == NULL))
+	if (sem == NULL)
 		goto exit_fail;
 
 	urt_inc_name_count(ro);
@@ -191,7 +191,7 @@ int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
 
 		do
 		{
-			if (URT_UNLIKELY(*stop))
+			if (*stop)
 				return URT_NOT_LOCKED;
 
 			t += URT_LOCK_STOP_MAX_DELAY;
@@ -203,9 +203,7 @@ int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
 		/* if sem_wait interrupted, retry */
 		while ((res = sem_wait(sem)) == -1 && errno == EINTR);
 
-	if (URT_LIKELY(res == 0))
-		return URT_SUCCESS;
-	return URT_FAIL;
+	return res == 0?URT_SUCCESS:URT_FAIL;
 }
 
 int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
@@ -229,7 +227,7 @@ int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 
 int urt_sem_try_wait(urt_sem *sem)
 {
-	if (URT_UNLIKELY(sem_trywait(sem) == -1))
+	if (sem_trywait(sem) == -1)
 		return URT_FAIL;
 	if (errno == EAGAIN)
 		return URT_NOT_LOCKED;
@@ -249,7 +247,7 @@ static int _shrwlock_common(urt_rwlock *rwl, int *error, int flags)
 	pthread_rwlockattr_init(&attr);
 	pthread_rwlockattr_setpshared(&attr, flags);
 
-	if (URT_UNLIKELY(err = pthread_rwlock_init(rwl, &attr)))
+	if ((err = pthread_rwlock_init(rwl, &attr)))
 		goto exit_bad_init;
 
 	pthread_rwlockattr_destroy(&attr);
@@ -271,10 +269,10 @@ exit_bad_init:
 urt_rwlock *(urt_rwlock_new)(int *error, ...)
 {
 	urt_rwlock *rwl = urt_mem_new(sizeof(*rwl), error);
-	if (URT_UNLIKELY(rwl == NULL))
+	if (rwl == NULL)
 		goto exit_fail;
 
-	if (URT_UNLIKELY(_shrwlock_common(rwl, error, PTHREAD_PROCESS_PRIVATE)))
+	if (_shrwlock_common(rwl, error, PTHREAD_PROCESS_PRIVATE))
 		goto exit_bad_init;
 
 	return rwl;
@@ -299,10 +297,10 @@ urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...)
 	return URT_NO_SUPPORT;
 #else
 	urt_rwlock *rwl = urt_shmem_new(name, sizeof(*rwl), error);
-	if (URT_UNLIKELY(rwl == NULL))
+	if (rwl == NULL)
 		goto exit_fail;
 
-	if (URT_UNLIKELY(_shrwlock_common(rwl, error, PTHREAD_PROCESS_SHARED)))
+	if (_shrwlock_common(rwl, error, PTHREAD_PROCESS_SHARED))
 		goto exit_bad_init;
 
 	return rwl;
@@ -329,7 +327,7 @@ static void _delete_rwlock_callback(void *mem)
 
 void urt_shrwlock_detach(urt_rwlock *rwl)
 {
-	if (URT_UNLIKELY(rwl == NULL))
+	if (rwl == NULL)
 		return;
 	urt_shmem_detach_with_callback(rwl, _delete_rwlock_callback);
 }
@@ -344,7 +342,7 @@ int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 
 		do
 		{
-			if (URT_UNLIKELY(*stop))
+			if (*stop)
 				return URT_NOT_LOCKED;
 
 			t += URT_LOCK_STOP_MAX_DELAY;
@@ -355,9 +353,7 @@ int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 	else
 		res = pthread_rwlock_rdlock(rwl);
 
-	if (URT_LIKELY(res == 0))
-		return URT_SUCCESS;
-	return URT_FAIL;
+	return res == 0?URT_SUCCESS:URT_FAIL;
 }
 
 int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
@@ -370,7 +366,7 @@ int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 
 		do
 		{
-			if (URT_UNLIKELY(*stop))
+			if (*stop)
 				return URT_NOT_LOCKED;
 
 			t += URT_LOCK_STOP_MAX_DELAY;
@@ -381,9 +377,7 @@ int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 	else
 		res = pthread_rwlock_wrlock(rwl);
 
-	if (URT_LIKELY(res == 0))
-		return URT_SUCCESS;
-	return URT_FAIL;
+	return res == 0?URT_SUCCESS:URT_FAIL;
 }
 
 int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)

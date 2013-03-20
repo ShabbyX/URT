@@ -34,7 +34,7 @@ int urt_convert_name(char to[URT_SYS_NAME_LEN], const char from[URT_NAME_LEN])
 			break;
 		else
 			to[i + 1] = from[i];
-	if (URT_UNLIKELY(i == 0))
+	if (i == 0)
 		goto exit_bad_name;
 	to[i + 1] = '\0';
 

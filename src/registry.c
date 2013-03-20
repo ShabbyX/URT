@@ -124,7 +124,7 @@ urt_registered_object *urt_reserve_name(const char *name, int *error)
 		if (!obj->reserved && obj->count == 0)
 			break;
 	}
-	if (URT_UNLIKELY(i == URT_MAX_OBJECTS))
+	if (i == URT_MAX_OBJECTS)
 		goto exit_max_reached;
 
 	obj->reserved = true;
@@ -234,7 +234,7 @@ int urt_get_free_name(char *name)
 
 	urt_sem_wait(urt_global_sem);
 
-	if (URT_UNLIKELY(urt_global_mem->names_exhausted))
+	if (urt_global_mem->names_exhausted)
 		/*
 		 * If ever needed, add a contingency plan.
 		 * For example retry from the beginning, checking against
