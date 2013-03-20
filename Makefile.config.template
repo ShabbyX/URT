@@ -37,13 +37,13 @@ URT_CONFIG_LOCK_STOP_MAX_DEALY=10000000
 URT_CONFIG_DEFAULT_STACK_SIZE=4096
 
 # Whether it should build in Debug mode
-URT_CONFIG_DEBUG=y
+URT_CONFIG_DEBUG=n
 
 # Whether it should use color in build
 URT_CONFIG_COLOR_BUILD=y
 
 # Whether this is a developer build
-URT_CONFIG_DEVELOPER_MODE=y
+URT_CONFIG_DEVELOPER_MODE=n
 
 # Whether documentation must be build
 URT_CONFIG_BUILD_DOC=n

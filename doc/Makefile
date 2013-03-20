@@ -5,7 +5,7 @@ DOC_THIS := ../../personal/DocThis/docthis
 RM := rm -f
 MKDIR := mkdir -p
 
-SOURCE_FILES := urt urt_time urt_thread urt_mem urt_lock urt_error urt_log
+SOURCE_FILES := urt urt_time urt_thread urt_mem urt_lock urt_log
 ALL_FILES := $(SOURCE_FILES) index constants
 HTML_DIR := generated/html
 TEX_DIR := generated/tex
@@ -19,6 +19,7 @@ TEX_MAKE_FILES := $(addprefix $(TEX_DIR)/, documentation.tex Makefile Makefile.o
 all:
 ifeq ($(URT_CONFIG_BUILD_DOC), y)
 	@$(PRINTF) "$(STATUS_COLOR)Building documentation...$(DEFAULT_COLOR)\n"
+	@$(MAKE) --no-print-directory files
 	$(DOC_THIS) +css
 	-$(MKDIR) $(HTML_DIR)/files
 	-$(MKDIR) $(TEX_DIR)/files
