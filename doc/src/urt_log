@@ -17,7 +17,8 @@ FUNCTION urt_log: (fmt: const char *, ...: vararg): void
 	Log message
 
 	This function logs a message, `printf` style.  In debug mode, it would prepend the log with the file name (at most the last 25 characters)
-	and the line number of the log. In release mode, it will simply logs the message.
+	and the line number of the log. In release mode, it will simply log the message. All messages, whether in debug or release mode are prefixed
+	with `"URT: "`.
 
 	Based on architecture:
 
@@ -27,9 +28,9 @@ FUNCTION urt_log: (fmt: const char *, ...: vararg): void
 	- Other: TODO
 
 	INPUT fmt
-		`printf`-style format string
+		`printf`-style format string.
 	INPUT ...
-		Parameters of the format
+		Parameters of the format.
 
 FUNCTION urt_dbg: (fmt: const char *, ...: vararg): void
 	Log debug message
@@ -37,6 +38,6 @@ FUNCTION urt_dbg: (fmt: const char *, ...: vararg): void
 	This function is the same as `[#urt_log]` in debug mode. In release mode, it does nothing.
 
 	INPUT fmt
-		See `[#urt_log]`
+		See `[#urt_log]`.
 	INPUT ...
-		See `[#urt_log]`
+		See `[#urt_log]`.

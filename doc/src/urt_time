@@ -25,4 +25,30 @@ FUNCTION urt_get_time: (): urt_time
 	This function retrieves the current time (from an unknown origin) in nanoseconds.
 
 	OUTPUT
-		Current time in nanoseconds
+		Current time in nanoseconds.
+
+FUNCTION urt_get_exec_time: (): urt_time
+	Get execution time
+
+	This function retrieves execution time of the current thread since it's beginning.
+
+	On some systems this operation may not be available. In such a case, `[#urt_get_time]` is used. Therefore, it
+	is advised to take the value of `urt_get_exec_time` at the beginning of the thread and subtract it from the
+	output of this function and use _that_ value as the execution time. Currently, this operation switches to
+	`urt_get_time` in the following case(s):
+
+		- In POSIX systems where `CLOCK_THREAD_CPUTIME_ID` is not defined.
+
+	Note: In POSIX systems, please read the man page for `clock_gettime`, information regarding `CLOCK_THREAD_CPUTIME_ID`
+	and `CLOCK_PROCESS_CPUTIME_ID`. In some systems, these clocks don't play well with task migration among CPUs.
+
+	OUTPUT
+		Execution time of the calling thread, possibly _not_ starting from zero.
+
+FUNCTION urt_sleep: (t: urt_time): void
+	Sleep for some time
+
+	This function suspends execution time of the calling thread for _at least_ **`t`** nanoseconds.
+
+	INPUT t
+		Requested time to sleep in nanoseconds.

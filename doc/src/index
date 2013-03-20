@@ -22,9 +22,11 @@ Please refer to the documentation on each module for their respective functions.
 
 - [Setup module](urt)
 - [Time module](urt_time)
-- [Thread module](urt_thread)
 - [Memory module](urt_mem)
 - [Lock module](urt_lock)
+- [Thread module](urt_thread)
+
+See [style] for general description of common usage styles among URT functions.
 
 ## Shared Resources
 

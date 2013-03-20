@@ -11,22 +11,84 @@ shortcut constants
 previous functions urt_mem
 next functions urt_error
 
-Functions of this module handle private and shared sync lock allocation, free and access.
+Functions of this module handle private and shared sync lock allocation, free and access. The actual types depend on the real-time
+back-end.
 
 TYPE urt_sem: opaque
 	A type representing a semaphore
 
-	A type representing a semaphore. The actual type depends on the real-time back-end.
+	A system-dependent type representing a semaphore.
 
-FUNCTION urt_sem_new: (init_value: unsigned int): urt_sem *
+TYPE urt_mutex: opaque
+	A type representing a mutex
+
+	A system-dependent type representing a mutex.
+
+TYPE urt_rwlock: opaque
+	A type representing a readers-writers lock
+
+	A system dependent type representing a readers-writers lock.
+
+FUNCTION urt_sem_new: (init_value: unsigned int, error: int *): urt_sem *
 	Create a new semaphore
 
 	This function creates and returns a new semaphore. This semaphore is unnamed and cannot be shared with other processes.
 
 	INPUT init_value
-		Initial value of the semaphore
+		Initial value of the semaphore.
+	INPUT error
+		Optional error code return value. See explanation [here](style#Error Reporting).
 	OUTPUT
 		A new semaphore, or `NULL` if not possible.
 
+FUNCTION urt_sem_delete: (sem: urt_sem *): void
+	Free a semaphore created by `urt_sem_new`
 
-TODO
+	This function frees a semaphore created by `[#urt_sem_new]`. If **`sem`** is `NULL`, the function silently returns.
+
+	INPUT: sem
+		The semaphore to be freed.
+
+FUNCTION urt_shsem_new: (name: const char *, init_value: unsigned int, error: int *): urt_sem *
+	Create a new shared semaphore
+
+	This function creates and returns a new shared semaphore. This semaphore will be [shared](index#Shared Resources)
+	with other processes under the given **`name`**. See further details [here](style#Shared Resource Allocation).
+
+	INPUT name
+		The name under which the semaphore is shared.
+	INPUT init_value
+		Initial value of the semaphore.
+	INPUT error
+		Optional error code return value. See explanation [here](style#Error Reporting).
+	OUTPUT
+		A new semaphore, or `NULL` if not possible.
+
+FUNCTION urt_shsem_delete: (sem: urt_sem *): void
+	Free a shared semaphore created by `urt_shsem_new`
+
+	This function frees a shared semaphore created by `[#urt_sgsem_new]`. If **`sem`** is `NULL`, the function silently returns.
+
+	INPUT: sem
+		The semaphore to be freed.
+
+FUNCTION urt_shsem_attach: (name: const char *, error: int * = NULL): void *
+	Attach to shared semaphore
+
+	This function attaches to the shared semaphore created under **`name`**. If no semaphore with that name exists, the function
+	will fail.
+
+	INPUT name
+		The name under which the semaphore is shared.
+	INPUT error
+		Optional error code return value. See explanation [here](style#Error Reporting).
+	OUTPUT
+		A pointer to the shared semaphore, or `NULL` if failed.
+
+FUNCTION urt_shsem_detach: (sem: urt_sem *): void
+	Detach from shared semaphore
+
+	This function detaches from shared semaphore, attached to by `[#urt_shsem_attach]`. If **`mem`** is `NULL`, the function silently returns.
+
+	INPUT sem
+		Semaphore to be detached from.

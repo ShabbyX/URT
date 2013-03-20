@@ -11,4 +11,5 @@ shortcut constants
 urt_time
 urt_mem
 urt_lock
+urt_thread
 urt_log

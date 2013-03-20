@@ -1,0 +1,33 @@
+other style
+# URT - Unified Real-Time Interface
+version version 0.1.0
+author Shahbaz Youssefi
+keyword real-time
+keyword middleware
+keyword interface
+shortcut index
+shortcut globals
+shortcut constants
+next index
+
+## Shared Resource Allocation
+Each resource, such as memory or semaphore can either be allocated unshared or shared. If shared, the allocation function takes a
+`name` parameter as the first argument. Assuming the name of the resource is `x` (such as `mem` for memory), then the following six
+function exist:
+
+- `urt_x_new`: allocates `x`.
+- `urt_x_delete`: deletes `x` allocated by `urt_x_new`.
+- `urt_shx_new`: allocates shared `x`. If the given name is already in use, even if it's an `x`, the function would fail.
+- `urt_shx_delete`: deletes `x` allocated by `urt_shx_new`.
+- `urt_shx_attach`: attaches to `x` shared by given name. If no such `x` exist, the function would fail.
+- `urt_shx_detach`: detaches from `x` attached to by `urt_shx_attach`.
+
+## Error Reporting
+
+The functions of URT either create something, such as `[#urt_mem_new](urt_mem)`, or do something such as `[#urt_sem_post](urt_lock)`.
+The functions that do something, if it is possible for them to fail for any reason, will have an `int` return value that can indicate
+possible [errors](constants#Return Values).
+
+The functions that create something, on the other hand, will return what was created. If these functions fail, they will return `NULL`.
+To return the error code to the interested user, these functions will take an optional `int *` parameter as the last argument where,
+if provided, the error code would be stored. If the function doesn't fail, this parameter will _not_ be touched.

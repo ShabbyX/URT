@@ -21,6 +21,60 @@ FUNCTION urt_mem_new: (size: size_t, error: int * = NULL): void *
 	INPUT size
 		Size of memory to be allocated.
 	INPUT error
-		Optional parameter where the error code would be stored iff the return value indicated error.
+		Optional error code return value. See explanation [here](style#Error Reporting).
 	OUTPUT
 		Similar to `malloc`, returns a pointer to the allocated memory, or `NULL` if failed.
+
+FUNCTION urt_mem_delete: (mem: void *): void
+	Free memory allocated with `urt_mem_new`
+
+	This function frees memory allocated with `[#urt_mem_new]`. If **`mem`** is `NULL`, the function silently returns.
+
+	INPUT mem
+		Memory to be freed.
+
+FUNCTION urt_shmem_new: (name: const char *, size: size_t, error: int * = NULL): void *
+	Allocate shared memory of given size
+
+	This function allocates memory of a given **`size`**, similar to `malloc`. This memory will be [shared](index#Shared Resources)
+	with other processes under the given **`name`**. See further details [here](style#Shared Resource Allocation).
+
+	INPUT name
+		The name under which the memory is shared.
+	INPUT size
+		Size of memory to be allocated.
+	INPUT error
+		Optional error code return value. See explanation [here](style#Error Reporting).
+	OUTPUT
+		A pointer to the allocated shared memory region, or `NULL` if failed.
+
+FUNCTION urt_shmem_delete: (mem: void *): void
+	Free shared memory allocated with `urt_shmem_new`
+
+	This function frees memory allocated with `[#urt_shmem_new]`. If **`mem`** is `NULL`, the function silently returns.
+
+	INPUT mem
+		Memory to be freed.
+
+FUNCTION urt_shmem_attach: (name: const char *, error: int * = NULL): void *
+	Attach to shared memory
+
+	This function attaches to the shared memory created under **`name`**. If no memory with that name exists, the function
+	will fail.
+
+	INPUT name
+		The name under which the memory is shared.
+	INPUT error
+		Optional error code return value. See explanation [here](style#Error Reporting).
+	OUTPUT
+		A pointer to the shared memory region, or `NULL` if failed.
+
+FUNCTION urt_shmem_detach: (mem: void *): void
+	Detach from shared memory
+
+	This function detaches from shared memory, attached to by `[#urt_shmem_attach]`. If **`mem`** is `NULL`, the function silently returns.
+	If the number of processes attached to the shared memory become zero as a result of a call to this function, the effect is the same as
+	having called `[#urt_shmem_delete]`.
+
+	INPUT mem
+		Memory to be detached from.

@@ -1,0 +1,3 @@
+- Is it possible to ensure urt_shx_detach would always imply urt_shx_delete if usage count reaches zero? If so, do ensure and write that in docs.
+  * Note: currently, urt_shsem_detach only does a sem_close, while urt_shsem_delete also does a sem_unlink. Possibly, after sem_unlink no other
+  processes can attach to the semaphore, so calling sem_unlink from urt_shsem_detach is probably not correct.
