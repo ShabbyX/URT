@@ -44,6 +44,7 @@ INTERNAL_CONFIG_HEADER := $(subst \n ,\n,"\#ifndef URT_INTERNAL_CONFIG_H\n\
 					\n\
 					\#define URT_MAX_OBJECTS $(URT_CONFIG_MAX_SHARED_OBJECTS)\n\
 					\#define URT_LOCK_STOP_MAX_DELAY $(URT_CONFIG_LOCK_STOP_MAX_DEALY)\n\
+					\#define URT_DEFAULT_STACK_SIZE $(URT_CONFIG_DEFAULT_STACK_SIZE)\n\
 					\n\
 					\#endif\n")
 

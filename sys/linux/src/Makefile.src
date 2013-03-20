@@ -1,2 +1,2 @@
-LIB_SRC += lock.c mem.c names.c
+LIB_SRC += lock.c mem.c thread.c names.c
 LIB_HDR += names.h mem_internal.h time_internal.h

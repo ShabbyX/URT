@@ -39,6 +39,8 @@ typedef struct urt_task_attr
 typedef struct urt_task
 {
 	urt_task_attr attr;
+	void (*func)(struct urt_task *, void *);
+	void *data;
 	pthread_t tid;
 } urt_task;
 
@@ -62,13 +64,12 @@ URT_ATTR_WARN_UNUSED urt_task *(urt_task_new)(void (*func)(urt_task *, void *), 
 void urt_task_delete(urt_task *task);
 
 int urt_task_start(urt_task *task);
-urt_task *urt_task_self(void);
-static inline bool urt_task_is_rt_context(void) { return urt_task_self() != NULL; }
+static inline bool urt_task_is_rt_context(void) { return true; }
 void urt_task_on_start(urt_task *task);
 void urt_task_wait_period(urt_task *task);
-void urt_task_on_stop(urt_task *task);
-urt_time urt_task_next_period(urt_task *task);	/* TODO: in implementation do a `while (cur > start_time) start_time += period;` before returning start_time */
-static inline urt_task_period_time_left(urt_task *task) { return urt_task_next_period(task) - urt_get_time(); }
+static inline void urt_task_on_stop(urt_task *task) {}
+urt_time urt_task_next_period(urt_task *task);
+static inline urt_time urt_task_period_time_left(urt_task *task) { return urt_task_next_period(task) - urt_get_time(); }
 
 URT_DECL_END
 
