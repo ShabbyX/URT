@@ -46,7 +46,7 @@ FUNCTION urt_sem_delete: (sem: urt_sem *): void
 
 	This function frees a semaphore created by `[#urt_sem_new]`. If **`sem`** is `NULL`, the function silently returns.
 
-	INPUT: sem
+	INPUT sem
 		The semaphore to be freed.
 
 FUNCTION urt_shsem_new: (name: const char *, init_value: unsigned int, error: int *): urt_sem *
@@ -69,7 +69,7 @@ FUNCTION urt_shsem_delete: (sem: urt_sem *): void
 
 	This function frees a shared semaphore created by `[#urt_sgsem_new]`. If **`sem`** is `NULL`, the function silently returns.
 
-	INPUT: sem
+	INPUT sem
 		The semaphore to be freed.
 
 FUNCTION urt_shsem_attach: (name: const char *, error: int * = NULL): void *
@@ -92,3 +92,317 @@ FUNCTION urt_shsem_detach: (sem: urt_sem *): void
 
 	INPUT sem
 		Semaphore to be detached from.
+
+FUNCTION urt_sem_wait: (sem: urt_sem *, stop: bool * = NULL): int
+	Wait on a semaphore
+
+	This function waits on semaphore **`sem`**. If the semaphore is not available, it will stay blocked until either it is [posted](urt_sem_post),
+	there is an error, or the optional argument **`stop`** becomes `true`.
+
+	INPUT sem
+		The semaphore to wait on.
+	INPUT stop
+		Optional argument that can cancel the operation. See explanation [here](style#Blocking Locks).
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
+		if that argument becomes `true` before the lock is aquired.
+
+FUNCTION urt_sem_timed_wait: (sem: urt_sem *, wait_time: urt_time): int
+	Wait on a semaphore for a maximum of given time
+
+	This function waits on semaphore **`sem`**. If the semaphore is not available until **`wait_time`** nanoseconds has passed, the function
+	will return.
+
+	INPUT sem
+		The semaphore to wait on.
+	INPUT wait_time
+		Maximum waiting time on the semaphore.
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`wait_time`** nanoseconds has passed and the semaphore was not
+		available, it would return `[#URT_NOT_LOCKED](constants)`.
+
+FUNCTION urt_sem_try_wait: (sem: urt_sem *): int
+	Try waiting on a semaphore
+
+	This function tries to wait on semaphore **`sem`**. If the semaphore is not available it will immediately return.
+
+	INPUT sem
+		The semaphore to wait on.
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` on success, `[#URT_NOT_LOCKED](constants)` if lock was not available or `[#URT_FAIL](constants)`
+		if there was an error.
+
+FUNCTION urt_sem_post: (sem: urt_sem *): void
+	Post a semaphore
+
+	This function posts semaphore **`sem`**. If there are threads waiting on the semaphore, one of them arbitrarily is chosen and unblocked.
+
+	INPUT sem
+		The semaphore to post.
+
+FUNCTION urt_mutex_new: (error: int *): urt_mutex *
+	Create a new mutex
+
+	This function creates and returns a new mutex. This mutex is unnamed and cannot be shared with other processes.
+
+	INPUT error
+		Optional error code return value. See explanation [here](style#Error Reporting).
+	OUTPUT
+		A new mutex, or `NULL` if not possible.
+
+FUNCTION urt_mutex_delete: (mutex: urt_mutex *): void
+	Free a mutex created by `urt_mutex_new`
+
+	This function frees a mutex created by `[#urt_mutex_new]`. If **`mutex`** is `NULL`, the function silently returns.
+
+	INPUT mutex
+		The mutex to be freed.
+
+FUNCTION urt_shmutex_new: (name: const char *, error: int *): urt_mutex *
+	Create a new shared mutex
+
+	This function creates and returns a new shared mutex. This mutex will be [shared](index#Shared Resources)
+	with other processes under the given **`name`**. See further details [here](style#Shared Resource Allocation).
+
+	INPUT name
+		The name under which the mutex is shared.
+	INPUT error
+		Optional error code return value. See explanation [here](style#Error Reporting).
+	OUTPUT
+		A new mutex, or `NULL` if not possible.
+
+FUNCTION urt_shmutex_delete: (mutex: urt_mutex *): void
+	Free a shared mutex created by `urt_shmutex_new`
+
+	This function frees a shared mutex created by `[#urt_sgmutex_new]`. If **`mutex`** is `NULL`, the function silently returns.
+
+	INPUT mutex
+		The mutex to be freed.
+
+FUNCTION urt_shmutex_attach: (name: const char *, error: int * = NULL): void *
+	Attach to shared mutex
+
+	This function attaches to the shared mutex created under **`name`**. If no mutex with that name exists, the function
+	will fail.
+
+	INPUT name
+		The name under which the mutex is shared.
+	INPUT error
+		Optional error code return value. See explanation [here](style#Error Reporting).
+	OUTPUT
+		A pointer to the shared mutex, or `NULL` if failed.
+
+FUNCTION urt_shmutex_detach: (mutex: urt_mutex *): void
+	Detach from shared mutex
+
+	This function detaches from shared mutex, attached to by `[#urt_shmutex_attach]`. If **`mem`** is `NULL`, the function silently returns.
+
+	INPUT mutex
+		Mutex to be detached from.
+
+FUNCTION urt_mutex_lock: (mutex: urt_mutex *, stop: bool * = NULL): int
+	Lock a mutex
+
+	This function locks mutex **`mutex`**. If the mutex is not available, it will stay blocked until either it is [unlocked](urt_mutex_unlock),
+	there is an error, or the optional argument **`stop`** becomes `true`.
+
+	INPUT mutex
+		The mutex to lock.
+	INPUT stop
+		Optional argument that can cancel the operation. See explanation [here](style#Blocking Locks).
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
+		if that argument becomes `true` before the lock is aquired.
+
+FUNCTION urt_mutex_timed_lock: (mutex: urt_mutex *, wait_time: urt_time): int
+	Lock a mutex if possible in a maximum of given time
+
+	This function locks mutex **`mutex`**. If the mutex is not available until **`wait_time`** nanoseconds has passed, the function
+	will return.
+
+	INPUT mutex
+		The mutex to lock.
+	INPUT wait_time
+		Maximum waiting time on the mutex.
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`wait_time`** nanoseconds has passed and the mutex was not
+		available, it would return `[#URT_NOT_LOCKED](constants)`.
+
+FUNCTION urt_mutex_try_lock: (mutex: urt_mutex *): int
+	Try locking a mutex
+
+	This function tries to lock mutex **`mutex`**. If the mutex is not available it will immediately return.
+
+	INPUT mutex
+		The mutex to lock.
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` on success, `[#URT_NOT_LOCKED](constants)` if lock was not available or `[#URT_FAIL](constants)`
+		if there was an error.
+
+FUNCTION urt_mutex_unlock: (mutex: urt_mutex *): void
+	Unlock a mutex
+
+	This function unlocks mutex **`mutex`**. If there are threads waiting on the mutex, one of them arbitrarily is chosen and unblocked.
+
+	INPUT mutex
+		The mutex to unlock.
+
+FUNCTION urt_rwlock_new: (error: int *): urt_rwlock *
+	Create a new readers-writers lock
+
+	This function creates and returns a new readers-writers lock. This lock is unnamed and cannot be shared with other processes.
+
+	INPUT error
+		Optional error code return value. See explanation [here](style#Error Reporting).
+	OUTPUT
+		A new readers-writers lock, or `NULL` if not possible.
+
+FUNCTION urt_rwlock_delete: (rwlock: urt_rwlock *): void
+	Free a readers-writers lock created by `urt_rwlock_new`
+
+	This function frees a readers-writers lock created by `[#urt_rwlock_new]`. If **`rwlock`** is `NULL`, the function silently returns.
+
+	INPUT rwlock
+		The readers-writers lock to be freed.
+
+FUNCTION urt_shrwlock_new: (name: const char *, error: int *): urt_rwlock *
+	Create a new shared readers-writers lock
+
+	This function creates and returns a new shared readers-writers lock. This lock will be [shared](index#Shared Resources)
+	with other processes under the given **`name`**. See further details [here](style#Shared Resource Allocation).
+
+	INPUT name
+		The name under which the lock is shared.
+	INPUT error
+		Optional error code return value. See explanation [here](style#Error Reporting).
+	OUTPUT
+		A new readers-writers lock, or `NULL` if not possible.
+
+FUNCTION urt_shrwlock_delete: (rwlock: urt_rwlock *): void
+	Free a shared readers-writers lock created by `urt_shrwlock_new`
+
+	This function frees a shared readers-writers lock created by `[#urt_sgrwlock_new]`. If **`rwlock`** is `NULL`, the function silently returns.
+
+	INPUT rwlock
+		The readers-writers lock to be freed.
+
+FUNCTION urt_shrwlock_attach: (name: const char *, error: int * = NULL): void *
+	Attach to shared readers-writers lock
+
+	This function attaches to the shared readers-writers lock created under **`name`**. If no lock with that name exists, the function
+	will fail.
+
+	INPUT name
+		The name under which the lock is shared.
+	INPUT error
+		Optional error code return value. See explanation [here](style#Error Reporting).
+	OUTPUT
+		A pointer to the shared readers-writers lock, or `NULL` if failed.
+
+FUNCTION urt_shrwlock_detach: (rwlock: urt_rwlock *): void
+	Detach from shared readers-writers lock
+
+	This function detaches from shared readers-writers lock, attached to by `[#urt_shrwlock_attach]`. If **`mem`** is `NULL`, the function silently returns.
+
+	INPUT rwlock
+		Readers-writers lock to be detached from.
+
+FUNCTION urt_rwlock_read_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
+	Read-lock a readers-writers lock
+
+	This function read-locks readers-writers lock **`rwlock`**. If the lock is not available, it will stay blocked until either it is
+	[unlocked](urt_rwlock_write_unlock), there is an error, or the optional argument **`stop`** becomes `true`.
+
+	So long as the lock is not [write-locked](urt_rwlock_write_lock) any number of readers can simultaneously acquire the lock. This number may be capped
+	by system specific limitations.
+
+	INPUT rwlock
+		The readers-writers lock to lock.
+	INPUT stop
+		Optional argument that can cancel the operation. See explanation [here](style#Blocking Locks).
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
+		if that argument becomes `true` before the lock is aquired.
+
+FUNCTION urt_rwlock_write_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
+	Write-lock a readers-writers lock
+
+	This function write-locks readers-writers lock **`rwlock`**. If the lock is not available, it will stay blocked until either it is
+	[unlocked](urt_rwlock_read_unlock), there is an error, or the optional argument **`stop`** becomes `true`.
+
+	There can be only one writer having the lock. Furthermore, a writer would stay blocked until all readers have released the lock. In a race condition,
+	it is a system-specific behavior whether writers are prioritized or readers.
+
+	INPUT rwlock
+		The readers-writers lock to lock.
+	INPUT stop
+		Optional argument that can cancel the operation. See explanation [here](style#Blocking Locks).
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
+		if that argument becomes `true` before the lock is aquired.
+
+FUNCTION urt_rwlock_timed_read_lock: (rwlock: urt_rwlock *, wait_time: urt_time): int
+	Read-lock a readers-writers lock if possible in a maximum of given time
+
+	This function read-locks readers-writers lock **`rwlock`**. If the lock is not available until **`wait_time`** nanoseconds has passed, the function
+	will return.
+
+	INPUT rwlock
+		The readers-writers lock to lock.
+	INPUT wait_time
+		Maximum waiting time on the lock.
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`wait_time`** nanoseconds has passed and the lock was not
+		available, it would return `[#URT_NOT_LOCKED](constants)`.
+
+FUNCTION urt_rwlock_timed_write_lock: (rwlock: urt_rwlock *, wait_time: urt_time): int
+	Write-lock a readers-writers lock if possible in a maximum of given time
+
+	This function write-locks readers-writers lock **`rwlock`**. If the lock is not available until **`wait_time`** nanoseconds has passed, the function
+	will return.
+
+	INPUT rwlock
+		The readers-writers lock to lock.
+	INPUT wait_time
+		Maximum waiting time on the lock.
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`wait_time`** nanoseconds has passed and the lock was not
+		available, it would return `[#URT_NOT_LOCKED](constants)`.
+
+FUNCTION urt_rwlock_try_read_lock: (rwlock: urt_rwlock *): int
+	Try read-locking a readers-writers lock
+
+	This function tries to read-lock readers-writers lock **`rwlock`**. If the lock is not available it will immediately return.
+
+	INPUT rwlock
+		The readers-writers lock to lock.
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` on success, `[#URT_NOT_LOCKED](constants)` if lock was not available or `[#URT_FAIL](constants)`
+		if there was an error.
+
+FUNCTION urt_rwlock_try_write_lock: (rwlock: urt_rwlock *): int
+	Try write-locking a readers-writers lock
+
+	This function tries to write-lock readers-writers lock **`rwlock`**. If the lock is not available it will immediately return.
+
+	INPUT rwlock
+		The readers-writers lock to lock.
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` on success, `[#URT_NOT_LOCKED](constants)` if lock was not available or `[#URT_FAIL](constants)`
+		if there was an error.
+
+FUNCTION urt_rwlock_read_unlock: (rwlock: urt_rwlock *): void
+	Read-unlock a readers-writers lock
+
+	This function read-unlocks readers-writers lock **`rwlock`**. If there are threads waiting on the lock, one of them arbitrarily is chosen and unblocked.
+
+	INPUT rwlock
+		The readers-writers lock to unlock.
+
+FUNCTION urt_rwlock_write_unlock: (rwlock: urt_rwlock *): void
+	Write-unlock a readers-writers lock
+
+	This function write-unlocks readers-writers lock **`rwlock`**. If there are threads waiting on the lock, one of them arbitrarily is chosen and unblocked.
+
+	INPUT rwlock
+		The readers-writers lock to unlock.
