@@ -140,7 +140,7 @@ void *(urt_shmem_attach)(const char *name, int *error, ...)
 
 	ro = urt_get_object_by_name(name);
 	if (ro == NULL)
-		goto exit_no_name;
+		goto exit_no_obj;
 
 	mem = _shmem_common(name, 0, error, 0);
 	if (mem == NULL)
@@ -149,9 +149,9 @@ void *(urt_shmem_attach)(const char *name, int *error, ...)
 	urt_inc_name_count(ro);
 
 	return mem;
-exit_no_name:
+exit_no_obj:
 	if (error)
-		*error = URT_NO_NAME;
+		*error = URT_NO_OBJ;
 exit_fail:
 	if (ro)
 		urt_deregister(ro);

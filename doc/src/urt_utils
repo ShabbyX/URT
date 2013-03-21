@@ -18,10 +18,9 @@ FUNCTION urt_get_free_name: (name: char[URT_NAME_LEN]): int
 
 	This function finds an unused name, fills it in **`name`** and reserves it.
 
-	Currently, the function generates unique names that cannot be used by the user. This makes the function faster, but also implies
-	that it is limited to slightly less than 70 million names before failing. It has been decided that such a number will not be reached
-	in any application. If it does, please file a report to extend the function. In any case, one can try asking for an object with names
-	generated in a loop and try until a free name is found.
+	Currently, the function generates unique names that cannot be used by the user. This makes the function faster for the first ~70 million names.
+	After that, the function reiterates the previous names and finds one that is not used. As long as the maximum possible number of object
+	(`URT_CONFIG_MAX_SHARED_OBJECTS`) is less than about 70 million, this functions should always eventually find a free name.
 
 	INPUT name
 		A new name available to be used as a shared object name.
@@ -35,3 +34,24 @@ FUNCTION urt_is_rt_context: (): bool
 
 	OUTPUT
 		Returns `true` if the calling thread is in real-time context.
+
+FUNCTION urt_make_rt_context: (prev: int *): int
+	Make the current context a real-time one if not already
+
+	This function tries to make the current context real-time if not already. The **`prev`** parameter is used to restore the context
+	to the previous one in the call to `[#urt_unmake_rt_context]` and therefore shall not be `NULL`.
+
+	INPUT prev
+		A variable used to store the current context.
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` if successful, `[#URT_NO_SUPPORT](constants)` if operation is not possible given the
+		underlying host system or `[#URT_FAIL](constants)` otherwise.
+
+FUNCTION urt_unmake_rt_context: (prev: int): void
+	Restore previous context after a call to `urt_make_rt_context`.
+
+	If a call to `[#urt_make_rt_context]` is successful, then the `prev` argument of that function should be provided to this function
+	to restore the previous, possibly non-realtime, context.
+
+	INPUT prev
+		Previous context before a successful call to `[#urt_make_rt_context]`.

@@ -11,7 +11,6 @@ shortcut globals
 Constants in the skin are divided in 3 groups:
 - Limits
 - Return Values
-- Flag Values
 - Meta
 
 CONST_GROUP Limits
@@ -50,26 +49,78 @@ CONST_GROUP Return Values
 	These are the possible return values from any function in the interface unless otherwise indicated. Throughout the API, any function
 	that has a return value has its possible return values listed.
 
-	CONSTANT URT_SUCCESS
-		Return value of operations if successful
+	CONSTANT URT_SUCCESS: 0
+		Successful operation
 
-		A non-negative value indicating successful operation. Returned by the following functions:
+		Zero value indicating successful operation.
 
-			- `[#urt_TODO](urt_lock)`
+	CONSTANT URT_NOT_LOCKED
+		Lock request was not performed
 
-		Function `[#urt_TODO](urt_error)` can be called to obtain possible warnings.
+		A positive value indicating that the lock operation was not successful due to non-error reasons. For example a
+		[try-lock](urt_lock#urt_mutex_try_lock) where the lock is not available, or a [semaphore wait](urt_lock#urt_sem_wait) that
+		was [canceled](Style#Blocking Locks).
 
 	CONSTANT URT_FAIL
-		Return value of operations if failed
+		Failed operation
 
-		A negative value indicating failed operation. Returned by the following functions:
+		A negative value indicating failed operation. Operations returning this value have failed for reasons that are unlikely to be
+		fixable given the current arguments, e.g. due to memory corruption. URT tries its best to identify errors and return a more
+		meaningful return value.
 
-		Function `[#urt_TODO](urt_error)` can be called to obtain error description.
+	CONSTANT URT_NO_MEM
+		Out of memory
 
-CONST_GROUP Flag Values
-	Values used as flags in the API
+		A negative value indicating that the operation failed due to lack of sufficient memory.
 
-	These are constants that are used within the API as flags, either to flag a certain data, or as input to functions of the API.
+	CONTANT URT_BAD_NAME
+		An invalid name is given
+
+		A negative value indicating that the operation failed because the provided name is not valid. See explanation
+		[here](Style#Shared Resources) for more information on valid names. If this value is returned, then the name
+		had contained an invalid character right at the beginning.
+
+		Note that this return value is unrelated to `[#URT_BAD_OBJ]`, i.e. it doesn't determine whether an object shared
+		under the given name exists or not.
+
+	CONSTANT URT_BAD_VALUE
+		Value out of range
+
+		A negative value indicating that one of the arguments is out of range, e.g. the initial value of a semaphore is out of the
+		accepted range in the host system.
+
+	CONSTANT URT_EXISTS
+		Another object with the same name exists
+
+		A negative value indicating that a shared object with a given name cannot be created because another object with the same name
+		exists.
+
+	CONSTANT URT_NO_OBJ
+		No object with a given name exists
+
+		A negative value indicating that an `*\_attach` operation has failed because no shared object with the given name exists.
+
+	CONSTANT URT_ALREADY
+		The operation is already performed
+
+		A negative value indicating that the operation is already performed, e.g. `[initializing URT](urt#urt_init)`.
+
+	CONSTANT URT_MAX_REACHED
+		Maximum number of objects reached
+
+		A negative value indicating that no new shared objects can be created because the configurable maximum (`URT_CONFIG_MAX_SHARED_OBJECTS`)
+		is reached.
+
+	CONSTANT URT_AGAIN
+		Failed operation that may work on retry
+
+		A negative value indicating that the operation failed due to some restriction in the system, but it may work on retry.
+
+	CONSTANT URT_NO_SUPPORT
+		No support for this function in the host system
+
+		A negative value indicating that the operation is not supported by the host system. URT tries to support all functionality over all supported
+		platforms as best as it can, therefore this return value is very rare.
 
 CONST_GROUP Meta
 	Constants providing information about the API

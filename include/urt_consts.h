@@ -23,18 +23,16 @@
 #define URT_NAME_LEN 6
 
 #define URT_SUCCESS 0		/* success! */
+#define URT_NOT_LOCKED 1	/* try/timed lock didn't lock */
 #define URT_FAIL -1		/* fail for various reasons */
 #define URT_NO_MEM -2		/* not enough memory */
-#define URT_NOT_LOCKED -3	/* try/timed lock didn't lock */
-#define URT_BAD_NAME -4		/* invalid name */
-#define URT_BAD_VALUE -5	/* value out of range */
-#define URT_EXISTS -6		/* object with that name already exists */
-#define URT_NO_OBJ -7		/* returned if trying to attach to a name that is not shared */
-#define URT_INTR -8		/* call was interrupted due to signal */
-#define URT_ALREADY -9		/* returned if operations is already done (e.g. urt_init) */
-#define URT_NO_NAME -10		/* no such name (e.g. in attach functions) */
-#define URT_MAX_REACHED -11	/* maximum number of names/objects reached */
-#define URT_AGAIN -12		/* currently impossible operation, but may work on retry */
-#define URT_NO_SUPPORT -13	/* operation is not supported */
+#define URT_BAD_NAME -3		/* invalid name */
+#define URT_BAD_VALUE -4	/* value out of range */
+#define URT_EXISTS -5		/* object with that name already exists */
+#define URT_NO_OBJ -6		/* returned if trying to attach to a name that is not shared */
+#define URT_ALREADY -7		/* returned if operations is already done (e.g. urt_init) */
+#define URT_MAX_REACHED -8	/* maximum number of names/objects reached */
+#define URT_AGAIN -9		/* currently impossible operation, but may work on retry */
+#define URT_NO_SUPPORT -10	/* operation is not supported */
 
 #endif

@@ -83,9 +83,7 @@ static urt_registered_object *_find_by_name(const char *name)
 			break;
 	}
 
-	if (i > max_index)
-		return NULL;
-	return ro;
+	return i > max_index?NULL:ro;
 }
 
 static urt_registered_object *_find_by_addr(void *address)
@@ -101,9 +99,7 @@ static urt_registered_object *_find_by_addr(void *address)
 			break;
 	}
 
-	if (i > max_index)
-		return NULL;
-	return ro;
+	return i > max_index?NULL:ro;
 }
 
 urt_registered_object *urt_reserve_name(const char *name, int *error)
@@ -221,35 +217,15 @@ urt_registered_object *urt_get_object_by_addr(void *address)
 	return ro;
 }
 
-/*
- * free names have 5 characters in [A-Z0-9_] and a terminating $.
- * Since users are not supposed to use $, this will not collide with
- * user names. Therefore, no actual checking with the registry is made.
- */
-int urt_get_free_name(char *name)
+static int _increment_name(char *name)
 {
 	int i;
-	char *next_name;
 	char digit;
 
-	urt_sem_wait(urt_global_sem);
-
-	if (urt_global_mem->names_exhausted)
-		/*
-		 * If ever needed, add a contingency plan.
-		 * For example retry from the beginning, checking against
-		 * the registry to find which of the ?????$ names are not
-		 * in use anymore.
-		 */
-		goto exit_fail;
-
-	next_name = urt_global_mem->next_free_name;
-	strncpy(name, next_name, URT_NAME_LEN);
-
-	for (i = 5; i >= 0; --i)
+	for (i = URT_NAME_LEN - 1; i >= 0; --i)
 	{
 		bool finished = true;
-		digit = next_name[i];
+		digit = name[i];
 
 		if (digit == '_')
 			digit = '0';
@@ -267,21 +243,75 @@ int urt_get_free_name(char *name)
 		else
 			goto exit_internal;
 
-		next_name[i] = digit;
+		name[i] = digit;
 		if (finished)
 			break;
 	}
 
 	if (URT_UNLIKELY(i < 0))
 	{
-		urt_global_mem->names_exhausted = true;
-		goto exit_fail;
+		name[0] = '_';
+		name[1] = '_';
+		name[2] = '_';
+		name[3] = '_';
+		name[4] = '_';
+		name[5] = '$';
+		return 1;
+	}
+
+	return 0;
+exit_internal:
+	urt_dbg("internal error: next_free_name contains invalid character '%c' (%d)\n", digit, digit);
+	name[0] = '_';
+	name[1] = '_';
+	name[2] = '_';
+	name[3] = '_';
+	name[4] = '_';
+	name[5] = '$';
+	return -1;
+}
+
+static void _check_and_get_free_name(char *name)
+{
+	char *next_name;
+	int ret;
+
+	next_name = urt_global_mem->next_free_name;
+
+	do
+	{
+		strncpy(name, next_name, URT_NAME_LEN);
+		ret = _increment_name(next_name);
+	} while (ret < 0 || _find_by_name(name) != NULL);
+}
+
+/*
+ * free names have 5 characters in [A-Z0-9_] and a terminating $.
+ * Since users are not supposed to use $, this will not collide with
+ * user names. Therefore, no actual checking with the registry is made.
+ */
+int urt_get_free_name(char *name)
+{
+	int ret;
+	char *next_name;
+
+	urt_sem_wait(urt_global_sem);
+
+	if (URT_UNLIKELY(urt_global_mem->names_exhausted))
+		_check_and_get_free_name(name);
+	else
+	{
+		next_name = urt_global_mem->next_free_name;
+		strncpy(name, next_name, URT_NAME_LEN);
+		ret = _increment_name(next_name);
+		if (URT_UNLIKELY(ret))
+			urt_global_mem->names_exhausted = true;
+		if (URT_UNLIKELY(ret < 0))
+			goto exit_fail;
 	}
 
 	urt_sem_post(urt_global_sem);
 	return URT_SUCCESS;
-exit_internal:
-	urt_dbg("internal error: next_free_name contains invalid character '%c' (%d)\n", digit, digit);
 exit_fail:
 	urt_sem_post(urt_global_sem);
 	return URT_FAIL;

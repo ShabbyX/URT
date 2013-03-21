@@ -28,9 +28,3 @@ Please refer to the documentation on each module for their respective functions.
 - [Utilities](urt_utils)
 
 See [style](Style) for general description of common usage styles among URT functions.
-
-## Shared Resources
-
-Shared resources in URT are identified by at-most-[#URT_NAME_LEN](constants)-character names, comprising of capital letters (`'A'-'Z'`), digits (`'0'-'9'`)
-and underscore (`'\_'`). At most `URT_NAME_LEN` characters are read from the name string. Therefore, a `URT_NAME_LEN`-character name doesn't need to be
-NUL-terminated. If NUL or an invalid character is reached before the `URT_NAME_LEN` characters, the name is truncated to that length.

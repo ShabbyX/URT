@@ -21,8 +21,10 @@ FUNCTION urt_init: (): int
 	OUTPUT
 		Returns one of the following:
 
-		- `[#URT_SUCCESS](constants)` if successful
-		- TODO
+		- `[#URT_SUCCESS](constants)` if successful,
+		- `[#URT_ALREADY](constants)` if URT is already initialized,
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_FAIL](constants)` otherwise
 
 FUNCTION urt_exit: (): void
 	Free URT

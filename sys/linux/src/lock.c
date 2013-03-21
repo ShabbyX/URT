@@ -143,7 +143,7 @@ urt_sem *(urt_shsem_attach)(const char *name, int *error, ...)
 
 	ro = urt_get_object_by_name(name);
 	if (ro == NULL)
-		goto exit_no_name;
+		goto exit_no_obj;
 
 	sem = _shsem_common(name, 0, error, 0);	/* TODO: I expect 0 for flags to only try to attach and not create. Must be tested */
 	if (sem == NULL)
@@ -152,9 +152,9 @@ urt_sem *(urt_shsem_attach)(const char *name, int *error, ...)
 	urt_inc_name_count(ro);
 
 	return sem;
-exit_no_name:
+exit_no_obj:
 	if (error)
-		*error = URT_NO_NAME;
+		*error = URT_NO_OBJ;
 exit_fail:
 	if (ro)
 		urt_deregister(ro);
