@@ -1,0 +1,95 @@
+functions urt_task
+# URT - Unified Real-Time Interface
+version version 0.1.0
+author Shahbaz Youssefi
+keyword real-time
+keyword middleware
+keyword interface
+shortcut index
+shortcut globals
+shortcut constants
+seealso `[urt_task_attr]`
+previous functions urt_time
+next functions urt_mem
+
+Functions of this module handle creation and deletion of real-time tasks. Each task is first [created](#urt_task_new) in a paused state and
+[run](#urt_task_start) at the programmer's will.
+
+TYPE urt_task: opaque
+	A real-time task
+
+	This opaque type contains system specific information of a real-time task.
+
+FUNCTION urt_task_new: (func: (urt_task *, void *): void, data: void * = NULL, attr: urt_task_attr * = NULL, error: int * = NULL): urt_task *
+	Create a new task in paused state
+
+	This function creates a new task, but doesn't run it. The task function **`func`** takes the created task as argument and a second
+	argument which is the optional **`data`** argument. If the task is periodic, or has attributes other than default, **`attr`** should
+	be provided. See the definition of `[urt_task_attr]` structure for possible attributes.
+
+	INPUT func
+		The function to be called by a new thread. The first argument to this function is the task pointer, which is the same as the
+		output of this function.
+	INPUT data
+		Optional argument to be passed as the second argument to **`func`**.
+	INPUT attr
+		Optional argument to tweak the attributes of the task, such as its period, priority or stack size. If not provided, default
+		attributes will be used.
+	INPUT error
+		Optional error code return value. See explanation [here](Style#Error Reporting).
+	OUTPUT
+		Returns a new task, or `NULL` if failed.
+
+FUNCTION urt_task_delete: (task: urt_task *): void
+	Cleanup a task
+
+	This function cleans up and removes a task. Note that this function may not terminate the thread calling the task, but wait for it
+	to finish. Therefore, it is important to make sure the task is terminated before calling this function.
+
+	INPUT task
+		The task to be cleaned up.
+
+FUNCTION urt_task_start: (task: urt_task *): int
+	Start a task
+
+	This function starts a task created by `[#urt_task_new]`. If the task's `[#start_time](urt_task_attr)` is specified and is in the future,
+	the task will not be called until such time arrives. Note that it is unknown whether an actual thread is created and paused, or no thread
+	is created until the start time. Nonetheless, this function is unaffected by the task's `start_time` attributed.
+
+	INPUT task
+		Task to be started.
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` on success, `[#URT_NO_MEM](constants)` if out of memory, `[#URT_AGAIN](constants)` if operation
+		failed but there is a chance of success on retry or `[#URT_FAIL](constants)` if there was any other error.
+
+FUNCTION urt_task_wait_period: (task: urt_task *): void
+	Wait for the next period if task is periodic
+
+	This function makes the calling thread sleep until the task's next period starts. If the task is not periodic, the function silently returns.
+	If a period deadline is missed, it is unspecified whether the function would wait until the next period in the future, or return immediately
+	taking the missed deadline as the next period.
+
+	INPUT task
+		Periodic task that needs to wait for its next period.
+
+FUNCTION urt_task_next_period: (task: urt_task *): urt_time
+	Return the absolute time of the next period of the task in nanoseconds
+
+	This function returns the absolute time of the next period of the function in nanoseconds.
+	Similar to `[#urt_task_wait_period]`, it is unspecified whether missed deadlines are taken into account when determining the time of the next period.
+
+	INPUT task
+		The task for which the next period is being determined.
+	OUTPUT
+		The absolute value of time, with the same origin as `[#urt_get_time](urt_time)`, marking the start of the next period of **`task`**.
+
+FUNCTION urt_task_period_time_left: (task: urt_task *): urt_time
+	Return the amount of time left before the start of next period in nanoseconds
+
+	This function returns the time left until the start of the next period of the given task in nanoseconds. The output of this function would be the same
+	as the difference of `[#urt_task_next_period]` and the current time. See the note on that function.
+
+	INPUT task
+		The task for which the time left of its period is being determined.
+	OUTPUT
+		Time left until the start of the next period of the given **`task`** in nanoseconds.

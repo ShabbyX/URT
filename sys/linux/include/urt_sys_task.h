@@ -17,37 +17,37 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_THREAD_H
-#define URT_THREAD_H
+#ifndef URT_SYS_THREAD_H
+#define URT_SYS_THREAD_H
 
-#include <urt_stdtypes.h>
-#include <urt_compiler.h>
-#include <urt_time.h>
-
-typedef struct urt_task_attr
-{
-	urt_time period;
-	urt_time start_time;
-	size_t stack_size;
-	int priority;
-	char uses_fpu;
-} urt_task_attr;
-
-#include <urt_sys_thread.h>
+#include <pthread.h>
 
 URT_DECL_BEGIN
 
-URT_ATTR_WARN_UNUSED urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data,
-		urt_task_attr *attr, int *error, ...);
-void urt_task_delete(urt_task *task);
+typedef struct urt_task
+{
+	urt_task_attr attr;
+	void (*func)(struct urt_task *, void *);
+	void *data;
+	pthread_t tid;
+} urt_task;
 
-int urt_task_start(urt_task *task);
-/* bool urt_task_is_rt_context(void); */
-void urt_task_on_start(urt_task *task);
-void urt_task_wait_period(urt_task *task);
-/* void urt_task_on_stop(urt_task *task); */
+#define URT_MAX_PRIORITY 0
+#define URT_MIN_PRIORITY 0
+#define URT_MORE_PRIORITY 0
+
+static inline bool urt_priority_is_valid(int p)
+{
+	return p == 0;
+}
+
+static inline bool urt_priority_is_higher(int a, int b)
+{
+	return a > b;
+}
+
 urt_time urt_task_next_period(urt_task *task);
-/* urt_time urt_task_period_time_left(urt_task *task); */
+static inline urt_time urt_task_period_time_left(urt_task *task) { return urt_task_next_period(task) - urt_get_time(); }
 
 URT_DECL_END
 

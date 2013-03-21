@@ -9,7 +9,7 @@ shortcut index
 shortcut globals
 shortcut constants
 previous functions urt
-next functions urt_thread
+next functions urt_task
 
 Functions of this module handle timing information.
 

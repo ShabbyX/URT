@@ -10,6 +10,7 @@ shortcut constants
 
 urt_time
 urt_mem
+urt_task
 urt_lock
-urt_thread
 urt_log
+urt_task_attr

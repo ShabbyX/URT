@@ -28,8 +28,6 @@ static void task(urt_task *task, void *data)
 {
 	int i;
 
-	urt_task_on_start(task);
-
 	for (i = 0; i < 20; ++i)
 	{
 		urt_mutex_lock(sync_mutex);
@@ -37,7 +35,6 @@ static void task(urt_task *task, void *data)
 		urt_mutex_unlock(sync_mutex);
 	}
 
-	urt_task_on_stop(task);
 	urt_sem_post(done_sem);
 }
 

@@ -29,8 +29,6 @@ static void periodic(urt_task *task, void *data)
 	urt_sem *sem = data;
 	urt_time start_time = urt_get_time();
 
-	urt_task_on_start(task);
-
 	for (i = 0; i < 20; ++i)
 	{
 		urt_log("Periodic: %llu: Time to next period: %llu (exec time: %llu)\n", urt_get_time() - start_time,
@@ -39,7 +37,6 @@ static void periodic(urt_task *task, void *data)
 		urt_sem_post(sem);
 	}
 
-	urt_task_on_stop(task);
 	urt_sem_post(done_sem);
 }
 
@@ -47,16 +44,13 @@ static void normal(urt_task *task, void *data)
 {
 	int i;
 
-	urt_task_on_start(task);
-
 	for (i = 0; i < 20; ++i)
 	{
 		urt_sem_wait(sync_sem);
 		urt_sleep(1000000);
-		urt_log("Normal: Signaled by periodic thread\n");
+		urt_log("Normal: Signaled by periodic task\n");
 	}
 
-	urt_task_on_stop(task);
 	urt_sem_post(done_sem);
 }
 
@@ -88,7 +82,7 @@ int main()
 	tn = urt_task_new(normal);
 	attr = (urt_task_attr){
 		.period = 500000000,
-		.start_time = urt_get_time() + 1000000000
+		.start_time = urt_get_time() + 3000000000ll
 	};
 	tp = urt_task_new(periodic, sync_sem, &attr, &ret);
 	if (tn == NULL || tp == NULL)

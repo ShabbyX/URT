@@ -15,7 +15,7 @@ Constants in the skin are divided in 3 groups:
 - Meta
 
 CONST_GROUP Limits
-	Limits to certain sizes
+	Limits to certain sizes or other values
 
 	These constants are limits to various features of URT.
 
@@ -24,6 +24,25 @@ CONST_GROUP Limits
 
 		This is the maximum length of a name used for sharing objects. URT never reads or writes more than this many characters on names.
 		This means that the name does not need to be NUL-terminated. It also means that URT does not NUL-terminate the name.
+
+	CONSTANT URT_MIN_PRIORITY
+		Minimum possible priority in the system
+
+		This is the minimum possible priority in the system. Note that the integer value of this priority may in fact be higher than
+		`[#URT_MAX_PRIORITY]`. Use `[#urt_priority_is_higher](urt_task_attr)` to compare priorities.
+
+	CONSTANT URT_MAX_PRIORITY
+		Maximum possible priority in the system
+
+		This is the maximum possible priority in the system. Note that the integer value of this priority may in fact be lower than
+		`[#URT_MIN_PRIORITY]`. Use `[#urt_priority_is_higher](urt_task_attr)` to compare priorities.
+
+	CONSTANT URT_MORE_PRIORITY
+		Value to be added to priority to increase it
+
+		If this value is added to a [valid](urt_task_attr#urt_priority_is_valid) priority and if the result is still a valid priority,
+		then the result would have a higher priority than the original one, unless no higher priority is possible. Similarly, subtracting
+		this value from a priority results in lower priority, unless no lower priority is possible.
 
 CONST_GROUP Return Values
 	Possible return values from the functions in the interface

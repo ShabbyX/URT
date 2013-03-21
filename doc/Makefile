@@ -5,8 +5,8 @@ DOC_THIS := ../../personal/DocThis/docthis
 RM := rm -f
 MKDIR := mkdir -p
 
-SOURCE_FILES := urt urt_time urt_thread urt_mem urt_lock urt_log
-ALL_FILES := $(SOURCE_FILES) index constants style
+SOURCE_FILES := urt urt_time urt_task urt_mem urt_lock urt_log
+ALL_FILES := $(SOURCE_FILES) index constants Style
 HTML_DIR := generated/html
 TEX_DIR := generated/tex
 HTML_FILES := $(addsuffix .html, $(addprefix $(HTML_DIR)/, $(ALL_FILES)))

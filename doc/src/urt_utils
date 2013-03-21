@@ -1,0 +1,37 @@
+functions urt_utils
+# URT - Unified Real-Time Interface
+version version 0.1.0
+author Shahbaz Youssefi
+keyword real-time
+keyword middleware
+keyword interface
+shortcut index
+shortcut globals
+shortcut constants
+previous functions urt_time
+next functions urt_mem
+
+Functions of this module provide miscellaneous utilities.
+
+FUNCTION urt_get_free_name: (name: char[URT_NAME_LEN]): int
+	Get and reserve an unused name
+
+	This function finds an unused name, fills it in **`name`** and reserves it.
+
+	Currently, the function generates unique names that cannot be used by the user. This makes the function faster, but also implies
+	that it is limited to slightly less than 70 million names before failing. It has been decided that such a number will not be reached
+	in any application. If it does, please file a report to extend the function. In any case, one can try asking for an object with names
+	generated in a loop and try until a free name is found.
+
+	INPUT name
+		A new name available to be used as a shared object name.
+	OUTPUT
+		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)` based on whether a name was available or not.
+
+FUNCTION urt_is_rt_context: (): bool
+	Whether calling thread is in real-time context
+
+	A call to this function determines whether the calling thread is in real-time context, and therefore can call URT functions or not.
+
+	OUTPUT
+		Returns `true` if the calling thread is in real-time context.

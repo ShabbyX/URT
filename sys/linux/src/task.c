@@ -19,7 +19,7 @@
 
 #include <errno.h>
 #include <urt_internal.h>
-#include <urt_thread.h>
+#include <urt_task.h>
 #include <urt_mem.h>
 
 urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data, urt_task_attr *attr, int *error, ...)
@@ -44,7 +44,7 @@ urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data, urt_task_
 		if (attr->period > 0)
 			task->attr.period = attr->period;
 		if (attr->start_time > 0)
-			task->attr.start_time = urt_get_time();
+			task->attr.start_time = attr->start_time;
 		if (attr->stack_size > 0)
 			task->attr.stack_size = attr->stack_size;
 		if (urt_priority_is_valid(attr->priority))
@@ -65,10 +65,17 @@ void urt_task_delete(urt_task *task)
 	urt_mem_delete(task);
 }
 
-static void *_thread_wrapper(void *t)
+static void *_task_wrapper(void *t)
 {
 	urt_task *task = t;
+
+	if (task->attr.start_time == 0)
+		task->attr.start_time = urt_get_time();
+	else
+		urt_sleep(task->attr.start_time - urt_get_time());
+
 	task->func(task, task->data);
+
 	return NULL;
 }
 
@@ -81,7 +88,7 @@ int urt_task_start(urt_task *task)
 
 	pthread_attr_setstacksize(&attr, task->attr.stack_size);
 
-	if (pthread_create(&task->tid, &attr, _thread_wrapper, task))
+	if (pthread_create(&task->tid, &attr, _task_wrapper, task))
 		goto exit_bad_create;
 
 	pthread_attr_destroy(&attr);
@@ -90,12 +97,6 @@ int urt_task_start(urt_task *task)
 exit_bad_create:
 	pthread_attr_destroy(&attr);
 	return errno == EAGAIN?URT_AGAIN:URT_FAIL;
-}
-
-void urt_task_on_start(urt_task *task)
-{
-	if (task->attr.start_time == 0)
-		task->attr.start_time = urt_get_time();
 }
 
 static void _update_start_time(urt_task_attr *attr)

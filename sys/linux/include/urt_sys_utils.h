@@ -17,34 +17,16 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_SYS_THREAD_H
-#define URT_SYS_THREAD_H
+#ifndef URT_SYS_UTILS_H
+#define URT_SYS_UTILS_H
 
 #include <pthread.h>
 
 URT_DECL_BEGIN
 
-typedef struct urt_task
-{
-	urt_task_attr attr;
-	void (*func)(struct urt_task *, void *);
-	void *data;
-	pthread_t tid;
-} urt_task;
-
-#define URT_MAX_PRIORITY 0
-#define URT_MIN_PRIORITY 0
-#define URT_MORE_PRIORITY 0
-
-static inline bool urt_priority_is_valid(int p)
-{
-	return p == 0;
-}
-
-static inline bool urt_task_is_rt_context(void) { return true; }
-static inline void urt_task_on_stop(urt_task *task) {}
-urt_time urt_task_next_period(urt_task *task);
-static inline urt_time urt_task_period_time_left(urt_task *task) { return urt_task_next_period(task) - urt_get_time(); }
+static inline bool urt_is_rt_context(void) { return true; }
+static inline int urt_make_rt_context(int *state) { return URT_SUCCESS; }
+static inline void urt_unmake_rt_context(int state) {}
 
 URT_DECL_END
 

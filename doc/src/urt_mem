@@ -8,7 +8,7 @@ keyword interface
 shortcut index
 shortcut globals
 shortcut constants
-previous functions urt_thread
+previous functions urt_task
 next functions urt_lock
 
 Functions of this module handle private and shared memory allocation, free and access.
@@ -21,7 +21,7 @@ FUNCTION urt_mem_new: (size: size_t, error: int * = NULL): void *
 	INPUT size
 		Size of memory to be allocated.
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		Similar to `malloc`, returns a pointer to the allocated memory, or `NULL` if failed.
 
@@ -37,14 +37,14 @@ FUNCTION urt_shmem_new: (name: const char *, size: size_t, error: int * = NULL):
 	Allocate shared memory of given size
 
 	This function allocates memory of a given **`size`**, similar to `malloc`. This memory will be [shared](index#Shared Resources)
-	with other processes under the given **`name`**. See further details [here](style#Shared Resource Allocation).
+	with other processes under the given **`name`**. See further details [here](Style#Shared Resource Allocation).
 
 	INPUT name
 		The name under which the memory is shared.
 	INPUT size
 		Size of memory to be allocated.
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		A pointer to the allocated shared memory region, or `NULL` if failed.
 
@@ -65,7 +65,7 @@ FUNCTION urt_shmem_attach: (name: const char *, error: int * = NULL): void *
 	INPUT name
 		The name under which the memory is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		A pointer to the shared memory region, or `NULL` if failed.
 

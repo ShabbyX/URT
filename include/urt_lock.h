@@ -20,10 +20,10 @@
 #ifndef URT_LOCK_H
 #define URT_LOCK_H
 
-#include <urt_stdtypes.h>
-#include <urt_compiler.h>
-#include <urt_defaults.h>
-#include <urt_time.h>
+#include "urt_stdtypes.h"
+#include "urt_compiler.h"
+#include "urt_defaults.h"
+#include "urt_time.h"
 #include <urt_sys_lock.h>
 
 URT_DECL_BEGIN

@@ -26,7 +26,7 @@
 #include "urt_setup.h"
 #include "urt_utils.h"
 #include "urt_time.h"
-#include "urt_thread.h"
+#include "urt_task.h"
 #include "urt_mem.h"
 #include "urt_lock.h"
 #include "urt_error.h"

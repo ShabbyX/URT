@@ -17,23 +17,34 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_MEM_H
-#define URT_MEM_H
+#ifndef URT_THREAD_H
+#define URT_THREAD_H
 
 #include "urt_stdtypes.h"
 #include "urt_compiler.h"
-#include "urt_defaults.h"
-#include <urt_sys_mem.h>
+#include "urt_time.h"
+
+typedef struct urt_task_attr
+{
+	urt_time period;
+	urt_time start_time;
+	size_t stack_size;
+	int priority;
+	char uses_fpu;
+} urt_task_attr;
+
+#include <urt_sys_task.h>
 
 URT_DECL_BEGIN
 
-URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *(urt_mem_new)(size_t size, int *error, ...);
-/* void urt_mem_delete(void *mem); */
+URT_ATTR_WARN_UNUSED urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data,
+		urt_task_attr *attr, int *error, ...);
+void urt_task_delete(urt_task *task);
 
-URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *(urt_shmem_new)(const char *name, size_t size, int *error, ...);
-URT_ATTR_WARN_UNUSED void *(urt_shmem_attach)(const char *name, int *error, ...);
-void urt_shmem_detach(void *mem);
-static inline void urt_shmem_delete(void *mem) { urt_shmem_detach(mem); }
+int urt_task_start(urt_task *task);
+void urt_task_wait_period(urt_task *task);
+urt_time urt_task_next_period(urt_task *task);
+/* urt_time urt_task_period_time_left(urt_task *task); */
 
 URT_DECL_END
 

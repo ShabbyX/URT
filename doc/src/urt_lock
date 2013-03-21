@@ -29,7 +29,7 @@ TYPE urt_rwlock: opaque
 
 	A system dependent type representing a readers-writers lock.
 
-FUNCTION urt_sem_new: (init_value: unsigned int, error: int *): urt_sem *
+FUNCTION urt_sem_new: (init_value: unsigned int, error: int * = NULL): urt_sem *
 	Create a new semaphore
 
 	This function creates and returns a new semaphore. This semaphore is unnamed and cannot be shared with other processes.
@@ -37,7 +37,7 @@ FUNCTION urt_sem_new: (init_value: unsigned int, error: int *): urt_sem *
 	INPUT init_value
 		Initial value of the semaphore.
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		A new semaphore, or `NULL` if not possible.
 
@@ -49,18 +49,18 @@ FUNCTION urt_sem_delete: (sem: urt_sem *): void
 	INPUT sem
 		The semaphore to be freed.
 
-FUNCTION urt_shsem_new: (name: const char *, init_value: unsigned int, error: int *): urt_sem *
+FUNCTION urt_shsem_new: (name: const char *, init_value: unsigned int, error: int * = NULL): urt_sem *
 	Create a new shared semaphore
 
 	This function creates and returns a new shared semaphore. This semaphore will be [shared](index#Shared Resources)
-	with other processes under the given **`name`**. See further details [here](style#Shared Resource Allocation).
+	with other processes under the given **`name`**. See further details [here](Style#Shared Resource Allocation).
 
 	INPUT name
 		The name under which the semaphore is shared.
 	INPUT init_value
 		Initial value of the semaphore.
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		A new semaphore, or `NULL` if not possible.
 
@@ -81,7 +81,7 @@ FUNCTION urt_shsem_attach: (name: const char *, error: int * = NULL): void *
 	INPUT name
 		The name under which the semaphore is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		A pointer to the shared semaphore, or `NULL` if failed.
 
@@ -102,7 +102,7 @@ FUNCTION urt_sem_wait: (sem: urt_sem *, stop: bool * = NULL): int
 	INPUT sem
 		The semaphore to wait on.
 	INPUT stop
-		Optional argument that can cancel the operation. See explanation [here](style#Blocking Locks).
+		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
 		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
 		if that argument becomes `true` before the lock is aquired.
@@ -140,13 +140,13 @@ FUNCTION urt_sem_post: (sem: urt_sem *): void
 	INPUT sem
 		The semaphore to post.
 
-FUNCTION urt_mutex_new: (error: int *): urt_mutex *
+FUNCTION urt_mutex_new: (error: int * = NULL): urt_mutex *
 	Create a new mutex
 
 	This function creates and returns a new mutex. This mutex is unnamed and cannot be shared with other processes.
 
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		A new mutex, or `NULL` if not possible.
 
@@ -158,16 +158,16 @@ FUNCTION urt_mutex_delete: (mutex: urt_mutex *): void
 	INPUT mutex
 		The mutex to be freed.
 
-FUNCTION urt_shmutex_new: (name: const char *, error: int *): urt_mutex *
+FUNCTION urt_shmutex_new: (name: const char *, error: int * = NULL): urt_mutex *
 	Create a new shared mutex
 
 	This function creates and returns a new shared mutex. This mutex will be [shared](index#Shared Resources)
-	with other processes under the given **`name`**. See further details [here](style#Shared Resource Allocation).
+	with other processes under the given **`name`**. See further details [here](Style#Shared Resource Allocation).
 
 	INPUT name
 		The name under which the mutex is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		A new mutex, or `NULL` if not possible.
 
@@ -188,7 +188,7 @@ FUNCTION urt_shmutex_attach: (name: const char *, error: int * = NULL): void *
 	INPUT name
 		The name under which the mutex is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		A pointer to the shared mutex, or `NULL` if failed.
 
@@ -209,7 +209,7 @@ FUNCTION urt_mutex_lock: (mutex: urt_mutex *, stop: bool * = NULL): int
 	INPUT mutex
 		The mutex to lock.
 	INPUT stop
-		Optional argument that can cancel the operation. See explanation [here](style#Blocking Locks).
+		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
 		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
 		if that argument becomes `true` before the lock is aquired.
@@ -247,13 +247,13 @@ FUNCTION urt_mutex_unlock: (mutex: urt_mutex *): void
 	INPUT mutex
 		The mutex to unlock.
 
-FUNCTION urt_rwlock_new: (error: int *): urt_rwlock *
+FUNCTION urt_rwlock_new: (error: int * = NULL): urt_rwlock *
 	Create a new readers-writers lock
 
 	This function creates and returns a new readers-writers lock. This lock is unnamed and cannot be shared with other processes.
 
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		A new readers-writers lock, or `NULL` if not possible.
 
@@ -265,16 +265,16 @@ FUNCTION urt_rwlock_delete: (rwlock: urt_rwlock *): void
 	INPUT rwlock
 		The readers-writers lock to be freed.
 
-FUNCTION urt_shrwlock_new: (name: const char *, error: int *): urt_rwlock *
+FUNCTION urt_shrwlock_new: (name: const char *, error: int * = NULL): urt_rwlock *
 	Create a new shared readers-writers lock
 
 	This function creates and returns a new shared readers-writers lock. This lock will be [shared](index#Shared Resources)
-	with other processes under the given **`name`**. See further details [here](style#Shared Resource Allocation).
+	with other processes under the given **`name`**. See further details [here](Style#Shared Resource Allocation).
 
 	INPUT name
 		The name under which the lock is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		A new readers-writers lock, or `NULL` if not possible.
 
@@ -295,7 +295,7 @@ FUNCTION urt_shrwlock_attach: (name: const char *, error: int * = NULL): void *
 	INPUT name
 		The name under which the lock is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting).
 	OUTPUT
 		A pointer to the shared readers-writers lock, or `NULL` if failed.
 
@@ -319,7 +319,7 @@ FUNCTION urt_rwlock_read_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
 	INPUT rwlock
 		The readers-writers lock to lock.
 	INPUT stop
-		Optional argument that can cancel the operation. See explanation [here](style#Blocking Locks).
+		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
 		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
 		if that argument becomes `true` before the lock is aquired.
@@ -336,7 +336,7 @@ FUNCTION urt_rwlock_write_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
 	INPUT rwlock
 		The readers-writers lock to lock.
 	INPUT stop
-		Optional argument that can cancel the operation. See explanation [here](style#Blocking Locks).
+		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
 		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
 		if that argument becomes `true` before the lock is aquired.

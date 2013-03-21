@@ -22,12 +22,16 @@
 
 #include "urt_config.h"
 
+#ifndef URT_LOG_PREFIX
+# define URT_LOG_PREFIX "URT: "
+#endif
+
 #ifndef NDEBUG
-# define URT_LOG_PREFIX_FORMAT "URT: %s:%u: "
+# define URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX"%s:%u: "
 # define URT_LOG_PREFIX_PARAMS , __FILE__ + (sizeof(__FILE__) < 25?0:sizeof(__FILE__) - 25), __LINE__
 # define urt_dbg(...) urt_log(__VA_ARGS__)
 #else
-# define URT_LOG_PREFIX_FORMAT "URT: "
+# define URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX
 # define URT_LOG_PREFIX_PARAMS
 # define urt_dbg(...) ((void)0)
 #endif
