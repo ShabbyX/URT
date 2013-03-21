@@ -221,7 +221,7 @@ int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 	if (res == 0)
 		return URT_SUCCESS;
 	else if (errno == ETIMEDOUT)
-		return URT_TIMEOUT;
+		return URT_NOT_LOCKED;
 	return URT_FAIL;
 }
 
@@ -395,7 +395,7 @@ int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)
 	if (res == 0)
 		return URT_SUCCESS;
 	else if (res == ETIMEDOUT)
-		return URT_TIMEOUT;
+		return URT_NOT_LOCKED;
 	return URT_FAIL;
 }
 
@@ -414,7 +414,7 @@ int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 	if (res == 0)
 		return URT_SUCCESS;
 	else if (res == ETIMEDOUT)
-		return URT_TIMEOUT;
+		return URT_NOT_LOCKED;
 	return URT_FAIL;
 }
 
