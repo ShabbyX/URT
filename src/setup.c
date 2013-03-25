@@ -21,13 +21,16 @@
 #include <urt_mem.h>
 #include "reserved.h"
 #include "urt_internal.h"
+#include <urt_sys_setup.h>
 
 urt_sem *urt_global_sem = NULL;
 urt_internal *urt_global_mem = NULL;
 
 int urt_init(void)
 {
-	int error = URT_SUCCESS;
+	int error = urt_sys_init();
+	if (error != URT_SUCCESS)
+		return error;
 
 	/* get global lock */
 	if (urt_global_sem != NULL || urt_global_mem != NULL)
@@ -55,15 +58,24 @@ void urt_exit(void)
 {
 	urt_global_mem_free(URT_GLOBAL_MEM_NAME);
 	urt_global_sem_free(URT_GLOBAL_LOCK_NAME);
+
+	urt_sys_exit();
 }
 
 void urt_recover(void)
 {
-	urt_sem *global_sem = urt_global_sem_get(URT_GLOBAL_LOCK_NAME, NULL);
+	urt_sem *global_sem;
+
+	if (urt_sys_init() != URT_SUCCESS)
+		return;
+
+	global_sem = urt_global_sem_get(URT_GLOBAL_LOCK_NAME, NULL);
 	if (global_sem == NULL)
 		return;
 
 	urt_sem_try_wait(global_sem);
 	urt_sem_post(global_sem);
 	urt_global_sem_free(URT_GLOBAL_LOCK_NAME);
+
+	urt_sys_exit();
 }
