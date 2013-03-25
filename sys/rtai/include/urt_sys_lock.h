@@ -17,15 +17,33 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_TIME_H
-#define URT_TIME_H
+#ifndef URT_SYS_LOCK_H
+#define URT_SYS_LOCK_H
 
-#include "urt_stdtypes.h"
-#include "urt_compiler.h"
-#include <urt_sys_time.h>
+#include <rtai_sem.h>
+#include <rtai_rwl.h>
 
-/* urt_time urt_get_time(void); */
-/* void urt_sleep(urt_time t); */
-/* urt_time urt_get_exec_time(void); */
+URT_DECL_BEGIN
+
+typedef SEM urt_sem;
+typedef SEM urt_mutex;
+typedef RWL urt_rwlock;
+
+#define urt_shsem_delete(sem) urt_shsem_detach(sem);
+
+URT_ATTR_WARN_UNUSED urt_mutex *(urt_mutex_new)(int *error, ...);
+#define urt_mutex_delete(m) urt_sem_delete(m)
+
+#define urt_shmutex_detach(m) urt_shmutex_detach(m)
+#define urt_shmutex_delete(m) urt_shsem_delete(m)
+
+#define urt_mutex_lock(...) urt_sem_wait(__VA_ARGS__)
+#define urt_mutex_timed_lock(m, t) urt_sem_timed_wait(m, t)
+#define urt_mutex_try_lock(m) urt_sem_try_lock(m)
+#define urt_mutex_unlock(m) urt_sem_post(m)
+
+#define urt_shrwlock_delete(rwl) urt_shrwlock_detach(rwl)
+
+URT_DECL_END
 
 #endif

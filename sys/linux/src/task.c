@@ -22,42 +22,6 @@
 #include <urt_task.h>
 #include <urt_mem.h>
 
-urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data, urt_task_attr *attr, int *error, ...)
-{
-	urt_task *task;
-
-	task = urt_mem_new(sizeof(*task), error);
-	if (task == NULL)
-		goto exit_fail;
-
-	*task = (urt_task){
-		.attr = {
-			.stack_size = URT_DEFAULT_STACK_SIZE,
-			.priority = URT_MIN_PRIORITY,
-		},
-		.func = func,
-		.data = data
-	};
-
-	if (attr != NULL)
-	{
-		if (attr->period > 0)
-			task->attr.period = attr->period;
-		if (attr->start_time > 0)
-			task->attr.start_time = attr->start_time;
-		if (attr->stack_size > 0)
-			task->attr.stack_size = attr->stack_size;
-		if (urt_priority_is_valid(attr->priority))
-			task->attr.priority = attr->priority;
-		if (attr->uses_fpu)
-			task->attr.uses_fpu = 1;
-	}
-
-	return task;
-exit_fail:
-	return NULL;
-}
-
 void urt_task_delete(urt_task *task)
 {
 	if (URT_LIKELY(task != NULL))
@@ -68,11 +32,12 @@ void urt_task_delete(urt_task *task)
 static void *_task_wrapper(void *t)
 {
 	urt_task *task = t;
+	urt_time now = urt_get_time();
 
 	if (task->attr.start_time == 0)
-		task->attr.start_time = urt_get_time();
+		task->attr.start_time = now;
 	else
-		urt_sleep(task->attr.start_time - urt_get_time());
+		urt_sleep(task->attr.start_time - now);
 
 	task->func(task, task->data);
 
@@ -110,10 +75,6 @@ static void _update_start_time(urt_task_attr *attr)
 	cur = urt_get_time();
 	if (cur > attr->start_time)
 		attr->start_time += attr->period;
-
-	/* the following if only happens if the user has missed period */
-	if (URT_UNLIKELY(cur > attr->start_time))
-		attr->start_time += (cur - attr->start_time + attr->period - 1) / attr->period * attr->period;
 }
 
 void urt_task_wait_period(urt_task *task)

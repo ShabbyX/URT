@@ -46,7 +46,7 @@ extern urt_sem *urt_global_sem;
 extern urt_internal *urt_global_mem;
 
 /* registry manipulation */
-void urt_init_registry(void);
+void urt_registry_init(void);
 urt_registered_object *urt_reserve_name(const char *name, int *error);
 void urt_inc_name_count(urt_registered_object *ro);
 void urt_dec_name_count(urt_registered_object *ro);
@@ -63,5 +63,15 @@ urt_sem *urt_global_sem_get(const char *name, int *error);
 void *urt_global_mem_get(const char *name, size_t size, int *error);
 void urt_global_sem_free(const char *name);
 void urt_global_mem_free(const char *name);
+
+/* system specific parts of object new/attach */
+void *urt_sys_shmem_new(const char *name, size_t size, int *error);
+void *urt_sys_shmem_attach(const char *name, int *error);
+urt_sem *urt_sys_shsem_new(const char *name, unsigned int init_value, int *error);
+urt_sem *urt_sys_shsem_attach(const char *name, int *error);
+urt_mutex *urt_sys_shmutex_new(const char *name, int *error);
+urt_mutex *urt_sys_shmutex_attach(const char *name, int *error);
+urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error);
+urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error);
 
 #endif

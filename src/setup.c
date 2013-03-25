@@ -46,7 +46,7 @@ int urt_init(void)
 	if (urt_global_mem == NULL)
 		goto exit_no_mem;
 
-	urt_init_registry();
+	urt_registry_init();
 
 exit_no_mem:
 	urt_sem_post(urt_global_sem);

@@ -45,12 +45,12 @@ int urt_sem_try_wait(urt_sem *sem);
 void urt_sem_post(urt_sem *sem);
 
 /* unnamed mutex */
-/* URT_ATTR_WARN_UNUSED urt_mutex *(urt_mutex_new); */
+/* URT_ATTR_WARN_UNUSED urt_mutex *(urt_mutex_new)(int *error, ...); */
 /* void urt_mutex_delete(urt_mutex *mutex); */
 
 /* shared mutex */
-/* URT_ATTR_WARN_UNUSED urt_mutex *(urt_shmutex_new); */
-/* URT_ATTR_WARN_UNUSED urt_mutex *(urt_shmutex_attach); */
+URT_ATTR_WARN_UNUSED urt_mutex *(urt_shmutex_new)(const char *name, int *error, ...);
+URT_ATTR_WARN_UNUSED urt_mutex *(urt_shmutex_attach)(const char *name, int *error, ...);
 /* void urt_shmutex_detach(urt_mutex *mutex); */
 /* void urt_shmutex_delete(urt_mutex *mutex); */
 

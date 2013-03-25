@@ -24,7 +24,7 @@
 
 URT_DECL_BEGIN
 
-static inline void urt_mem_delete(void *mem) { free(mem); }
+#define urt_mem_delete(mem) free(mem)
 
 URT_DECL_END
 

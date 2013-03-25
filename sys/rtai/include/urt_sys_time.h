@@ -17,15 +17,36 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_TIME_H
-#define URT_TIME_H
+#ifndef URT_SYS_TIME_H
+#define URT_SYS_TIME_H
 
-#include "urt_stdtypes.h"
-#include "urt_compiler.h"
-#include <urt_sys_time.h>
+#include <rtai_lxrt.h>
 
-/* urt_time urt_get_time(void); */
-/* void urt_sleep(urt_time t); */
-/* urt_time urt_get_exec_time(void); */
+URT_DECL_BEGIN
+
+typedef int64_t urt_time;
+
+#define urt_get_time rt_get_time_ns
+#define urt_sleep(t) rt_sleep(nano2count(t))
+
+static inline urt_time urt_get_exec_time(void)
+{
+	RT_TASK *task;
+#ifdef __KERNEL__
+	task = rt_whoami();
+	if (task == NULL)
+		return 0;
+	return count2nano(task->exectime[0]);
+#else
+	RTIME exectime[3];
+	task = rt_buddy();
+	if (task == NULL)
+		return 0;
+	rt_get_exectime(task, exectime);
+	return count2nano(exectime[0]);
+#endif
+}
+
+URT_DECL_END
 
 #endif

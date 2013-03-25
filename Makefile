@@ -16,6 +16,7 @@ GENERATED_FILES := urt_config.h urt_internal_config.h urt_version.h
 config: $(GENERATED_FILES)
 $(GENERATED_FILES): Makefile.config
 	@$(MAKE) --no-print-directory -f Makefile.generate all
+	@$(RM) build/Makefile.dep tests/*/Makefile.dep
 	@$(MAKE) --no-print-directory -C build dep
 	@$(MAKE) --no-print-directory -C tests dep
 

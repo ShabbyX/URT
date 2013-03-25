@@ -110,52 +110,14 @@ void *urt_global_mem_get(const char *name, size_t size, int *error)
 	return _shmem_common(name, size, error, O_CREAT);
 }
 
-void *(urt_shmem_new)(const char *name, size_t size, int *error, ...)
+void *urt_sys_shmem_new(const char *name, size_t size, int *error)
 {
-	void *mem = NULL;
-	urt_registered_object *ro = NULL;
-
-	ro = urt_reserve_name(name, error);
-	if (ro == NULL)
-		goto exit_fail;
-
-	mem = _shmem_common(name, size, error, O_CREAT | O_EXCL);
-	if (mem == NULL)
-		goto exit_fail;
-
-	ro->address = mem;
-	urt_inc_name_count(ro);
-
-	return mem;
-exit_fail:
-	if (ro)
-		urt_deregister(ro);
-	return NULL;
+	return _shmem_common(name, size, error, O_CREAT | O_EXCL);
 }
 
-void *(urt_shmem_attach)(const char *name, int *error, ...)
+void *urt_sys_shmem_attach(const char *name, int *error)
 {
-	void *mem = NULL;
-	urt_registered_object *ro = NULL;
-
-	ro = urt_get_object_by_name(name);
-	if (ro == NULL)
-		goto exit_no_obj;
-
-	mem = _shmem_common(name, 0, error, 0);
-	if (mem == NULL)
-		goto exit_fail;
-
-	urt_inc_name_count(ro);
-
-	return mem;
-exit_no_obj:
-	if (error)
-		*error = URT_NO_OBJ;
-exit_fail:
-	if (ro)
-		urt_deregister(ro);
-	return NULL;
+	return _shmem_common(name, 0, error, 0);
 }
 
 void urt_global_mem_free(const char *name)

@@ -104,27 +104,9 @@ urt_sem *urt_global_sem_get(const char *name, int *error)
 	return _shsem_common(name, 1, error, O_CREAT);
 }
 
-urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, ...)
+urt_sem *urt_sys_shsem_new(const char *name, unsigned int init_value, int *error)
 {
-	urt_sem *sem = NULL;
-	urt_registered_object *ro = NULL;
-
-	ro = urt_reserve_name(name, error);
-	if (ro == NULL)
-		goto exit_fail;
-
-	sem = _shsem_common(name, init_value, error, O_CREAT | O_EXCL);
-	if (sem == NULL)
-		goto exit_fail;
-
-	ro->address = sem;
-	urt_inc_name_count(ro);
-
-	return sem;
-exit_fail:
-	if (ro)
-		urt_deregister(ro);
-	return NULL;
+	return _shsem_common(name, init_value, error, O_CREAT | O_EXCL);
 }
 
 void urt_global_sem_free(const char *name)
@@ -136,29 +118,9 @@ void urt_global_sem_free(const char *name)
 		sem_unlink(n);
 }
 
-urt_sem *(urt_shsem_attach)(const char *name, int *error, ...)
+urt_sem *urt_sys_shsem_attach(const char *name, int *error)
 {
-	urt_sem *sem = NULL;
-	urt_registered_object *ro = NULL;
-
-	ro = urt_get_object_by_name(name);
-	if (ro == NULL)
-		goto exit_no_obj;
-
-	sem = _shsem_common(name, 0, error, 0);	/* TODO: I expect 0 for flags to only try to attach and not create. Must be tested */
-	if (sem == NULL)
-		goto exit_fail;
-
-	urt_inc_name_count(ro);
-
-	return sem;
-exit_no_obj:
-	if (error)
-		*error = URT_NO_OBJ;
-exit_fail:
-	if (ro)
-		urt_deregister(ro);
-	return NULL;
+	return _shsem_common(name, 0, error, 0);	/* TODO: I expect 0 for flags to only try to attach and not create. Must be tested */
 }
 
 void urt_shsem_detach(urt_sem *sem)
@@ -239,6 +201,16 @@ void urt_sem_post(urt_sem *sem)
 	sem_post(sem);
 }
 
+urt_mutex *urt_sys_shmutex_new(const char *name, int *error)
+{
+	return urt_sys_shsem_new(name, 1, error);
+}
+
+urt_mutex *urt_sys_shmutex_attach(const char *name, int *error)
+{
+	return urt_sys_shsem_attach(name, error);
+}
+
 static int _shrwlock_common(urt_rwlock *rwl, int *error, int flags)
 {
 	int err;
@@ -291,14 +263,14 @@ void urt_rwlock_delete(urt_rwlock *rwl)
 	urt_mem_delete(rwl);
 }
 
-urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...)
+urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error)
 {
 #if !defined(_POSIX_THREAD_PROCESS_SHARED) || _POSIX_THREAD_PROCESS_SHARED <= 0
 	if (error)
 		*error = URT_NO_SUPPORT;
 	return NULL;
 #else
-	urt_rwlock *rwl = urt_shmem_new(name, sizeof(*rwl), error);
+	urt_rwlock *rwl = urt_sys_shmem_new(name, sizeof(*rwl), error);
 	if (rwl == NULL)
 		goto exit_fail;
 
@@ -313,9 +285,9 @@ exit_fail:
 #endif
 }
 
-urt_rwlock *(urt_shrwlock_attach)(const char *name, int *error, ...)
+urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error)
 {
-	return urt_shmem_attach(name, error);
+	return urt_sys_shmem_attach(name, error);
 }
 
 static void _delete_rwlock_callback(void *mem)

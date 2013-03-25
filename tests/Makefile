@@ -9,7 +9,7 @@ all:
 	@for i in $(TESTS); do \
 		$(PRINTF) "$(SUB_STATUS_COLOR)$$i$(DEFAULT_COLOR)\n"; \
 		$(MAKE) --no-print-directory -C $$i; \
-	done
+	done $(HIGHLIGHT)
 .PHONY: dep
 dep:
 	@for i in $(TESTS); do \

@@ -17,15 +17,28 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_TIME_H
-#define URT_TIME_H
+#ifndef URT_SYS_UTILS_H
+#define URT_SYS_UTILS_H
 
-#include "urt_stdtypes.h"
-#include "urt_compiler.h"
-#include <urt_sys_time.h>
+#include <rtai_lxrt.h>
 
-/* urt_time urt_get_time(void); */
-/* void urt_sleep(urt_time t); */
-/* urt_time urt_get_exec_time(void); */
+URT_DECL_BEGIN
+
+static inline bool urt_is_rt_context(void)
+{
+#ifdef __KERNEL__
+	RT_TASK *task = rt_whoami();
+	if (task == NULL)
+		return false;
+	return task->is_hard > 0;
+#else
+	return rt_buddy() != NULL;
+#endif
+}
+
+int urt_make_rt_context(int *prev);
+void urt_unmake_rt_context(int prev);
+
+URT_DECL_END
 
 #endif

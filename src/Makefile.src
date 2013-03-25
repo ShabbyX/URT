@@ -1,2 +1,2 @@
-LIB_SRC += setup.c registry.c
+LIB_SRC += setup.c registry.c task_common.c new_common.c
 LIB_HDR += reserved.h urt_internal.h

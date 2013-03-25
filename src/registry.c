@@ -45,7 +45,7 @@ static void _name_cpy(char *to, const char *from)
 	to[i] = '\0';
 }
 
-void urt_init_registry(void)
+void urt_registry_init(void)
 {
 	unsigned int i;
 

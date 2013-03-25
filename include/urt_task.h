@@ -17,11 +17,12 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_THREAD_H
-#define URT_THREAD_H
+#ifndef URT_TASK_H
+#define URT_TASK_H
 
 #include "urt_stdtypes.h"
 #include "urt_compiler.h"
+#include "urt_defaults.h"
 #include "urt_time.h"
 
 typedef struct urt_task_attr
@@ -43,7 +44,7 @@ void urt_task_delete(urt_task *task);
 
 int urt_task_start(urt_task *task);
 void urt_task_wait_period(urt_task *task);
-urt_time urt_task_next_period(urt_task *task);
+/* urt_time urt_task_next_period(urt_task *task); */
 /* urt_time urt_task_period_time_left(urt_task *task); */
 
 URT_DECL_END

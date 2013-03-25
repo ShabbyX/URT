@@ -17,15 +17,22 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_TIME_H
-#define URT_TIME_H
+#ifndef URT_SYS_MEM_H
+#define URT_SYS_MEM_H
 
-#include "urt_stdtypes.h"
-#include "urt_compiler.h"
-#include <urt_sys_time.h>
+#ifdef __KERNEL__
+# include <vmalloc.h>
+#else
+# include <stdlib.h>
+#endif
 
-/* urt_time urt_get_time(void); */
-/* void urt_sleep(urt_time t); */
-/* urt_time urt_get_exec_time(void); */
+URT_DECL_BEGIN
+
+#ifdef __KERNEL__
+# define urt_mem_delete(mem) vfree(mem)
+#else
+# define urt_mem_delete(mem) free(mem)
+
+URT_DECL_END
 
 #endif

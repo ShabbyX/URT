@@ -17,15 +17,15 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_TIME_H
-#define URT_TIME_H
+#ifndef URT_SYS_LOG_H
+#define URT_SYS_LOG_H
 
-#include "urt_stdtypes.h"
-#include "urt_compiler.h"
-#include <urt_sys_time.h>
+#include <rtai_lxrt.h>
 
-/* urt_time urt_get_time(void); */
-/* void urt_sleep(urt_time t); */
-/* urt_time urt_get_exec_time(void); */
+#define urt_log(...)									\
+	do {										\
+		rt_printk(URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX_PARAMS);			\
+		rt_printk(__VA_ARGS__);							\
+	} while (0)
 
 #endif

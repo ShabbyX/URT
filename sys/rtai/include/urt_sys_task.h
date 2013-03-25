@@ -20,33 +20,46 @@
 #ifndef URT_SYS_TASK_H
 #define URT_SYS_TASK_H
 
-#include <pthread.h>
+#include <rtai_lxrt.h>
 
 URT_DECL_BEGIN
 
 typedef struct urt_task
 {
 	urt_task_attr attr;
+#ifdef __KERNEL__
+	RT_TASK rt_task;
+#else
+	RT_TASK *rt_task;
+	pthread_t tid;
+#endif
 	void (*func)(struct urt_task *, void *);
 	void *data;
-	pthread_t tid;
 } urt_task;
 
-#define URT_MAX_PRIORITY 0
-#define URT_MIN_PRIORITY 0
-#define URT_MORE_PRIORITY 0
+#define URT_MAX_PRIORITY RT_SCHED_HIGHEST_PRIORITY
+#define URT_MIN_PRIORITY RT_SCHED_LOWEST_PRIORITY
+#define URT_MORE_PRIORITY -1
 
 static inline bool urt_priority_is_valid(int p)
 {
-	return p == 0;
+	return (p <= RT_SCHED_LOWEST_PRIORITY && p >= RT_SCHED_HIGHEST_PRIORITY);
 }
 
 static inline bool urt_priority_is_higher(int a, int b)
 {
-	return a > b;
+	return a < b;
 }
 
-urt_time urt_task_next_period(urt_task *task);
+static inline urt_time urt_task_next_period(urt_task *task)
+{
+#ifdef __KERNEL__
+	return count2nano(next_period());
+#else
+	return count2nano(task->rt_task->periodic_resume_time + task->rt_task->period);
+#endif
+}
+
 static inline urt_time urt_task_period_time_left(urt_task *task) { return urt_task_next_period(task) - urt_get_time(); }
 
 URT_DECL_END

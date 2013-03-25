@@ -17,15 +17,17 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_TIME_H
-#define URT_TIME_H
+#include <urt_setup.h>
 
-#include "urt_stdtypes.h"
-#include "urt_compiler.h"
-#include <urt_sys_time.h>
-
-/* urt_time urt_get_time(void); */
-/* void urt_sleep(urt_time t); */
-/* urt_time urt_get_exec_time(void); */
-
+int urt_sys_init(void)
+{
+#ifndef __KERNEL__
+	rt_allow_nonroot_hrt();
 #endif
+	if (!rt_is_hard_timer_running())
+	{
+		rt_set_oneshot_mode();
+		start_rt_timer(nano2count(100000));
+	}
+	mlockall(MCL_CURRENT | MCL_FUTURE);
+}
