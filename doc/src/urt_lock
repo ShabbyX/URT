@@ -37,7 +37,11 @@ FUNCTION urt_sem_new: (init_value: unsigned int, error: int * = NULL): urt_sem *
 	INPUT init_value
 		Initial value of the semaphore.
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_BAD_VALUE](constants)` if **`init_value`** is invalid,
+		- `[#URT_FAIL](constants)` otherwise.
 	OUTPUT
 		A new semaphore, or `NULL` if not possible.
 
@@ -60,7 +64,14 @@ FUNCTION urt_shsem_new: (name: const char *, init_value: unsigned int, error: in
 	INPUT init_value
 		Initial value of the semaphore.
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_EXISTS](constants)` if an object with that name already exists,
+		- `[#URT_BAD_NAME](constants)` if given an invalid name,
+		- `[#URT_BAD_VALUE](constants)` if **`init_value`** is invalid,
+		- `[#URT_MAX_REACHED](constants)` if maximum number of shared objects reached,
+		- `[#URT_FAIL](constants)` otherwise.
 	OUTPUT
 		A new semaphore, or `NULL` if not possible.
 
@@ -81,7 +92,12 @@ FUNCTION urt_shsem_attach: (name: const char *, error: int * = NULL): void *
 	INPUT name
 		The name under which the semaphore is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_BAD_NAME](constants)` if given an invalid name,
+		- `[#URT_NO_OBJ](constants)` if no shared object with given name exists,
+		- `[#URT_FAIL](constants)` otherwise.
 	OUTPUT
 		A pointer to the shared semaphore, or `NULL` if failed.
 
@@ -104,8 +120,11 @@ FUNCTION urt_sem_wait: (sem: urt_sem *, stop: bool * = NULL): int
 	INPUT stop
 		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
-		if that argument becomes `true` before the lock is aquired.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if **`stop`** is provided and it becomes `true` before the lock is aquired,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_sem_timed_wait: (sem: urt_sem *, wait_time: urt_time): int
 	Wait on a semaphore for a maximum of given time
@@ -118,8 +137,11 @@ FUNCTION urt_sem_timed_wait: (sem: urt_sem *, wait_time: urt_time): int
 	INPUT wait_time
 		Maximum waiting time on the semaphore.
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`wait_time`** nanoseconds has passed and the semaphore was not
-		available, it would return `[#URT_NOT_LOCKED](constants)`.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_sem_try_wait: (sem: urt_sem *): int
 	Try waiting on a semaphore
@@ -129,8 +151,11 @@ FUNCTION urt_sem_try_wait: (sem: urt_sem *): int
 	INPUT sem
 		The semaphore to wait on.
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` on success, `[#URT_NOT_LOCKED](constants)` if lock was not available or `[#URT_FAIL](constants)`
-		if there was an error.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if lock was not available,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_sem_post: (sem: urt_sem *): void
 	Post a semaphore
@@ -146,7 +171,10 @@ FUNCTION urt_mutex_new: (error: int * = NULL): urt_mutex *
 	This function creates and returns a new mutex. This mutex is unnamed and cannot be shared with other processes.
 
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_FAIL](constants)` otherwise.
 	OUTPUT
 		A new mutex, or `NULL` if not possible.
 
@@ -167,7 +195,13 @@ FUNCTION urt_shmutex_new: (name: const char *, error: int * = NULL): urt_mutex *
 	INPUT name
 		The name under which the mutex is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_EXISTS](constants)` if an object with that name already exists,
+		- `[#URT_BAD_NAME](constants)` if given an invalid name,
+		- `[#URT_MAX_REACHED](constants)` if maximum number of shared objects reached,
+		- `[#URT_FAIL](constants)` otherwise.
 	OUTPUT
 		A new mutex, or `NULL` if not possible.
 
@@ -188,7 +222,12 @@ FUNCTION urt_shmutex_attach: (name: const char *, error: int * = NULL): void *
 	INPUT name
 		The name under which the mutex is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_BAD_NAME](constants)` if given an invalid name,
+		- `[#URT_NO_OBJ](constants)` if no shared object with given name exists,
+		- `[#URT_FAIL](constants)` otherwise.
 	OUTPUT
 		A pointer to the shared mutex, or `NULL` if failed.
 
@@ -211,8 +250,11 @@ FUNCTION urt_mutex_lock: (mutex: urt_mutex *, stop: bool * = NULL): int
 	INPUT stop
 		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
-		if that argument becomes `true` before the lock is aquired.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if **`stop`** is provided and it becomes `true` before the lock is aquired,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_mutex_timed_lock: (mutex: urt_mutex *, wait_time: urt_time): int
 	Lock a mutex if possible in a maximum of given time
@@ -225,8 +267,11 @@ FUNCTION urt_mutex_timed_lock: (mutex: urt_mutex *, wait_time: urt_time): int
 	INPUT wait_time
 		Maximum waiting time on the mutex.
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`wait_time`** nanoseconds has passed and the mutex was not
-		available, it would return `[#URT_NOT_LOCKED](constants)`.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_mutex_try_lock: (mutex: urt_mutex *): int
 	Try locking a mutex
@@ -236,8 +281,11 @@ FUNCTION urt_mutex_try_lock: (mutex: urt_mutex *): int
 	INPUT mutex
 		The mutex to lock.
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` on success, `[#URT_NOT_LOCKED](constants)` if lock was not available or `[#URT_FAIL](constants)`
-		if there was an error.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if lock was not available,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_mutex_unlock: (mutex: urt_mutex *): void
 	Unlock a mutex
@@ -253,7 +301,11 @@ FUNCTION urt_rwlock_new: (error: int * = NULL): urt_rwlock *
 	This function creates and returns a new readers-writers lock. This lock is unnamed and cannot be shared with other processes.
 
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_AGAIN](constants)` if operation failed but there is a chance of success on retry,
+		- `[#URT_FAIL](constants)` otherwise.
 	OUTPUT
 		A new readers-writers lock, or `NULL` if not possible.
 
@@ -274,7 +326,15 @@ FUNCTION urt_shrwlock_new: (name: const char *, error: int * = NULL): urt_rwlock
 	INPUT name
 		The name under which the lock is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_EXISTS](constants)` if an object with that name already exists,
+		- `[#URT_BAD_NAME](constants)` if given an invalid name,
+		- `[#URT_MAX_REACHED](constants)` if maximum number of shared objects reached,
+		- `[#URT_NO_SUPPORT](constants)` if the underlying system doesn't support shared readers-writers locks,
+		- `[#URT_FAIL](constants)` otherwise.
+
 	OUTPUT
 		A new readers-writers lock, or `NULL` if not possible.
 
@@ -295,7 +355,12 @@ FUNCTION urt_shrwlock_attach: (name: const char *, error: int * = NULL): void *
 	INPUT name
 		The name under which the lock is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_BAD_NAME](constants)` if given an invalid name,
+		- `[#URT_NO_OBJ](constants)` if no shared object with given name exists,
+		- `[#URT_FAIL](constants)` otherwise.
 	OUTPUT
 		A pointer to the shared readers-writers lock, or `NULL` if failed.
 
@@ -321,8 +386,11 @@ FUNCTION urt_rwlock_read_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
 	INPUT stop
 		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
-		if that argument becomes `true` before the lock is aquired.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if **`stop`** is provided and it becomes `true` before the lock is aquired,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_write_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
 	Write-lock a readers-writers lock
@@ -338,8 +406,11 @@ FUNCTION urt_rwlock_write_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
 	INPUT stop
 		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`stop`** is provided, it would return `[#URT_NOT_LOCKED](constants)`
-		if that argument becomes `true` before the lock is aquired.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if **`stop`** is provided and it becomes `true` before the lock is aquired,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_timed_read_lock: (rwlock: urt_rwlock *, wait_time: urt_time): int
 	Read-lock a readers-writers lock if possible in a maximum of given time
@@ -352,8 +423,11 @@ FUNCTION urt_rwlock_timed_read_lock: (rwlock: urt_rwlock *, wait_time: urt_time)
 	INPUT wait_time
 		Maximum waiting time on the lock.
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`wait_time`** nanoseconds has passed and the lock was not
-		available, it would return `[#URT_NOT_LOCKED](constants)`.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_timed_write_lock: (rwlock: urt_rwlock *, wait_time: urt_time): int
 	Write-lock a readers-writers lock if possible in a maximum of given time
@@ -366,8 +440,11 @@ FUNCTION urt_rwlock_timed_write_lock: (rwlock: urt_rwlock *, wait_time: urt_time
 	INPUT wait_time
 		Maximum waiting time on the lock.
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` or `[#URT_FAIL](constants)`. If **`wait_time`** nanoseconds has passed and the lock was not
-		available, it would return `[#URT_NOT_LOCKED](constants)`.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_try_read_lock: (rwlock: urt_rwlock *): int
 	Try read-locking a readers-writers lock
@@ -377,8 +454,11 @@ FUNCTION urt_rwlock_try_read_lock: (rwlock: urt_rwlock *): int
 	INPUT rwlock
 		The readers-writers lock to lock.
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` on success, `[#URT_NOT_LOCKED](constants)` if lock was not available or `[#URT_FAIL](constants)`
-		if there was an error.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if lock was not available,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_try_write_lock: (rwlock: urt_rwlock *): int
 	Try write-locking a readers-writers lock
@@ -388,8 +468,11 @@ FUNCTION urt_rwlock_try_write_lock: (rwlock: urt_rwlock *): int
 	INPUT rwlock
 		The readers-writers lock to lock.
 	OUTPUT
-		Returns `[#URT_SUCCESS](constants)` on success, `[#URT_NOT_LOCKED](constants)` if lock was not available or `[#URT_FAIL](constants)`
-		if there was an error.
+		Reurns one of the following:
+
+		- `[#URT_SUCCESS](constants)` on success,
+		- `[#URT_NOT_LOCKED](constants)` if lock was not available,
+		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_read_unlock: (rwlock: urt_rwlock *): void
 	Read-unlock a readers-writers lock

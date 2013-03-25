@@ -294,7 +294,9 @@ void urt_rwlock_delete(urt_rwlock *rwl)
 urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...)
 {
 #if !defined(_POSIX_THREAD_PROCESS_SHARED) || _POSIX_THREAD_PROCESS_SHARED <= 0
-	return URT_NO_SUPPORT;
+	if (error)
+		*error = URT_NO_SUPPORT;
+	return NULL;
 #else
 	urt_rwlock *rwl = urt_shmem_new(name, sizeof(*rwl), error);
 	if (rwl == NULL)

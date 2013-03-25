@@ -21,7 +21,9 @@ FUNCTION urt_mem_new: (size: size_t, error: int * = NULL): void *
 	INPUT size
 		Size of memory to be allocated.
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory.
 	OUTPUT
 		Similar to `malloc`, returns a pointer to the allocated memory, or `NULL` if failed.
 
@@ -44,7 +46,14 @@ FUNCTION urt_shmem_new: (name: const char *, size: size_t, error: int * = NULL):
 	INPUT size
 		Size of memory to be allocated.
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_EXISTS](constants)` if an object with that name already exists,
+		- `[#URT_BAD_NAME](constants)` if given an invalid name,
+		- `[#URT_BAD_VALUE](constants)` if **`size`** is invalid,
+		- `[#URT_MAX_REACHED](constants)` if maximum number of shared objects reached,
+		- `[#URT_FAIL](constants)` otherwise.
 	OUTPUT
 		A pointer to the allocated shared memory region, or `NULL` if failed.
 
@@ -65,7 +74,12 @@ FUNCTION urt_shmem_attach: (name: const char *, error: int * = NULL): void *
 	INPUT name
 		The name under which the memory is shared.
 	INPUT error
-		Optional error code return value. See explanation [here](Style#Error Reporting).
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `[#URT_NO_MEM](constants)` if out of memory,
+		- `[#URT_BAD_NAME](constants)` if given an invalid name,
+		- `[#URT_NO_OBJ](constants)` if no shared object with given name exists,
+		- `[#URT_FAIL](constants)` otherwise.
 	OUTPUT
 		A pointer to the shared memory region, or `NULL` if failed.
 

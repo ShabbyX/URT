@@ -46,7 +46,7 @@ static void *_shmem_common(const char *name, size_t size, int *error, int flags)
 	if (urt_convert_name(n, name) != URT_SUCCESS)
 		goto exit_bad_name;
 
-	fd = shm_open(n, O_RDWR | flags /*O_CREAT | O_EXCL*/, S_IRWXU | S_IRWXG | S_IRWXO);
+	fd = shm_open(n, O_RDWR | flags, S_IRWXU | S_IRWXG | S_IRWXO);
 	if (fd == -1)
 		goto exit_bad_open;
 
