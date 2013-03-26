@@ -21,7 +21,7 @@ tests:
 	@for i in $(TESTS); do \
 		$(PRINTF) "$(SUB_STATUS_COLOR)$$i$(DEFAULT_COLOR)\n"; \
 		$(MAKE) --no-print-directory -C $$i execute_test || exit 1; \
-		$(PRINTF) "-- passed"; \
+		$(PRINTF) "-- passed\n"; \
 	done
 valgrind:
 	@$(PRINTF) "$(STATUS_COLOR)Executing valgrind tests...$(DEFAULT_COLOR)\n"

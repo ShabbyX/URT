@@ -29,4 +29,10 @@ $(TARGET2): read.o $(BASE)/build/shared/liburt-$(URT_VERSION).so
 %.o: %.c
 	$(CC) $(CFLAGS) $(CC_o) $@ $<
 
+.PHONY: execute_test valgrind_check
+execute_test:
+	@./$(TARGET) > /dev/null 2>&1
+valgrind_check:
+	@valgrind --leak-check=full ./$(TARGET) | grep --color=never 'in use at exit:\|== Invalid'
+
 -include Makefile.dep
