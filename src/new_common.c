@@ -64,38 +64,46 @@ void *(urt_shmem_new)(const char *name, size_t size, int *error, ...)
 {
 	SHOBJ_NEW(name, error, void *, urt_sys_shmem_new(name, size, error));
 }
+URT_EXPORT_SYMBOL(urt_shmem_new);
 
 void *(urt_shmem_attach)(const char *name, int *error, ...)
 {
 	SHOBJ_ATTACH(name, error, void *, urt_sys_shmem_attach(name, error));
 }
+URT_EXPORT_SYMBOL(urt_shmem_attach);
 
 urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, ...)
 {
 	SHOBJ_NEW(name, error, urt_sem *, urt_sys_shsem_new(name, init_value, error));
 }
+URT_EXPORT_SYMBOL(urt_shsem_new);
 
 urt_sem *(urt_shsem_attach)(const char *name, int *error, ...)
 {
 	SHOBJ_ATTACH(name, error, urt_sem *, urt_sys_shsem_attach(name, error));
 }
+URT_EXPORT_SYMBOL(urt_shsem_attach);
 
 urt_mutex *(urt_shmutex_new)(const char *name, int *error, ...)
 {
 	SHOBJ_NEW(name, error, urt_mutex *, urt_sys_shmutex_new(name, error));
 }
+URT_EXPORT_SYMBOL(urt_shmutex_new);
 
 urt_mutex *(urt_shmutex_attach)(const char *name, int *error, ...)
 {
 	SHOBJ_ATTACH(name, error, urt_mutex *, urt_sys_shmutex_attach(name, error));
 }
+URT_EXPORT_SYMBOL(urt_shmutex_attach);
 
 urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...)
 {
 	SHOBJ_NEW(name, error, urt_rwlock *, urt_sys_shrwlock_new(name, error));
 }
+URT_EXPORT_SYMBOL(urt_shrwlock_new);
 
 urt_rwlock *(urt_shrwlock_attach)(const char *name, int *error, ...)
 {
 	SHOBJ_ATTACH(name, error, urt_rwlock *, urt_sys_shrwlock_attach(name, error));
 }
+URT_EXPORT_SYMBOL(urt_shrwlock_attach);

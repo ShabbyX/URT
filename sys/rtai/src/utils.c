@@ -46,6 +46,7 @@ int urt_make_rt_context(int *prev)
 	return URT_SUCCESS;
 #endif
 }
+URT_EXPORT_SYMBOL(urt_make_rt_context);
 
 void urt_unmake_rt_context(int prev)
 {
@@ -56,3 +57,4 @@ void urt_unmake_rt_context(int prev)
 			rt_task_delete(NULL);
 	}
 }
+URT_EXPORT_SYMBOL(urt_unmake_rt_context);

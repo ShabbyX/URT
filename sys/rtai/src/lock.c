@@ -49,6 +49,7 @@ urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...)
 {
 	return _sem_new_common(init_value, CNT_SEM, error);
 }
+URT_EXPORT_SYMBOL(urt_sem_new);
 
 void urt_sem_delete(urt_sem *sem)
 {
@@ -58,6 +59,7 @@ void urt_sem_delete(urt_sem *sem)
 	urt_mem_delete(sem);
 #endif
 }
+URT_EXPORT_SYMBOL(urt_sem_delete);
 
 static _shsem_common(const char *name, unsigned int init_value, int type, int *error)
 {
@@ -79,11 +81,6 @@ urt_sem *urt_sys_shsem_new(const char *name, unsigned int init_value, int *error
 	return _shsem_common(name, init_value, CNT_SEM, error);
 }
 
-void urt_global_sem_free(const char *name)
-{
-	rt_named_sem_delete(urt_global_sem);
-}
-
 urt_sem *urt_sys_shsem_attach(const char *name, int *error)
 {
 	urt_sem *sem = rt_get_adr(nam2num(name));
@@ -94,6 +91,11 @@ urt_sem *urt_sys_shsem_attach(const char *name, int *error)
 	return NULL;
 }
 
+void urt_global_sem_free(const char *name)
+{
+	rt_named_sem_delete(urt_global_sem);
+}
+
 void urt_shsem_detach(urt_sem *sem)
 {
 	if (sem == NULL)
@@ -101,6 +103,7 @@ void urt_shsem_detach(urt_sem *sem)
 	rt_named_sem_delete(sem);
 	urt_deregister_addr(sem);
 }
+URT_EXPORT_SYMBOL(urt_shsem_detach);
 
 int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
 {
@@ -116,28 +119,33 @@ int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
 
 	return res > RTE_BASE?URT_FAIL:URT_SUCCESS;
 }
+URT_EXPORT_SYMBOL(urt_sem_wait);
 
 int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 {
 	res = rt_sem_wait_timed(sem, nano2count(max_wait));
 	return res == RTE_TIMOUT?URT_NOT_LOCKED:res > RTE_BASE?URT_FAIL:URT_SUCCESS;
 }
+URT_EXPORT_SYMBOL(urt_sem_timed_wait);
 
 int urt_sem_try_wait(urt_sem *sem)
 {
 	res = rt_sem_wait_if(sem, nano2count(max_wait));
 	return res == 0?URT_NOT_LOCKED:res > RTE_BASE?URT_FAIL:URT_SUCCESS;
 }
+URT_EXPORT_SYMBOL(urt_sem_try_wait);
 
 void urt_sem_post(urt_sem *sem)
 {
 	rt_sem_signal(sem);
 }
+URT_EXPORT_SYMBOL(urt_sem_post);
 
 urt_mutex *(urt_mutex_new)(int *error, ...)
 {
 	return _sem_new_common(1, BIN_SEM, error);
 }
+URT_EXPORT_SYMBOL(urt_mutex_new);
 
 urt_mutex *urt_sys_shmutex_new(const char *name, int *error)
 {
@@ -167,6 +175,7 @@ urt_rwlock *(urt_rwlock_new)(int *error, ...)
 	return NULL;
 #endif
 }
+URT_EXPORT_SYMBOL(urt_rwlock_new);
 
 void urt_rwlock_delete(urt_rwlock *rwl)
 {
@@ -176,10 +185,7 @@ void urt_rwlock_delete(urt_rwlock *rwl)
 	urt_mem_delete(rwl);
 #endif
 }
-
-static int _shrwlock_common(urt_rwlock *rwl, int *error, int flags)
-{
-}
+URT_EXPORT_SYMBOL(urt_rwlock_detach);
 
 urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error)
 {
@@ -208,6 +214,7 @@ void urt_shrwlock_detach(urt_rwlock *rwl)
 	rt_named_rwl_delete(rwl);
 	urt_deregister_addr(rwl);
 }
+URT_EXPORT_SYMBOL(urt_shrwlock_detach);
 
 int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 {
@@ -223,6 +230,7 @@ int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 
 	return res == 0?URT_SUCCESS:URT_FAIL;
 }
+URT_EXPORT_SYMBOL(urt_shrwlock_read_lock);
 
 int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 {
@@ -238,35 +246,42 @@ int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 
 	return res == 0?URT_SUCCESS:URT_FAIL;
 }
+URT_EXPORT_SYMBOL(urt_shrwlock_write_lock);
 
 int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)
 {
 	int res = rt_rwl_rdlock_timed(rwl, nano2count(max_wait));
 	return res == RTE_TIMOUT?URT_NOT_LOCKED:res == 0?URT_SUCCESS:URT_FAIL;
 }
+URT_EXPORT_SYMBOL(urt_shrwlock_timed_read_lock);
 
 int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 {
 	int res = rt_rwl_wrlock_timed(rwl, nano2count(max_wait));
 	return res == RTE_TIMOUT?URT_NOT_LOCKED:res == 0?URT_SUCCESS:URT_FAIL;
 }
+URT_EXPORT_SYMBOL(urt_shrwlock_timed_write_lock);
 
 int urt_rwlock_try_read_lock(urt_rwlock *rwl)
 {
 	return rt_rwl_rdlock_if(rwl) == 0?URT_SUCCESS:URT_NOT_LOCKED;
 }
+URT_EXPORT_SYMBOL(urt_shrwlock_try_read_lock);
 
 int urt_rwlock_try_write_lock(urt_rwlock *rwl)
 {
 	return rt_rwl_wrlock_if(rwl) == 0?URT_SUCCESS:URT_NOT_LOCKED;
 }
+URT_EXPORT_SYMBOL(urt_shrwlock_try_write_lock);
 
 int urt_rwlock_read_unlock(urt_rwlock *rwl)
 {
 	return rt_rwl_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
 }
+URT_EXPORT_SYMBOL(urt_shrwlock_read_unlock);
 
 int urt_rwlock_write_unlock(urt_rwlock *rwl)
 {
 	return rt_rwl_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
 }
+URT_EXPORT_SYMBOL(urt_shrwlock_write_unlock);

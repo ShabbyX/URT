@@ -33,6 +33,7 @@ void *(urt_mem_new)(size_t size, int *error, ...)
 			*error = URT_NO_MEM;
 	return mem;
 }
+URT_EXPORT_SYMBOL(urt_mem_new);
 
 void *urt_global_mem_get(const char *name, size_t size, int *error)
 {
@@ -84,3 +85,4 @@ void urt_shmem_detach(void *mem)
 	urt_shm_free(nam2num(ro->name));
 	urt_deregister(ro);
 }
+URT_EXPORT_SYMBOL(urt_shmem_detach);

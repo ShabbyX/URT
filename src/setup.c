@@ -53,6 +53,7 @@ exit_no_mem:
 exit_no_sem:
 	return error;
 }
+URT_EXPORT_SYMBOL(urt_init);
 
 void urt_exit(void)
 {
@@ -61,6 +62,7 @@ void urt_exit(void)
 
 	urt_sys_exit();
 }
+URT_EXPORT_SYMBOL(urt_exit);
 
 void urt_recover(void)
 {
@@ -79,3 +81,4 @@ void urt_recover(void)
 
 	urt_sys_exit();
 }
+URT_EXPORT_SYMBOL(urt_recover);

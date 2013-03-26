@@ -109,6 +109,11 @@ urt_sem *urt_sys_shsem_new(const char *name, unsigned int init_value, int *error
 	return _shsem_common(name, init_value, error, O_CREAT | O_EXCL);
 }
 
+urt_sem *urt_sys_shsem_attach(const char *name, int *error)
+{
+	return _shsem_common(name, 0, error, 0);	/* TODO: I expect 0 for flags to only try to attach and not create. Must be tested */
+}
+
 void urt_global_sem_free(const char *name)
 {
 	char n[URT_SYS_NAME_LEN];
@@ -116,11 +121,6 @@ void urt_global_sem_free(const char *name)
 	sem_close(urt_global_sem);
 	if (urt_convert_name(n, name) == URT_SUCCESS)
 		sem_unlink(n);
-}
-
-urt_sem *urt_sys_shsem_attach(const char *name, int *error)
-{
-	return _shsem_common(name, 0, error, 0);	/* TODO: I expect 0 for flags to only try to attach and not create. Must be tested */
 }
 
 void urt_shsem_detach(urt_sem *sem)

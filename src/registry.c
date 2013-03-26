@@ -316,3 +316,4 @@ exit_fail:
 	urt_sem_post(urt_global_sem);
 	return URT_FAIL;
 }
+URT_EXPORT_SYMBOL(urt_get_free_name);

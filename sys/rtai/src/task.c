@@ -28,6 +28,7 @@ void urt_task_delete(urt_task *task)
 #endif
 	urt_mem_delete(task);
 }
+URT_EXPORT_SYMBOL(urt_task_delete);
 
 #ifdef __KERNEL__
 static void _task_wrapper(long t)
@@ -88,8 +89,10 @@ exit_bad_init:
 	return task->tid?URT_SUCCESS:errno == EAGAIN?URT_AGAIN:URT_FAIL;
 #endif
 }
+URT_EXPORT_SYMBOL(urt_task_start);
 
 void urt_task_wait_period(urt_task *task)
 {
 	rt_task_wait_period();
 }
+URT_EXPORT_SYMBOL(urt_task_wait_period);

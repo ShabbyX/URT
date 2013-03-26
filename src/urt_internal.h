@@ -25,6 +25,15 @@
 #include <urt_lock.h>
 #include "urt_internal_config.h"
 
+#ifdef __KERNEL__
+# include <linux/version.h>
+# if LINUX_VERSION_CODE < KERNEL_VERSION(3,2,0)
+#  include <linux/module.h>
+# else
+#  include <linux/export.h>
+# endif
+#endif
+
 typedef struct urt_registered_object
 {
 	char name[URT_NAME_LEN + 1];	/* name of object */
@@ -73,5 +82,11 @@ urt_mutex *urt_sys_shmutex_new(const char *name, int *error);
 urt_mutex *urt_sys_shmutex_attach(const char *name, int *error);
 urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error);
 urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error);
+
+#ifdef __KERNEL__
+# define URT_EXPORT_SYMBOL(s) EXPORT_SYMBOL_GPL(s)
+#else
+# define URT_EXPORT_SYMBOL(s)
+#endif
 
 #endif
