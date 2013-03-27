@@ -32,6 +32,7 @@ URT_DECL_BEGIN
 # define urt_mem_delete(mem) vfree(mem)
 #else
 # define urt_mem_delete(mem) free(mem)
+#endif
 
 URT_DECL_END
 

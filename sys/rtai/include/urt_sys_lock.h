@@ -35,14 +35,11 @@ URT_ATTR_WARN_UNUSED urt_mutex *(urt_mutex_new)(int *error, ...);
 #define urt_mutex_delete(m) urt_sem_delete(m)
 
 #define urt_shmutex_detach(m) urt_shmutex_detach(m)
-#define urt_shmutex_delete(m) urt_shsem_delete(m)
 
 #define urt_mutex_lock(...) urt_sem_wait(__VA_ARGS__)
 #define urt_mutex_timed_lock(m, t) urt_sem_timed_wait(m, t)
 #define urt_mutex_try_lock(m) urt_sem_try_lock(m)
 #define urt_mutex_unlock(m) urt_sem_post(m)
-
-#define urt_shrwlock_delete(rwl) urt_shrwlock_detach(rwl)
 
 URT_DECL_END
 

@@ -27,6 +27,9 @@ function exist:
 - `urt_shx_attach`: attaches to `x` shared by given name. If no such `x` exist, the function would fail.
 - `urt_shx_detach`: detaches from `x` attached to by `urt_shx_attach`.
 
+Note that the shared objects are reference counted. As a result, `urt_shx_delete` and `urt_shx_detach` functions are in fact the same
+and they exist for symmetry. Both of these functions either detach from or delete the shared object based on its usage count.
+
 ## Error Reporting
 The functions of URT either create something, such as `[#urt_mem_new](urt_mem)`, or do something such as `[#urt_sem_post](urt_lock)`.
 The functions that do something, if it is possible for them to fail for any reason, will have an `int` return value that can indicate

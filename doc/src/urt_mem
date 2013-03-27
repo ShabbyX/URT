@@ -38,7 +38,7 @@ FUNCTION urt_mem_delete: (mem: void *): void
 FUNCTION urt_shmem_new: (name: const char *, size: size_t, error: int * = NULL): void *
 	Allocate shared memory of given size
 
-	This function allocates memory of a given **`size`**, similar to `malloc`. This memory will be [shared](index#Shared Resources)
+	This function allocates memory of a given **`size`**, similar to `malloc`. This memory will be shared
 	with other processes under the given **`name`**. See further details [here](Style#Shared Resource Allocation).
 
 	INPUT name
@@ -58,12 +58,16 @@ FUNCTION urt_shmem_new: (name: const char *, size: size_t, error: int * = NULL):
 		A pointer to the allocated shared memory region, or `NULL` if failed.
 
 FUNCTION urt_shmem_delete: (mem: void *): void
-	Free shared memory allocated with `urt_shmem_new`
+	Free or detach from shared memory
 
-	This function frees memory allocated with `[#urt_shmem_new]`. If **`mem`** is `NULL`, the function silently returns.
+	This function detaches from shared memory, attached to by `[#urt_shmem_attach]`, or created by `[#urt_shmem_new]`.
+	If **`mem`** is `NULL`, the function silently returns. If the number of processes attached to the shared memory become
+	zero as a result of a call to this function, the memory will be freed.
+
+	See further details [here](Style#Shared Resource Allocation).
 
 	INPUT mem
-		Memory to be freed.
+		Memory to be detached from or freed.
 
 FUNCTION urt_shmem_attach: (name: const char *, error: int * = NULL): void *
 	Attach to shared memory
@@ -84,11 +88,9 @@ FUNCTION urt_shmem_attach: (name: const char *, error: int * = NULL): void *
 		A pointer to the shared memory region, or `NULL` if failed.
 
 FUNCTION urt_shmem_detach: (mem: void *): void
-	Detach from shared memory
+	Free or detach from shared memory
 
-	This function detaches from shared memory, attached to by `[#urt_shmem_attach]`. If **`mem`** is `NULL`, the function silently returns.
-	If the number of processes attached to the shared memory become zero as a result of a call to this function, the effect is the same as
-	having called `[#urt_shmem_delete]`.
+	The same as `[#urt_shmem_delete]`.
 
 	INPUT mem
-		Memory to be detached from.
+		See `[#urt_shmem_delete]`.

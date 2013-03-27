@@ -116,30 +116,27 @@ urt_sem *urt_sys_shsem_attach(const char *name, int *error)
 
 void urt_global_sem_free(const char *name)
 {
+	sem_close(urt_global_sem);
+	/* Note: it's easier if urt_global_sem is never `sem_unlink`ed */
+}
+
+static void _shsem_detach(struct urt_registered_object *ro)
+{
 	char n[URT_SYS_NAME_LEN];
 
-	sem_close(urt_global_sem);
-	if (urt_convert_name(n, name) == URT_SUCCESS)
+	sem_close(ro->address);
+	if (ro->count == 0 && urt_convert_name(n, ro->name) == URT_SUCCESS)
 		sem_unlink(n);
 }
 
 void urt_shsem_detach(urt_sem *sem)
 {
-	sem_close(sem);
-	urt_deregister_addr(sem);
-}
-
-void urt_shsem_delete(urt_sem *sem)
-{
-	char n[URT_SYS_NAME_LEN];
 	urt_registered_object *ro;
 
-	sem_close(sem);
 	ro = urt_get_object_by_addr(sem);
 	if (ro == NULL)
 		return;
-	if (urt_convert_name(n, ro->name) == URT_SUCCESS)
-		sem_unlink(n);
+	ro->release = _shsem_detach;
 	urt_deregister(ro);
 }
 
@@ -290,10 +287,8 @@ urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error)
 	return urt_sys_shmem_attach(name, error);
 }
 
-static void _delete_rwlock_callback(void *mem)
+static void _shrwlock_detach(void *rwl)
 {
-	urt_rwlock *rwl = mem;
-
 	while (pthread_rwlock_destroy(rwl) == EBUSY)
 		if (pthread_rwlock_unlock(rwl))
 			break;
@@ -301,9 +296,7 @@ static void _delete_rwlock_callback(void *mem)
 
 void urt_shrwlock_detach(urt_rwlock *rwl)
 {
-	if (rwl == NULL)
-		return;
-	urt_shmem_detach_with_callback(rwl, _delete_rwlock_callback);
+	urt_shmem_detach_with_callback(rwl, _shrwlock_detach);
 }
 
 int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)

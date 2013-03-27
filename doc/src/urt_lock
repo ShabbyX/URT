@@ -56,7 +56,7 @@ FUNCTION urt_sem_delete: (sem: urt_sem *): void
 FUNCTION urt_shsem_new: (name: const char *, init_value: unsigned int, error: int * = NULL): urt_sem *
 	Create a new shared semaphore
 
-	This function creates and returns a new shared semaphore. This semaphore will be [shared](index#Shared Resources)
+	This function creates and returns a new shared semaphore. This semaphore will be shared
 	with other processes under the given **`name`**. See further details [here](Style#Shared Resource Allocation).
 
 	INPUT name
@@ -76,12 +76,16 @@ FUNCTION urt_shsem_new: (name: const char *, init_value: unsigned int, error: in
 		A new semaphore, or `NULL` if not possible.
 
 FUNCTION urt_shsem_delete: (sem: urt_sem *): void
-	Free a shared semaphore created by `urt_shsem_new`
+	Free a detach from shared semaphore
 
-	This function frees a shared semaphore created by `[#urt_sgsem_new]`. If **`sem`** is `NULL`, the function silently returns.
+	This function detaches from shared semaphore, attached to by `[#urt_shsem_attach]`, or created by `[#urt_shsem_new]`.
+	If **`sem`** is `NULL`, the function silently returns. If the number of processes attached to the shared semaphore become
+	zero as a result of a call to this function, the semaphore will be freed.
+
+	See further details [here](Style#Shared Resource Allocation).
 
 	INPUT sem
-		The semaphore to be freed.
+		The semaphore to be detached from or freed.
 
 FUNCTION urt_shsem_attach: (name: const char *, error: int * = NULL): void *
 	Attach to shared semaphore
@@ -102,17 +106,17 @@ FUNCTION urt_shsem_attach: (name: const char *, error: int * = NULL): void *
 		A pointer to the shared semaphore, or `NULL` if failed.
 
 FUNCTION urt_shsem_detach: (sem: urt_sem *): void
-	Detach from shared semaphore
+	Free or detach from shared semaphore
 
-	This function detaches from shared semaphore, attached to by `[#urt_shsem_attach]`. If **`mem`** is `NULL`, the function silently returns.
+	The same as `[#urt_shsem_delete]`.
 
 	INPUT sem
-		Semaphore to be detached from.
+		See `[#urt_shsem_delete]`.
 
 FUNCTION urt_sem_wait: (sem: urt_sem *, stop: bool * = NULL): int
 	Wait on a semaphore
 
-	This function waits on semaphore **`sem`**. If the semaphore is not available, it will stay blocked until either it is [posted](urt_sem_post),
+	This function waits on semaphore **`sem`**. If the semaphore is not available, it will stay blocked until either it is [posted](#urt_sem_post),
 	there is an error, or the optional argument **`stop`** becomes `true`.
 
 	INPUT sem
@@ -189,7 +193,7 @@ FUNCTION urt_mutex_delete: (mutex: urt_mutex *): void
 FUNCTION urt_shmutex_new: (name: const char *, error: int * = NULL): urt_mutex *
 	Create a new shared mutex
 
-	This function creates and returns a new shared mutex. This mutex will be [shared](index#Shared Resources)
+	This function creates and returns a new shared mutex. This mutex will be shared
 	with other processes under the given **`name`**. See further details [here](Style#Shared Resource Allocation).
 
 	INPUT name
@@ -206,12 +210,16 @@ FUNCTION urt_shmutex_new: (name: const char *, error: int * = NULL): urt_mutex *
 		A new mutex, or `NULL` if not possible.
 
 FUNCTION urt_shmutex_delete: (mutex: urt_mutex *): void
-	Free a shared mutex created by `urt_shmutex_new`
+	Free or detach from shared mutex
 
-	This function frees a shared mutex created by `[#urt_sgmutex_new]`. If **`mutex`** is `NULL`, the function silently returns.
+	This function detaches from shared mutex, attached to by `[#urt_shmutex_attach]`, or created by `[#urt_shmutex_new]`.
+	If **`mutex`** is `NULL`, the function silently returns. If the number of processes attached to the shared mutex become
+	zero as a result of a call to this function, the mutex will be freed.
+
+	See further details [here](Style#Shared Resource Allocation).
 
 	INPUT mutex
-		The mutex to be freed.
+		The mutex to be detached from or freed.
 
 FUNCTION urt_shmutex_attach: (name: const char *, error: int * = NULL): void *
 	Attach to shared mutex
@@ -232,17 +240,17 @@ FUNCTION urt_shmutex_attach: (name: const char *, error: int * = NULL): void *
 		A pointer to the shared mutex, or `NULL` if failed.
 
 FUNCTION urt_shmutex_detach: (mutex: urt_mutex *): void
-	Detach from shared mutex
+	Free or detach from shared mutex
 
-	This function detaches from shared mutex, attached to by `[#urt_shmutex_attach]`. If **`mem`** is `NULL`, the function silently returns.
+	The same as `[#urt_shmutex_delete]`.
 
 	INPUT mutex
-		Mutex to be detached from.
+		See `[#urt_shmutex_delete]`.
 
 FUNCTION urt_mutex_lock: (mutex: urt_mutex *, stop: bool * = NULL): int
 	Lock a mutex
 
-	This function locks mutex **`mutex`**. If the mutex is not available, it will stay blocked until either it is [unlocked](urt_mutex_unlock),
+	This function locks mutex **`mutex`**. If the mutex is not available, it will stay blocked until either it is [unlocked](#urt_mutex_unlock),
 	there is an error, or the optional argument **`stop`** becomes `true`.
 
 	INPUT mutex
@@ -320,7 +328,7 @@ FUNCTION urt_rwlock_delete: (rwlock: urt_rwlock *): void
 FUNCTION urt_shrwlock_new: (name: const char *, error: int * = NULL): urt_rwlock *
 	Create a new shared readers-writers lock
 
-	This function creates and returns a new shared readers-writers lock. This lock will be [shared](index#Shared Resources)
+	This function creates and returns a new shared readers-writers lock. This lock will be shared
 	with other processes under the given **`name`**. See further details [here](Style#Shared Resource Allocation).
 
 	INPUT name
@@ -339,12 +347,16 @@ FUNCTION urt_shrwlock_new: (name: const char *, error: int * = NULL): urt_rwlock
 		A new readers-writers lock, or `NULL` if not possible.
 
 FUNCTION urt_shrwlock_delete: (rwlock: urt_rwlock *): void
-	Free a shared readers-writers lock created by `urt_shrwlock_new`
+	Free or detach from shared readers-writers lock
 
-	This function frees a shared readers-writers lock created by `[#urt_sgrwlock_new]`. If **`rwlock`** is `NULL`, the function silently returns.
+	This function detaches from shared readers-writers lock, attached to by `[#urt_shrwlock_attach]`, or created by `[#urt_shrwlock_new]`.
+	If **`rwlock`** is `NULL`, the function silently returns. If the number of processes attached to the shared lock become
+	zero as a result of a call to this function, the lock will be freed.
+
+	See further details [here](Style#Shared Resource Allocation).
 
 	INPUT rwlock
-		The readers-writers lock to be freed.
+		The readers-writers lock to be detached from or freed.
 
 FUNCTION urt_shrwlock_attach: (name: const char *, error: int * = NULL): void *
 	Attach to shared readers-writers lock
@@ -365,20 +377,20 @@ FUNCTION urt_shrwlock_attach: (name: const char *, error: int * = NULL): void *
 		A pointer to the shared readers-writers lock, or `NULL` if failed.
 
 FUNCTION urt_shrwlock_detach: (rwlock: urt_rwlock *): void
-	Detach from shared readers-writers lock
+	Free or detach from shared readers-writers lock
 
-	This function detaches from shared readers-writers lock, attached to by `[#urt_shrwlock_attach]`. If **`mem`** is `NULL`, the function silently returns.
+	The same as `[#urt_shrwlock_delete]`.
 
 	INPUT rwlock
-		Readers-writers lock to be detached from.
+		See `[#urt_shrwlock_delete]`.
 
 FUNCTION urt_rwlock_read_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
 	Read-lock a readers-writers lock
 
 	This function read-locks readers-writers lock **`rwlock`**. If the lock is not available, it will stay blocked until either it is
-	[unlocked](urt_rwlock_write_unlock), there is an error, or the optional argument **`stop`** becomes `true`.
+	[unlocked](#urt_rwlock_write_unlock), there is an error, or the optional argument **`stop`** becomes `true`.
 
-	So long as the lock is not [write-locked](urt_rwlock_write_lock) any number of readers can simultaneously acquire the lock. This number may be capped
+	So long as the lock is not [write-locked](#urt_rwlock_write_lock) any number of readers can simultaneously acquire the lock. This number may be capped
 	by system specific limitations.
 
 	INPUT rwlock
@@ -396,7 +408,7 @@ FUNCTION urt_rwlock_write_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
 	Write-lock a readers-writers lock
 
 	This function write-locks readers-writers lock **`rwlock`**. If the lock is not available, it will stay blocked until either it is
-	[unlocked](urt_rwlock_read_unlock), there is an error, or the optional argument **`stop`** becomes `true`.
+	[unlocked](#urt_rwlock_read_unlock), there is an error, or the optional argument **`stop`** becomes `true`.
 
 	There can be only one writer having the lock. Furthermore, a writer would stay blocked until all readers have released the lock. In a race condition,
 	it is a system-specific behavior whether writers are prioritized or readers.

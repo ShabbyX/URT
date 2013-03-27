@@ -73,14 +73,14 @@ CONST_GROUP Return Values
 
 		A negative value indicating that the operation failed due to lack of sufficient memory.
 
-	CONTANT URT_BAD_NAME
+	CONSTANT URT_BAD_NAME
 		An invalid name is given
 
 		A negative value indicating that the operation failed because the provided name is not valid. See explanation
 		[here](Style#Shared Resources) for more information on valid names. If this value is returned, then the name
 		had contained an invalid character right at the beginning.
 
-		Note that this return value is unrelated to `[#URT_BAD_OBJ]`, i.e. it doesn't determine whether an object shared
+		Note that this return value is unrelated to `[#URT_NO_OBJ]`, i.e. it doesn't determine whether an object shared
 		under the given name exists or not.
 
 	CONSTANT URT_BAD_VALUE

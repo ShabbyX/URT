@@ -57,6 +57,9 @@ URT_EXPORT_SYMBOL(urt_init);
 
 void urt_exit(void)
 {
+	if (urt_global_sem == NULL || urt_global_mem == NULL)
+		return;
+
 	urt_global_mem_free(URT_GLOBAL_MEM_NAME);
 	urt_global_sem_free(URT_GLOBAL_LOCK_NAME);
 

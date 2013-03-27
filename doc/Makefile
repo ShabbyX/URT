@@ -5,7 +5,7 @@ DOC_THIS := ../../personal/DocThis/docthis
 RM := rm -f
 MKDIR := mkdir -p
 
-SOURCE_FILES := urt urt_time urt_task urt_mem urt_lock urt_log
+SOURCE_FILES := urt urt_time urt_task urt_task_attr urt_mem urt_lock urt_log urt_utils
 ALL_FILES := $(SOURCE_FILES) index constants Style
 HTML_DIR := generated/html
 TEX_DIR := generated/tex

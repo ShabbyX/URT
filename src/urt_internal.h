@@ -36,19 +36,23 @@
 
 typedef struct urt_registered_object
 {
-	char name[URT_NAME_LEN + 1];	/* name of object */
-	bool reserved;			/* count could be zero, but name reserved */
-	unsigned int count;		/* usage count */
-	void *address;			/* address of the registered object */
+	char name[URT_NAME_LEN + 1];		/* name of object */
+	bool reserved;				/* count could be zero, but name reserved */
+	unsigned int count;			/* usage count */
+	void *address;				/* address of the registered object */
+	size_t size;				/* size of memory, if object is shared memory */
+	void *user_data;			/* additional data to detach/free */
+	void (*release)(struct urt_registered_object *);
+						/* function to call on use count decrement (arg: the registry object) */
 } urt_registered_object;
 
 typedef struct urt_internal
 {
 	urt_registered_object objects[URT_MAX_OBJECTS];
-	unsigned int objects_max_index;	/* maximum index of `objects` that is used */
+	unsigned int objects_max_index;		/* maximum index of `objects` that is used */
 	char next_free_name[URT_NAME_LEN];	/* see implementation of urt_get_free_name */
-	bool names_exhausted;		/* whether free names are exhausted */
-	bool initialized;		/* whether registry is already initialized */
+	bool names_exhausted;			/* whether free names are exhausted */
+	bool initialized;			/* whether registry is already initialized */
 } urt_internal;
 
 extern urt_sem *urt_global_sem;

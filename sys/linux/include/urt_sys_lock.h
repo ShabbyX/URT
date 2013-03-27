@@ -32,15 +32,12 @@ typedef pthread_rwlock_t urt_rwlock;
 #define urt_mutex_new(...) urt_sem_new(1, ##__VA_ARGS__)
 #define urt_mutex_delete(m) urt_sem_delete(m)
 
-#define urt_shmutex_detach(m) urt_shmutex_detach(m)
-#define urt_shmutex_delete(m) urt_shsem_delete(m)
+#define urt_shmutex_detach(m) urt_shsem_detach(m)
 
 #define urt_mutex_lock(...) urt_sem_wait(__VA_ARGS__)
 #define urt_mutex_timed_lock(m, t) urt_sem_timed_wait(m, t)
 #define urt_mutex_try_lock(m) urt_sem_try_lock(m)
 #define urt_mutex_unlock(m) urt_sem_post(m)
-
-#define urt_shrwlock_delete(rwl) urt_shrwlock_detach(rwl)
 
 URT_DECL_END
 

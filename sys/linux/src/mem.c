@@ -122,9 +122,24 @@ void *urt_sys_shmem_attach(const char *name, int *error)
 
 void urt_global_mem_free(const char *name)
 {
-	char n[URT_SYS_NAME_LEN];
+	munmap(urt_global_mem, sizeof(*urt_global_mem));
+	/* Note: it's easier if urt_global_mem is never `shm_unlink`ed */
+}
 
-	if (urt_convert_name(n, name) == URT_SUCCESS)
+#include <urt_log.h>
+
+static void _shmem_detach(struct urt_registered_object *ro)
+{
+	char n[URT_SYS_NAME_LEN];
+	void (*callback)(void *) = ro->user_data;
+
+	if (callback)
+		callback(ro->address);
+
+	/* FIXME: return value of munmap for debug */
+	if (munmap(ro->address, ro->size))
+		urt_err("munmap failed with error: %d\n", errno);
+	if (ro->count == 0 && urt_convert_name(n, ro->name) == URT_SUCCESS)
 		shm_unlink(n);
 }
 
@@ -135,15 +150,12 @@ void urt_shmem_detach(void *mem)
 
 void urt_shmem_detach_with_callback(void *mem, void (*f)(void *))
 {
-	char n[URT_SYS_NAME_LEN];
 	urt_registered_object *ro;
 
 	ro = urt_get_object_by_addr(mem);
 	if (ro == NULL)
 		return;
-	if (f && ro->count == 1)
-		f(mem);
-	if (urt_convert_name(n, ro->name) == URT_SUCCESS)
-		shm_unlink(n);
+	ro->release = _shmem_detach;
+	ro->user_data = f;
 	urt_deregister(ro);
 }

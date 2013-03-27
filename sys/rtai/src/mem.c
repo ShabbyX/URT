@@ -82,7 +82,7 @@ void urt_shmem_detach(void *mem)
 	if (ro == NULL)
 		return;
 
-	urt_shm_free(nam2num(ro->name));
+	rt_shm_free(nam2num(ro->name));
 	urt_deregister(ro);
 }
 URT_EXPORT_SYMBOL(urt_shmem_detach);

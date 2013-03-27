@@ -20,7 +20,7 @@
 #include <urt_mem.h>
 #include "urt_internal.h"
 
-#define SHOBJ_NEW(name, error, type, call)			\
+#define SHOBJ_NEW(name, error, type, sz, call)			\
 do {								\
 	type obj = NULL;					\
 	urt_registered_object *ro = NULL;			\
@@ -31,6 +31,7 @@ do {								\
 	if (obj == NULL)					\
 		goto exit_fail;					\
 	ro->address = obj;					\
+	ro->size = sz;						\
 	urt_inc_name_count(ro);					\
 	return obj;						\
 exit_fail:							\
@@ -62,7 +63,7 @@ exit_fail:							\
 
 void *(urt_shmem_new)(const char *name, size_t size, int *error, ...)
 {
-	SHOBJ_NEW(name, error, void *, urt_sys_shmem_new(name, size, error));
+	SHOBJ_NEW(name, error, void *, size, urt_sys_shmem_new(name, size, error));
 }
 URT_EXPORT_SYMBOL(urt_shmem_new);
 
@@ -74,7 +75,7 @@ URT_EXPORT_SYMBOL(urt_shmem_attach);
 
 urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_sem *, urt_sys_shsem_new(name, init_value, error));
+	SHOBJ_NEW(name, error, urt_sem *, 0, urt_sys_shsem_new(name, init_value, error));
 }
 URT_EXPORT_SYMBOL(urt_shsem_new);
 
@@ -86,7 +87,7 @@ URT_EXPORT_SYMBOL(urt_shsem_attach);
 
 urt_mutex *(urt_shmutex_new)(const char *name, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_mutex *, urt_sys_shmutex_new(name, error));
+	SHOBJ_NEW(name, error, urt_mutex *, 0, urt_sys_shmutex_new(name, error));
 }
 URT_EXPORT_SYMBOL(urt_shmutex_new);
 
@@ -98,7 +99,7 @@ URT_EXPORT_SYMBOL(urt_shmutex_attach);
 
 urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_rwlock *, urt_sys_shrwlock_new(name, error));
+	SHOBJ_NEW(name, error, urt_rwlock *, 0, urt_sys_shrwlock_new(name, error));
 }
 URT_EXPORT_SYMBOL(urt_shrwlock_new);
 

@@ -36,7 +36,7 @@ void urt_sem_delete(urt_sem *sem);
 URT_ATTR_WARN_UNUSED urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, ...);
 URT_ATTR_WARN_UNUSED urt_sem *(urt_shsem_attach)(const char *name, int *error, ...);
 void urt_shsem_detach(urt_sem *sem);
-void urt_shsem_delete(urt_sem *sem);
+static inline void urt_shsem_delete(urt_sem *sem) { urt_shsem_detach(sem); }
 
 /* common semaphore operations */
 int (urt_sem_wait)(urt_sem *sem, bool *stop, ...);
@@ -52,7 +52,7 @@ void urt_sem_post(urt_sem *sem);
 URT_ATTR_WARN_UNUSED urt_mutex *(urt_shmutex_new)(const char *name, int *error, ...);
 URT_ATTR_WARN_UNUSED urt_mutex *(urt_shmutex_attach)(const char *name, int *error, ...);
 /* void urt_shmutex_detach(urt_mutex *mutex); */
-/* void urt_shmutex_delete(urt_mutex *mutex); */
+static inline void urt_shmutex_delete(urt_mutex *mutex) { urt_shmutex_detach(mutex); }
 
 /* common mutex operations */
 /* int (urt_mutex_lock); */
@@ -68,7 +68,7 @@ void urt_rwlock_delete(urt_rwlock *rwl);
 URT_ATTR_WARN_UNUSED urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...);
 URT_ATTR_WARN_UNUSED urt_rwlock *(urt_shrwlock_attach)(const char *name, int *error, ...);
 void urt_shrwlock_detach(urt_rwlock *rwl);
-/* void urt_shrwlock_delete(urt_rwlock *rwl); */
+static inline void urt_shrwlock_delete(urt_rwlock *rwl) { urt_shrwlock_detach(rwl); }
 
 /* common rwlock operations */
 int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...);

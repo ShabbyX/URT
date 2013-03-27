@@ -47,20 +47,21 @@ static void _name_cpy(char *to, const char *from)
 
 void urt_registry_init(void)
 {
-	unsigned int i;
+/*	unsigned int i; */
 
 	if (urt_global_mem->initialized)
 		return;
-	urt_global_mem->initialized = true;
+	*urt_global_mem = (urt_internal){
+		.initialized = true
+	};
 
-	urt_global_mem->objects_max_index = 0;
-	for (i = 0; i < URT_MAX_OBJECTS; ++i)
+/*	for (i = 0; i < URT_MAX_OBJECTS; ++i)
 		urt_global_mem->objects[i] = (urt_registered_object){
 			.name[0] = '\0',
 			.reserved = false,
 			.count = 0,
 			.address = NULL
-		};
+		};*/
 
 	urt_global_mem->next_free_name[0] = '_';
 	urt_global_mem->next_free_name[1] = '_';
@@ -147,6 +148,7 @@ void urt_inc_name_count(urt_registered_object *ro)
 {
 	urt_sem_wait(urt_global_sem);
 	++ro->count;
+	ro->reserved = false;
 	urt_sem_post(urt_global_sem);
 }
 
@@ -156,6 +158,11 @@ static inline void _dec_count_common(urt_registered_object *ro)
 	if (URT_LIKELY(ro->count > 0))
 		--ro->count;
 	ro->reserved = false;
+
+	/* take care of object cleanup */
+	if (ro->release)
+		ro->release(ro);
+
 	/* if removing max_index used, lower max_index used */
 	if (URT_UNLIKELY(index == urt_global_mem->objects_max_index))
 	{
@@ -331,18 +338,18 @@ void urt_print_names(void)
 	urt_out_cont("name");
 	for (i = 0; i < URT_NAME_LEN - URT_NAME_LEN / 2 - 2; ++i)
 		urt_out_cont(" ");
-	urt_out_cont(" |  count  | reserved |  address\n");
+	urt_out_cont(" |  count  | reserved |  address   | size (bytes)\n");
 	urt_out_cont("---------+-");
 	for (i = 0; i < URT_NAME_LEN; ++i)
 		urt_out_cont("-");
-	urt_out_cont("-+---------+----------+------------\n");
+	urt_out_cont("-+---------+----------+------------+--------------\n");
 	for (i = 0; i < URT_MAX_OBJECTS; ++i)
 	{
 		obj = &urt_global_mem->objects[i];
 		if (!obj->reserved && obj->count == 0)
 			continue;
-		urt_out_cont(" %7u | %*s | %7u | %8s | %10p\n", i, URT_NAME_LEN, obj->name, obj->count,
-				obj->reserved?"Yes":"No", obj->address);
+		urt_out_cont(" %7u | %*s | %7u | %8s | %10p | %12zu\n", i, URT_NAME_LEN, obj->name, obj->count,
+				obj->reserved?"Yes":"No", obj->address, obj->size);
 	}
 	urt_out_cont("\nmax index: %u\n", urt_global_mem->objects_max_index);
 	urt_out_cont("next free name: %*s%s\n", URT_NAME_LEN, urt_global_mem->next_free_name,
