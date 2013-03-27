@@ -13,29 +13,48 @@ next index
 
 Functions of this module handle logging.
 
-FUNCTION urt_log: (fmt: const char *, ...: vararg): void
+FUNCTION urt_log: (file: FILE *, fmt: const char *, ...: varargs): void
 	Log message
 
 	This function logs a message, `printf` style.  In debug mode, it would prepend the log with the file name (at most the last 25 characters)
 	and the line number of the log. In release mode, it will simply log the message. All messages, whether in debug or release mode are prefixed
 	with `"URT: "`.
 
-	Based on architecture:
+	If in kernel space, **`file`** is not used.
 
-	- Linux: The log is written to `stderr`
-	- RTAI (kernel space): The log is written using `rt_printk`
-	- RTAI (user space): TODO
-	- Other: TODO
-
+	INPUT file
+		The file where the log would be written.
 	INPUT fmt
 		`printf`-style format string.
 	INPUT ...
 		Parameters of the format.
 
-FUNCTION urt_dbg: (fmt: const char *, ...: vararg): void
+FUNCTION urt_dbg: (file: FILE *, fmt: const char *, ...: varargs): void
 	Log debug message
 
 	This function is the same as `[#urt_log]` in debug mode. In release mode, it does nothing.
+
+	INPUT file
+		See `[#urt_log]`.
+	INPUT fmt
+		See `[#urt_log]`.
+	INPUT ...
+		See `[#urt_log]`.
+
+FUNCTION urt_out: (fmt: const char *, ...: varargs): void
+	Output message to `stdout`
+
+	This function is the same as `[#urt_log]` given `stdout` as its `file` argument.
+
+	INPUT fmt
+		See `[#urt_log]`.
+	INPUT ...
+		See `[#urt_log]`.
+
+FUNCTION urt_err: (fmt: const char *, ...: varargs): void
+	Output message to `stderr`
+
+	This function is the same as `[#urt_log]` given `stderr` as its `file` argument.
 
 	INPUT fmt
 		See `[#urt_log]`.

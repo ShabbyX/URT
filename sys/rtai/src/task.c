@@ -82,7 +82,7 @@ int urt_task_start(urt_task *task)
 	return ret?URT_FAIL:URT_SUCCESS;
 exit_bad_init:
 	if (ret == -EINVAL)
-		urt_dbg("internal error: urt_task_new should have made sure parameters to urt_task_start are correct\n");
+		urt_err("internal error: urt_task_new should have made sure parameters to urt_task_start are correct\n");
 	return ret == -ENOMEM?URT_NO_MEM:URT_FAIL;
 #else
 	task->tid = rt_thread_create((void *)_task_wrapper, task, task->attr.stack_size);

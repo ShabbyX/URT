@@ -26,28 +26,28 @@ int main()
 	int exit_status = 0;
 	urt_sem *sem = NULL;
 
-	urt_log("starting test...\n");
+	urt_out("starting test...\n");
 	ret = urt_init();
 	if (ret)
 	{
-		urt_log("init returned %d\n", ret);
+		urt_out("init returned %d\n", ret);
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
 	sem = urt_shsem_new("TSTSEM", 1);
 	if (sem == NULL)
 	{
-		urt_log("no shared sem\n");
+		urt_out("no shared sem\n");
 		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
-	urt_log("sem allocated\n");
-	urt_log("Sleeping for 10 seconds...\n");
+	urt_out("sem allocated\n");
+	urt_out("Sleeping for 10 seconds...\n");
 	urt_sleep(10000000000ll);
 	urt_shsem_delete(sem);
 exit_no_sem:
 	urt_exit();
-	urt_log("test done\n");
+	urt_out("test done\n");
 exit_no_init:
 	return exit_status;
 }

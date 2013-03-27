@@ -31,7 +31,7 @@ int main()
 	urt_sem *req = NULL;
 	urt_sem *res = NULL;
 
-	urt_log("main: starting test...\n");
+	urt_out("main: starting test...\n");
 
 	for (i = 0; i < 20; ++i)
 		if (fork() == 0)
@@ -43,7 +43,7 @@ int main()
 	ret = urt_init();
 	if (ret)
 	{
-		urt_log("main: init returned %d\n", ret);
+		urt_out("main: init returned %d\n", ret);
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
@@ -51,19 +51,19 @@ int main()
 	res = urt_shsem_new("TSTRES", 0);
 	if (req == NULL || res == NULL)
 	{
-		urt_log("main: no shared sem\n");
+		urt_out("main: no shared sem\n");
 		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
-	urt_log("main: sem allocated\n");
+	urt_out("main: sem allocated\n");
 	mem = urt_shmem_new("TSTMEM", 4 * sizeof(*mem));
 	if (mem == NULL)
 	{
-		urt_log("main: no shared mem\n");
+		urt_out("main: no shared mem\n");
 		exit_status = EXIT_FAILURE;
 		goto exit_no_mem;
 	}
-	urt_log("main: mem allocated\n");
+	urt_out("main: mem allocated\n");
 	mem[0] = mem[1] = mem[2] = mem[3] = 0;
 	for (i = 0; i < 20; ++i)
 		urt_sem_post(req);
@@ -71,7 +71,7 @@ int main()
 		urt_sem_wait(res);
 	if (!(mem[0] == 20 && mem[1] == 40 && mem[2] == 60 && mem[3] == -20))
 	{
-		urt_log("main: bad synchronization (wrong results)");
+		urt_out("main: bad synchronization (wrong results)");
 		exit_status = EXIT_FAILURE;
 	}
 	for (i = 0; i < 20; ++i)
@@ -84,7 +84,7 @@ exit_no_mem:
 		urt_shsem_delete(res);
 exit_no_sem:
 	urt_exit();
-	urt_log("main: test done\n");
+	urt_out("main: test done\n");
 exit_no_init:
 	return exit_status;
 }

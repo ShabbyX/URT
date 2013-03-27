@@ -261,7 +261,7 @@ static int _increment_name(char *name)
 
 	return 0;
 exit_internal:
-	urt_dbg("internal error: next_free_name contains invalid character '%c' (%d)\n", digit, digit);
+	urt_err("internal error: next_free_name contains invalid character '%c' (%d)\n", digit, digit);
 	name[0] = '_';
 	name[1] = '_';
 	name[2] = '_';

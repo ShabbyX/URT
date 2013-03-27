@@ -26,29 +26,29 @@ int main()
 	int ret;
 	urt_sem *sem = NULL;
 
-	urt_log("wait: spawned\n");
+	urt_out("wait: spawned\n");
 
 	ret = urt_init();	/* tests race condition for urt_init */
 	urt_sleep(100000000);		/* wait for main to create semaphore */
 	if (ret)
 	{
-		urt_log("wait: init returned %d\n", ret);
+		urt_out("wait: init returned %d\n", ret);
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
 	sem = urt_shsem_attach("TSTSEM");
 	if (sem == NULL)
 	{
-		urt_log("wait: no shared sem\n");
+		urt_out("wait: no shared sem\n");
 		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
-	urt_log("wait: sem attached\n");
+	urt_out("wait: sem attached\n");
 	urt_sem_wait(sem);
 	urt_shsem_detach(sem);
 exit_no_sem:
 	urt_exit();
-	urt_log("wait: test done\n");
+	urt_out("wait: test done\n");
 exit_no_init:
 	return exit_status;
 }

@@ -29,7 +29,7 @@ int main()
 	int i;
 	urt_rwlock *rwl = NULL;
 
-	urt_log("main: starting test...\n");
+	urt_out("main: starting test...\n");
 
 	for (i = 0; i < 4; ++i)
 		if (fork() == 0)
@@ -41,33 +41,33 @@ int main()
 	ret = urt_init();
 	if (ret)
 	{
-		urt_log("main: init returned %d\n", ret);
+		urt_out("main: init returned %d\n", ret);
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
 	rwl = urt_shrwlock_new("TSTRWL");
 	if (rwl == NULL)
 	{
-		urt_log("main: no shared rwl\n");
+		urt_out("main: no shared rwl\n");
 		exit_status = EXIT_FAILURE;
 		goto exit_no_rwl;
 	}
-	urt_log("main: rwl allocated\n");
+	urt_out("main: rwl allocated\n");
 	urt_rwlock_write_lock(rwl);
-	urt_log("main: waiting for 3 seconds\n");
+	urt_out("main: waiting for 3 seconds\n");
 	urt_sleep(3000000000ll);
-	urt_log("main: write unlock\n");
+	urt_out("main: write unlock\n");
 	urt_rwlock_write_unlock(rwl);
 	urt_sleep(1000000000ll);
-	urt_log("main: waiting for write lock\n");
+	urt_out("main: waiting for write lock\n");
 	ret = urt_rwlock_write_lock(rwl);
-	urt_log("main: write lock returned: %d\n", ret);
+	urt_out("main: write lock returned: %d\n", ret);
 	urt_shrwlock_delete(rwl);
 	for (i = 0; i < 4; ++i)
 		wait(NULL);
 exit_no_rwl:
 	urt_exit();
-	urt_log("main: test done\n");
+	urt_out("main: test done\n");
 exit_no_init:
 	return exit_status;
 }

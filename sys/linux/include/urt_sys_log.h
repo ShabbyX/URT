@@ -22,10 +22,10 @@
 
 #include <stdio.h>
 
-#define urt_log(...)									\
+#define urt_log(f, ...)									\
 	do {										\
-		fprintf(stderr, URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX_PARAMS);		\
-		fprintf(stderr, __VA_ARGS__);						\
+		fprintf(f, URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX_PARAMS);		\
+		fprintf(f, __VA_ARGS__);						\
 	} while (0)
 
 #endif

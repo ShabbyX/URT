@@ -46,11 +46,11 @@ int main()
 	int tasks_made = 0;
 	urt_task *tasks[10];
 
-	urt_log("starting test...\n");
+	urt_out("starting test...\n");
 	ret = urt_init();
 	if (ret)
 	{
-		urt_log("init returned %d\n", ret);
+		urt_out("init returned %d\n", ret);
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
@@ -58,25 +58,25 @@ int main()
 	done_sem = urt_sem_new(0);
 	if (sync_mutex == NULL || done_sem == NULL)
 	{
-		urt_log("no sem/mutex\n");
+		urt_out("no sem/mutex\n");
 		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
-	urt_log("sem allocated\n");
+	urt_out("sem allocated\n");
 
 	for (i = 0; i < 10; ++i)
 	{
 		tasks[i] = urt_task_new(task);
 		if (tasks[i] == NULL)
 		{
-			urt_log("failed to create tasks\n");
+			urt_out("failed to create tasks\n");
 			exit_status = EXIT_FAILURE;
 			goto exit_no_task;
 		}
 	}
 	for (i = 0; i < 10; ++i)
 		if (urt_task_start(tasks[i]))
-			urt_log("failed to start task %d\n", i);
+			urt_out("failed to start task %d\n", i);
 		else
 			++tasks_made;
 
@@ -84,9 +84,9 @@ int main()
 		urt_sem_wait(done_sem);
 
 	if (num != 10 * 20)
-		urt_log("Wrong synchronization. Num is %d instead of 200\n", num);
+		urt_out("Wrong synchronization. Num is %d instead of 200\n", num);
 	else
-		urt_log("Successful synchronization\n");
+		urt_out("Successful synchronization\n");
 exit_no_task:
 	for (i = 0; i < 10; ++i)
 		urt_task_delete(tasks[i]);
@@ -94,7 +94,7 @@ exit_no_sem:
 	urt_mutex_delete(sync_mutex);
 	urt_sem_delete(done_sem);
 	urt_exit();
-	urt_log("test done\n");
+	urt_out("test done\n");
 exit_no_init:
 	return exit_status;
 }

@@ -31,7 +31,7 @@ static void periodic(urt_task *task, void *data)
 
 	for (i = 0; i < 20; ++i)
 	{
-		urt_log("Periodic: %llu: Time to next period: %llu (exec time: %llu)\n", urt_get_time() - start_time,
+		urt_out("Periodic: %llu: Time to next period: %llu (exec time: %llu)\n", urt_get_time() - start_time,
 				urt_task_period_time_left(task), urt_get_exec_time());
 		urt_task_wait_period(task);
 		urt_sem_post(sem);
@@ -48,7 +48,7 @@ static void normal(urt_task *task, void *data)
 	{
 		urt_sem_wait(sync_sem);
 		urt_sleep(1000000);
-		urt_log("Normal: Signaled by periodic task\n");
+		urt_out("Normal: Signaled by periodic task\n");
 	}
 
 	urt_sem_post(done_sem);
@@ -61,11 +61,11 @@ int main()
 	urt_task *tp, *tn;
 	urt_task_attr attr;
 
-	urt_log("starting test...\n");
+	urt_out("starting test...\n");
 	ret = urt_init();
 	if (ret)
 	{
-		urt_log("init returned %d\n", ret);
+		urt_out("init returned %d\n", ret);
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
@@ -73,11 +73,11 @@ int main()
 	done_sem = urt_sem_new(0);
 	if (sync_sem == NULL || done_sem == NULL)
 	{
-		urt_log("no sem\n");
+		urt_out("no sem\n");
 		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
-	urt_log("sem allocated\n");
+	urt_out("sem allocated\n");
 
 	tn = urt_task_new(normal);
 	attr = (urt_task_attr){
@@ -87,9 +87,9 @@ int main()
 	tp = urt_task_new(periodic, sync_sem, &attr, &ret);
 	if (tn == NULL || tp == NULL)
 	{
-		urt_log("failed to create tasks\n");
+		urt_out("failed to create tasks\n");
 		if (tp == NULL)
-			urt_log("periodic task creation returned %d\n", ret);
+			urt_out("periodic task creation returned %d\n", ret);
 		exit_status = EXIT_FAILURE;
 		goto exit_no_task;
 	}
@@ -106,7 +106,7 @@ exit_no_sem:
 	urt_sem_delete(sync_sem);
 	urt_sem_delete(done_sem);
 	urt_exit();
-	urt_log("test done\n");
+	urt_out("test done\n");
 exit_no_init:
 	return exit_status;
 }

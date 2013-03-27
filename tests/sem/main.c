@@ -29,7 +29,7 @@ int main()
 	int i;
 	urt_sem *sem = NULL;
 
-	urt_log("main: starting test...\n");
+	urt_out("main: starting test...\n");
 
 	for (i = 0; i < 20; ++i)
 		if (fork() == 0)
@@ -41,19 +41,19 @@ int main()
 	ret = urt_init();
 	if (ret)
 	{
-		urt_log("main: init returned %d\n", ret);
+		urt_out("main: init returned %d\n", ret);
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
 	sem = urt_shsem_new("TSTSEM", 5);
 	if (sem == NULL)
 	{
-		urt_log("main: no shared sem\n");
+		urt_out("main: no shared sem\n");
 		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
-	urt_log("main: sem allocated\n");
-	urt_log("main: waiting for 3 seconds\n");
+	urt_out("main: sem allocated\n");
+	urt_out("main: waiting for 3 seconds\n");
 	urt_sleep(3000000000ll);
 	for (i = 0; i < 15; ++i)
 		urt_sem_post(sem);
@@ -62,7 +62,7 @@ int main()
 	urt_shsem_delete(sem);
 exit_no_sem:
 	urt_exit();
-	urt_log("main: test done\n");
+	urt_out("main: test done\n");
 exit_no_init:
 	return exit_status;
 }

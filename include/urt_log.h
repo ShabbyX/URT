@@ -29,11 +29,19 @@
 #ifndef NDEBUG
 # define URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX"%s:%u: "
 # define URT_LOG_PREFIX_PARAMS , __FILE__ + (sizeof(__FILE__) < 25?0:sizeof(__FILE__) - 25), __LINE__
-# define urt_dbg(...) urt_log(__VA_ARGS__)
+# define urt_dbg(f, ...) urt_log(f, __VA_ARGS__)
 #else
 # define URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX
 # define URT_LOG_PREFIX_PARAMS
-# define urt_dbg(...) ((void)0)
+# define urt_dbg(f, ...) ((void)0)
+#endif
+
+#ifdef __KERNEL__
+# define urt_out(...) urt_log(NULL, __VA_ARGS__)
+# define urt_err(...) urt_log(NULL, __VA_ARGS__)
+#else
+# define urt_out(...) urt_log(stdout, __VA_ARGS__)
+# define urt_err(...) urt_log(stderr, __VA_ARGS__)
 #endif
 
 #include <urt_sys_log.h>

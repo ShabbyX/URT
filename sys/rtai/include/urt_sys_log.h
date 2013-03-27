@@ -22,10 +22,18 @@
 
 #include <rtai_lxrt.h>
 
-#define urt_log(...)									\
+#ifdef __KERNEL__
+# define urt_log(f, ...)								\
 	do {										\
 		rt_printk(URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX_PARAMS);			\
 		rt_printk(__VA_ARGS__);							\
 	} while (0)
+#else
+# define urt_log(f, ...)								\
+	do {										\
+		fprintf(f, URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX_PARAMS);		\
+		fprintf(f, __VA_ARGS__);						\
+	} while (0)
+#endif
 
 #endif
