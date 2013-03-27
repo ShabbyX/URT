@@ -17,26 +17,22 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_SETUP_H
-#define URT_SETUP_H
+#include <urt.h>
 
-#include "urt_compiler.h"
-#include "urt_consts.h"
+int main()
+{
+	int ret;
+	int exit_status = 0;
 
-URT_DECL_BEGIN
-
-int URT_ATTR_WARN_UNUSED urt_init(void);
-void urt_exit(void);
-void urt_recover(void);
-
-/*
- * helper functions for tools
- *
- * These functions output information regarding internal states of URT.
- * `urt_init` and `urt_exit` need to be called by the tool itself.
- */
-void urt_print_names(void);
-
-URT_DECL_END
-
-#endif
+	ret = urt_init();
+	if (ret)
+	{
+		urt_out("unable to initialize URT: %d\n", ret);
+		exit_status = EXIT_FAILURE;
+		goto exit_no_init;
+	}
+	urt_print_names();
+	urt_exit();
+exit_no_init:
+	return exit_status;
+}

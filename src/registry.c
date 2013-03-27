@@ -317,3 +317,36 @@ exit_fail:
 	return URT_FAIL;
 }
 URT_EXPORT_SYMBOL(urt_get_free_name);
+
+void urt_print_names(void)
+{
+	unsigned int i;
+	urt_registered_object *obj = NULL;
+
+	urt_sem_wait(urt_global_sem);
+
+	urt_out_cont("  index  | ");
+	for (i = 0; i < URT_NAME_LEN / 2 - 2; ++i)
+		urt_out_cont(" ");
+	urt_out_cont("name");
+	for (i = 0; i < URT_NAME_LEN - URT_NAME_LEN / 2 - 2; ++i)
+		urt_out_cont(" ");
+	urt_out_cont(" |  count  | reserved |  address\n");
+	urt_out_cont("---------+-");
+	for (i = 0; i < URT_NAME_LEN; ++i)
+		urt_out_cont("-");
+	urt_out_cont("-+---------+----------+------------\n");
+	for (i = 0; i < URT_MAX_OBJECTS; ++i)
+	{
+		obj = &urt_global_mem->objects[i];
+		if (!obj->reserved && obj->count == 0)
+			continue;
+		urt_out_cont(" %7u | %*s | %7u | %8s | %10p\n", i, URT_NAME_LEN, obj->name, obj->count,
+				obj->reserved?"Yes":"No", obj->address);
+	}
+	urt_out_cont("\nmax index: %u\n", urt_global_mem->objects_max_index);
+	urt_out_cont("next free name: %*s%s\n", URT_NAME_LEN, urt_global_mem->next_free_name,
+			urt_global_mem->names_exhausted?" (cycled)":"");
+
+	urt_sem_post(urt_global_sem);
+}

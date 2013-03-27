@@ -23,17 +23,9 @@
 #include <rtai_lxrt.h>
 
 #ifdef __KERNEL__
-# define urt_log(f, ...)								\
-	do {										\
-		rt_printk(URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX_PARAMS);			\
-		rt_printk(__VA_ARGS__);							\
-	} while (0)
+# define urt_log(f, ...) rt_printk(__VA_ARGS__)
 #else
-# define urt_log(f, ...)								\
-	do {										\
-		fprintf(f, URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX_PARAMS);		\
-		fprintf(f, __VA_ARGS__);						\
-	} while (0)
+# define urt_log_cont(f, ...) fprintf(f, __VA_ARGS__)
 #endif
 
 #endif

@@ -6,10 +6,10 @@
 # install: installs the software
 # uninstall: uninstalls the software
 
-VPATH = include src
+VPATH := include:src
 
-.PHONY: all config library doc tests
-all: config library tests doc
+.PHONY: all config library tools tests doc
+all: config library tools tests doc
 
 GENERATED_FILES := urt_config.h urt_internal_config.h urt_version.h
 
@@ -18,12 +18,15 @@ $(GENERATED_FILES): Makefile.config
 	@$(MAKE) --no-print-directory -f Makefile.generate all
 	@$(RM) build/Makefile.dep tests/*/Makefile.dep
 	@$(MAKE) --no-print-directory -C build dep
+	@$(MAKE) --no-print-directory -C tools dep
 	@$(MAKE) --no-print-directory -C tests dep
 
 library: $(GENERATED_FILES)
 	@$(MAKE) --no-print-directory -C build
 doc:
 	@$(MAKE) --no-print-directory -C doc
+tools: $(GENERATED_FILES)
+	@$(MAKE) --no-print-directory -C tools
 tests:
 	@$(MAKE) --no-print-directory -C tests
 

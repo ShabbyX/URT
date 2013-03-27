@@ -22,10 +22,6 @@
 
 #include <stdio.h>
 
-#define urt_log(f, ...)									\
-	do {										\
-		fprintf(f, URT_LOG_PREFIX_FORMAT URT_LOG_PREFIX_PARAMS);		\
-		fprintf(f, __VA_ARGS__);						\
-	} while (0)
+#define urt_log_cont(f, ...) fprintf(f, __VA_ARGS__)
 
 #endif
