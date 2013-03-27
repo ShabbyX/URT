@@ -60,3 +60,49 @@ FUNCTION urt_err: (fmt: const char *, ...: varargs): void
 		See `[#urt_log]`.
 	INPUT ...
 		See `[#urt_log]`.
+
+FUNCTION urt_log_cont: (file: FILE *, fmt: const char *, ...: varargs): void
+	Log message witout prefix
+
+	This function is the same as `[#urt_log]`, except it doesn't prepend any prefixes. It is useful for continuing a log that didn't end in a new-line.
+
+	If in kernel space, **`file`** is not used.
+
+	INPUT file
+		See `[#urt_log]`.
+	INPUT fmt
+		See `[#urt_log]`.
+	INPUT ...
+		See `[#urt_log]`.
+
+FUNCTION urt_dbg_cont: (file: FILE *, fmt: const char *, ...: varargs): void
+	Log debug message witout prefix
+
+	This function is the same as `[#urt_log_cont]` in debug mode. In release mode, it does nothing.
+
+	INPUT file
+		See `[#urt_log_cont]`.
+	INPUT fmt
+		See `[#urt_log_cont]`.
+	INPUT ...
+		See `[#urt_log_cont]`.
+
+FUNCTION urt_out_cont: (fmt: const char *, ...: varargs): void
+	Output message to `stdout` without prefix
+
+	This function is the same as `[#urt_log_cont]` given `stdout` as its `file` argument.
+
+	INPUT fmt
+		See `[#urt_log_cont]`.
+	INPUT ...
+		See `[#urt_log_cont]`.
+
+FUNCTION urt_err_cont: (fmt: const char *, ...: varargs): void
+	Output message to `stderr` without prefix
+
+	This function is the same as `[#urt_log_cont]` given `stderr` as its `file` argument.
+
+	INPUT fmt
+		See `[#urt_log_cont]`.
+	INPUT ...
+		See `[#urt_log_cont]`.
