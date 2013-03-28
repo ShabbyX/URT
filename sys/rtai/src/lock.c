@@ -36,7 +36,7 @@ urt_sem *_sem_new_common(unsigned int init_value, int type, int *error)
 	rt_typed_sem_init(sem, init_value, type);
 	return sem;
 #else
-	urt_sem *sem = rt_typed_sem_init(NULL, init_value, type);
+	urt_sem *sem = rt_typed_sem_init(0, init_value, type);
 	if (sem)
 		return sem;
 	if (error)
@@ -53,7 +53,7 @@ URT_EXPORT_SYMBOL(urt_sem_new);
 
 void urt_sem_delete(urt_sem *sem)
 {
-	if (URT_LIKELY(sem != NULL)
+	if (URT_LIKELY(sem != NULL))
 		rt_sem_delete(sem);
 #ifdef __KERNEL__
 	urt_mem_delete(sem);
@@ -61,7 +61,7 @@ void urt_sem_delete(urt_sem *sem)
 }
 URT_EXPORT_SYMBOL(urt_sem_delete);
 
-static _shsem_common(const char *name, unsigned int init_value, int type, int *error)
+static urt_sem *_shsem_common(const char *name, unsigned int init_value, int type, int *error)
 {
 	urt_sem *sem = rt_typed_named_sem_init(name, init_value, type);
 	if (sem)
@@ -123,14 +123,14 @@ URT_EXPORT_SYMBOL(urt_sem_wait);
 
 int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 {
-	res = rt_sem_wait_timed(sem, nano2count(max_wait));
+	int res = rt_sem_wait_timed(sem, nano2count(max_wait));
 	return res == RTE_TIMOUT?URT_NOT_LOCKED:res > RTE_BASE?URT_FAIL:URT_SUCCESS;
 }
 URT_EXPORT_SYMBOL(urt_sem_timed_wait);
 
 int urt_sem_try_wait(urt_sem *sem)
 {
-	res = rt_sem_wait_if(sem, nano2count(max_wait));
+	int res = rt_sem_wait_if(sem);
 	return res == 0?URT_NOT_LOCKED:res > RTE_BASE?URT_FAIL:URT_SUCCESS;
 }
 URT_EXPORT_SYMBOL(urt_sem_try_wait);
@@ -167,7 +167,7 @@ urt_rwlock *(urt_rwlock_new)(int *error, ...)
 	rt_rwl_init(rwl);
 	return rwl;
 #else
-	urt_rwl *rwl = rt_rwl_init(NULL);
+	urt_rwlock *rwl = rt_rwl_init(0);
 	if (rwl)
 		return rwl;
 	if (error)
@@ -179,7 +179,7 @@ URT_EXPORT_SYMBOL(urt_rwlock_new);
 
 void urt_rwlock_delete(urt_rwlock *rwl)
 {
-	if (URT_LIKELY(rwl != NULL)
+	if (URT_LIKELY(rwl != NULL))
 		rt_rwl_delete(rwl);
 #ifdef __KERNEL__
 	urt_mem_delete(rwl);

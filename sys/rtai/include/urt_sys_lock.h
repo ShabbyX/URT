@@ -29,12 +29,9 @@ typedef SEM urt_sem;
 typedef SEM urt_mutex;
 typedef RWL urt_rwlock;
 
-#define urt_shsem_delete(sem) urt_shsem_detach(sem);
-
 URT_ATTR_WARN_UNUSED urt_mutex *(urt_mutex_new)(int *error, ...);
-#define urt_mutex_delete(m) urt_sem_delete(m)
 
-#define urt_shmutex_detach(m) urt_shmutex_detach(m)
+#define urt_shmutex_detach(m) urt_shsem_detach(m)
 
 #define urt_mutex_lock(...) urt_sem_wait(__VA_ARGS__)
 #define urt_mutex_timed_lock(m, t) urt_sem_timed_wait(m, t)

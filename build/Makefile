@@ -30,6 +30,7 @@ modules:
 	@$(MAKE) --no-print-directory -C kernel $(HIGHLIGHT)
 
 include Makefile.build
+include Makefile.src
 dep: Makefile.dep
 	@$(SHELL_NOOP)
 Makefile.dep: $(LIB_SRC) $(LIB_HDR)

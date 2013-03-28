@@ -18,6 +18,7 @@
  */
 
 #include <urt_setup.h>
+#include <rtai_lxrt.h>
 
 int urt_sys_init(void)
 {
@@ -30,4 +31,5 @@ int urt_sys_init(void)
 		start_rt_timer(nano2count(100000));
 	}
 	mlockall(MCL_CURRENT | MCL_FUTURE);
+	return 0;
 }

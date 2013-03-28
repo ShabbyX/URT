@@ -1,5 +1,8 @@
-include $(M)/../Makefile.build
-include $(M)/../Makefile.dep
+BASE := $(abspath $(M)/../..)
+include $(BASE)/Makefile.config
+include $(BASE)/Makefile.common
+include $(BASE)/build/Makefile.src
+include $(BASE)/build/Makefile.dep
 
 obj-m += urt.o
 urt-y := $(LIB_SRC)

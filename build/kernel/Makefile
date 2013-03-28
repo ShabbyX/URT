@@ -3,8 +3,15 @@ ifneq ($(KERNELRELEASE),)
   include Kbuild
 else
 
-include ../../Makefile.config
-include ../../Makefile.common
+ifdef M
+  BASE := $(abspath $(M)/../..)
+else
+  BASE := $(abspath $(CURDIR)/../..)
+endif
+
+include $(BASE)/Makefile.config
+include $(BASE)/Makefile.common
+include $(BASE)/build/Makefile.build
 
 .PHONY: all clean
 all:

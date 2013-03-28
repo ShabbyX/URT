@@ -18,6 +18,7 @@
  */
 
 #include <urt_utils.h>
+#include <urt_internal.h>
 
 #define MADE_RT_CONTEXT 0x01
 

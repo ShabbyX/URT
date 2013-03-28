@@ -9,10 +9,3 @@ LDFLAGS += $(URT_LDFLAGS) $(EXTRA_LDFLAGS)
 SHARED_LDFLAGS += $(URT_SHARED_LDFLAGS) $(EXTRA_LDFLAGS)
 
 KBUILD_EXTRA_SYMBOLS += $(URT_KERNEL_SYMBOLS)
-
-VPATH := $(BASE)/src:$(SYS)/src:$(BASE)/include:$(SYS)/include
-include $(BASE)/src/Makefile.src
-include $(BASE)/include/Makefile.src
-include $(SYS)/src/Makefile.src
-include $(SYS)/include/Makefile.src
-LIB_OBJ := $(LIB_SRC:.c=.o)

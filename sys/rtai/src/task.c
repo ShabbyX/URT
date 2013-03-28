@@ -19,6 +19,8 @@
 
 #include <urt_internal.h>
 #include <urt_task.h>
+#include <urt_mem.h>
+#include <urt_utils.h>
 
 void urt_task_delete(urt_task *task)
 {
@@ -50,10 +52,10 @@ static void *_task_wrapper(void *t)
 		if (urt_get_free_name(name) != URT_SUCCESS)
 			return NULL;
 		if ((task->rt_task = rt_task_init_schmod(nam2num(name), task->attr.priority,
-				task->attr->stack_size, 0, SCHED_FIFO, 0xff)) == NULL)
+				task->attr.stack_size, 0, SCHED_FIFO, 0xff)) == NULL)
 			return NULL;
 	}
-	rt_task_make_hard_real_time();
+	rt_make_hard_real_time();
 #endif
 
 	task->func(task, task->data);
@@ -68,9 +70,8 @@ static void *_task_wrapper(void *t)
 
 int urt_task_start(urt_task *task)
 {
-	int ret;
 #ifdef __KERNEL__
-	ret = rt_task_init(&task->rt_task, _task_wrapper, task, task->attr.stack_size, task->attr.priority, task->attr.uses_fpu, NULL);
+	int ret = rt_task_init(&task->rt_task, _task_wrapper, task, task->attr.stack_size, task->attr.priority, task->attr.uses_fpu, NULL);
 	if (ret)
 		goto exit_bad_init;
 
@@ -96,3 +97,21 @@ void urt_task_wait_period(urt_task *task)
 	rt_task_wait_period();
 }
 URT_EXPORT_SYMBOL(urt_task_wait_period);
+
+#ifndef __KERNEL__
+urt_time urt_task_next_period(urt_task *task)
+{
+	urt_time cur;
+	urt_task_attr *attr = &task->attr;
+
+	/* make sure task is periodic */
+	if (URT_UNLIKELY(attr->period <= 0))
+		return 0;
+
+	cur = urt_get_time();
+	if (cur > attr->start_time)
+		attr->start_time += (cur - attr->start_time + attr->period - 1) / attr->period * attr->period;
+
+	return attr->start_time;
+}
+#endif

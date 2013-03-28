@@ -8,7 +8,7 @@ ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
   URT_SYS_DEF := \#define URT_SYS_LINUX\n
 else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
-  URT_SYS_DEF := \#ifdef __KERNEL__\n\#define URT_SYS_RTAI_KERNEL\n\#else\n\#define URT_SYS_RTAI_USER\n\#endif\n
+  URT_SYS_DEF := \#ifdef __KERNEL__\n\# define URT_SYS_RTAI_KERNEL\n\#else\n\# define URT_SYS_RTAI_USER\n\#endif\n
 else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-kernel-only)
   URT_SYS_DEF := \#define URT_SYS_RTAI_KERNEL\n

@@ -24,9 +24,9 @@
 void *(urt_mem_new)(size_t size, int *error, ...)
 {
 #ifdef __KERNEL__
-	void *mem = malloc(size);
-#else
 	void *mem = vmalloc(size);
+#else
+	void *mem = malloc(size);
 #endif
 	if (URT_UNLIKELY(mem == NULL))
 		if (error)

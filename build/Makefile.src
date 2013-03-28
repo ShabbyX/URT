@@ -1,0 +1,8 @@
+SYS := $(BASE)/sys/$(URT_SYS_DIR)
+
+VPATH := $(BASE)/src:$(SYS)/src:$(BASE)/include:$(SYS)/include
+
+include $(BASE)/src/Makefile.src
+include $(BASE)/include/Makefile.src
+include $(SYS)/src/Makefile.src
+include $(SYS)/include/Makefile.src
