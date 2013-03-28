@@ -20,3 +20,5 @@ ifeq ($(URT_MAKE_KERNEL), y)
 else
 	@$(SHELL_NOOP)
 endif
+
+endif
