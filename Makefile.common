@@ -45,9 +45,9 @@ ifndef IGNORE_BUILD_OPTIONS
     URT_MAKE_KERNEL = y
     URT_SYS_DIR = rtai
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
-    URT_CFLAGS += $(shell $(URT_CONFIG_RTAI_CONFIG_TOOL) --lxrt-cflags)
-    URT_LDFLAGS +=  $(shell $(URT_CONFIG_RTAI_CONFIG_TOOL) --lxrt-ldflags)
-    URT_CFLAGS_KERNEL += $(shell $(URT_CONFIG_RTAI_CONFIG_TOOL) --module-cflags)
+    URT_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-cflags)
+    URT_LDFLAGS +=  $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-ldflags)
+    URT_CFLAGS_KERNEL += $(shell $(URT_CONFIG_RTAI_TOOL) --module-cflags)
     URT_KERNEL_SYMBOLS += $(RTAI_HOME)/modules/Module.symvers
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-kernel-only)
@@ -55,14 +55,14 @@ ifndef IGNORE_BUILD_OPTIONS
     URT_MAKE_KERNEL = y
     URT_SYS_DIR = rtai
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
-    URT_CFLAGS_KERNEL += $(shell $(URT_CONFIG_RTAI_CONFIG_TOOL) --module-cflags)
+    URT_CFLAGS_KERNEL += $(shell $(URT_CONFIG_RTAI_TOOL) --module-cflags)
     URT_KERNEL_SYMBOLS += $(RTAI_HOME)/modules/Module.symvers
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-user-only)
     URT_SYS_DIR = rtai
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
-    URT_CFLAGS += $(shell $(URT_CONFIG_RTAI_CONFIG_TOOL) --lxrt-cflags)
-    URT_LDFLAGS +=  $(shell $(URT_CONFIG_RTAI_CONFIG_TOOL) --lxrt-ldflags)
+    URT_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-cflags)
+    URT_LDFLAGS +=  $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-ldflags)
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
     URT_SYS_DIR = qnx
