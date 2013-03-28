@@ -1,0 +1,5 @@
+include $(M)/../Makefile.build
+include $(M)/../Makefile.dep
+
+obj-m += urt.o
+urt-y := $(LIB_SRC)

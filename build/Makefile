@@ -5,6 +5,12 @@ BASE := $(abspath $(CURDIR)/..)
 INC_BUILD := ./increase_build
 BUILD_FILE := build.txt
 
+ifeq ($(URT_MAKE_USER), y)
+  INC_BUILD_TARGET := static/liburt.a
+else
+  INC_BUILD_TARGET := kernel/urt.ko
+endif
+
 ifeq ($(URT_CONFIG_DEVELOPER_MODE), y)
   INC_BUILD_DEP := $(INC_BUILD) $(BUILD_FILE)
 endif
@@ -18,10 +24,10 @@ clean:
 	@$(MAKE) --no-print-directory -C kernel clean
 	-$(RM) Makefile.dep
 modules:
-# TODO: proper ifeq for different builds and messages
 	@$(PRINTF) "$(STATUS_COLOR)Building URT API...$(DEFAULT_COLOR)\n"
 	@$(MAKE) --no-print-directory -C static $(HIGHLIGHT)
 	@$(MAKE) --no-print-directory -C shared $(HIGHLIGHT)
+	@$(MAKE) --no-print-directory -C kernel $(HIGHLIGHT)
 
 include Makefile.build
 dep: Makefile.dep
@@ -29,8 +35,7 @@ dep: Makefile.dep
 Makefile.dep: $(LIB_SRC) $(LIB_HDR)
 	$(CC) $(CFLAGS) $(CC_M) $(filter-out %.h,$^) > Makefile.dep
 
-# TODO: target that build_file depends on would be based on what is being built
-$(BUILD_FILE): static/liburt.a
+$(BUILD_FILE): $(INC_BUILD_TARGET)
 	$(INC_BUILD) $@
 # TODO: -lrt is probably platform dependent
 $(INC_BUILD): increase_build.c

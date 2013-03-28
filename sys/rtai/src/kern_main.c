@@ -17,23 +17,28 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_SYS_MEM_H
-#define URT_SYS_MEM_H
-
 #ifdef __KERNEL__
-# include <linux/vmalloc.h>
-#else
-# include <stdlib.h>
-#endif
 
-URT_DECL_BEGIN
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <urt.h>
 
-#ifdef __KERNEL__
-# define urt_mem_delete(mem) vfree(mem)
-#else
-# define urt_mem_delete(mem) free(mem)
-#endif
+static int __init _urt_rtai_init(void)
+{
+	int ret = urt_init();
+	if (ret == URT_SUCCESS || ret == URT_ALREADY)
+		return 0;
+	urt_err("Could not initialize URT\n");
+	urt_exit();
+	return -ENOMEM;
+}
 
-URT_DECL_END
+static void __exit _urt_rtai_exit(void)
+{
+	urt_exit();
+}
+
+module_init(_urt_rtai_init);
+module_exit(_urt_rtai_exit);
 
 #endif
