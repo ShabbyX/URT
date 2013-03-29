@@ -26,7 +26,7 @@
 # include <stdbool.h>
 # include <stdint.h>
 #elif defined(URT_SYS_RTAI_KERNEL)
-# include <kernel.h>
+# include <linux/kernel.h>
 #endif
 
 #endif

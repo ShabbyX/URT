@@ -5,4 +5,4 @@ include $(BASE)/build/Makefile.src
 include $(BASE)/build/Makefile.dep
 
 obj-m += urt.o
-urt-y := $(LIB_SRC)
+urt-y := $(LIB_OBJ)

@@ -17,7 +17,6 @@ BASE := $(abspath $(CURDIR)/../..)
 include ../Makefile.build
 include ../Makefile.src
 include ../Makefile.dep
-LIB_OBJ := $(LIB_SRC:.c=.o)
 
 $(TARGET): $(LIB_OBJ)
 	-$(RM) liburt*.so

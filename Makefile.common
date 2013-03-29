@@ -125,3 +125,4 @@ endif
 
 RM := rm -f
 MKDIR := mkdir
+CP := \cp -f

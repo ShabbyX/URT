@@ -6,3 +6,5 @@ include $(BASE)/src/Makefile.src
 include $(BASE)/include/Makefile.src
 include $(SYS)/src/Makefile.src
 include $(SYS)/include/Makefile.src
+
+LIB_OBJ := $(LIB_SRC:.c=.o)
