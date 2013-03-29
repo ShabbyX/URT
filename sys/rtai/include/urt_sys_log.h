@@ -20,10 +20,13 @@
 #ifndef URT_SYS_LOG_H
 #define URT_SYS_LOG_H
 
+#ifdef __KERNEL__
+# include <linux/kernel.h>
+#endif
 #include <rtai_lxrt.h>
 
 #ifdef __KERNEL__
-# define urt_log(f, ...) rt_printk(__VA_ARGS__)
+# define urt_log_cont(f, ...) rt_printk(__VA_ARGS__)
 #else
 # define urt_log_cont(f, ...) fprintf(f, __VA_ARGS__)
 #endif

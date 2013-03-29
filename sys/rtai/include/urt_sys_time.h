@@ -20,6 +20,9 @@
 #ifndef URT_SYS_TIME_H
 #define URT_SYS_TIME_H
 
+#ifdef __KERNEL__
+# include <linux/kernel.h>
+#endif
 #include <rtai_lxrt.h>
 
 URT_DECL_BEGIN

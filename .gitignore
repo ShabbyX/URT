@@ -1,8 +1,9 @@
 # Config files
 Makefile.config
 
-# Object files
+# Intermediate files
 *.o
+*.o.cmd
 
 # Libraries
 *.a

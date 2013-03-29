@@ -20,6 +20,9 @@
 #ifndef URT_SYS_LOCK_H
 #define URT_SYS_LOCK_H
 
+#ifdef __KERNEL__
+# include <linux/kernel.h>
+#endif
 #include <rtai_sem.h>
 #include <rtai_rwl.h>
 

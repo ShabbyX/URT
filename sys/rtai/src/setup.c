@@ -30,6 +30,8 @@ int urt_sys_init(void)
 		rt_set_oneshot_mode();
 		start_rt_timer(nano2count(100000));
 	}
+#ifndef __KERNEL__
 	mlockall(MCL_CURRENT | MCL_FUTURE);
+#endif
 	return 0;
 }

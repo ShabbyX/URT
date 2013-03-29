@@ -1,11 +1,7 @@
 include ../../Makefile.config
 include ../../Makefile.common
 
-ifeq ($(URT_MAKE_USER), y)
-  TARGET := liburt.a
-else
-  TARGET :=
-endif
+TARGET := liburt.a
 
 .PHONY: all clean
 all: $(TARGET)
