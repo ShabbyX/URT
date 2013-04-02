@@ -51,11 +51,15 @@ URT_EXPORT_SYMBOL(urt_make_rt_context);
 
 void urt_unmake_rt_context(int prev)
 {
+#ifdef __KERNEL__
+	return;
+#else
 	if (prev & MADE_RT_CONTEXT)
 	{
 		rt_make_soft_real_time();
 		if (rt_buddy() != NULL)
 			rt_task_delete(NULL);
 	}
+#endif
 }
 URT_EXPORT_SYMBOL(urt_unmake_rt_context);

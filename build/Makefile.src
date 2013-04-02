@@ -1,10 +1,10 @@
-SYS := $(BASE)/sys/$(URT_SYS_DIR)
+URT_SYS := $(URT_BASE)/sys/$(URT_SYS_DIR)
 
-VPATH := $(BASE)/src:$(SYS)/src:$(BASE)/include:$(SYS)/include
+VPATH := $(URT_BASE)/src:$(URT_SYS)/src:$(URT_BASE)/include:$(URT_SYS)/include
 
-include $(BASE)/src/Makefile.src
-include $(BASE)/include/Makefile.src
-include $(SYS)/src/Makefile.src
-include $(SYS)/include/Makefile.src
+include $(URT_BASE)/src/Makefile.src
+include $(URT_BASE)/include/Makefile.src
+include $(URT_SYS)/src/Makefile.src
+include $(URT_SYS)/include/Makefile.src
 
 LIB_OBJ := $(LIB_SRC:.c=.o)

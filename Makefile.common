@@ -1,4 +1,31 @@
 # include Makefile.config or define IGNORE_BUILD_OPTIONS before including this Makefile
+# if URT_KERNEL_BUILD is defined, then only the URT_SYS_DIR is calculated
+
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
+  URT_SYS_DIR = linux
+else
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
+  URT_SYS_DIR = rtai
+else
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-kernel-only)
+  URT_SYS_DIR = rtai
+else
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-user-only)
+  URT_SYS_DIR = rtai
+else
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
+  URT_SYS_DIR = qnx
+else
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
+  URT_SYS_DIR = vxworks
+endif
+endif
+endif
+endif
+endif
+endif
+
+ifndef URT_KERNEL_BUILD
 
 SHELL := /bin/bash
 SHELL_NOOP := :
@@ -37,40 +64,34 @@ ifndef IGNORE_BUILD_OPTIONS
   URT_MAKE_USER = y
   URT_MAKE_KERNEL = n
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
-    URT_SYS_DIR = linux
-    URT_CFLAGS +=
-    URT_LDFLAGS += -lrt
+    URT_STATIC_CFLAGS +=
+    URT_STATIC_LDFLAGS += -lrt
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
     URT_MAKE_KERNEL = y
-    URT_SYS_DIR = rtai
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
-    URT_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-cflags)
-    URT_LDFLAGS +=  $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-ldflags)
-    URT_CFLAGS_KERNEL += $(shell $(URT_CONFIG_RTAI_TOOL) --module-cflags)
+    URT_STATIC_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-cflags)
+    URT_STATIC_LDFLAGS +=  $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-ldflags)
+    URT_KERNEL_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --module-cflags)
     URT_KERNEL_SYMBOLS += $(RTAI_HOME)/modules/Module.symvers
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-kernel-only)
     URT_MAKE_USER = n
     URT_MAKE_KERNEL = y
-    URT_SYS_DIR = rtai
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
-    URT_CFLAGS_KERNEL += $(shell $(URT_CONFIG_RTAI_TOOL) --module-cflags)
+    URT_KERNEL_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --module-cflags)
     URT_KERNEL_SYMBOLS += $(RTAI_HOME)/modules/Module.symvers
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-user-only)
-    URT_SYS_DIR = rtai
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
-    URT_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-cflags)
-    URT_LDFLAGS +=  $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-ldflags)
+    URT_STATIC_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-cflags)
+    URT_STATIC_LDFLAGS +=  $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-ldflags)
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
-    URT_SYS_DIR = qnx
-    URT_CFLAGS +=
+    URT_STATIC_CFLAGS +=
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
-    URT_SYS_DIR = vxworks
-    URT_CFLAGS +=
+    URT_STATIC_CFLAGS +=
   endif
   endif
   endif
@@ -80,18 +101,18 @@ ifndef IGNORE_BUILD_OPTIONS
 
   # Generic variables
   ifeq ($(URT_CONFIG_DEBUG), y)
-    URT_CFLAGS += $(CC_O0) $(CC_g)
-    URT_CFLAGS_KERNEL += $(CC_O0) $(CC_g)
+    URT_STATIC_CFLAGS += $(CC_O0) $(CC_g)
+    URT_KERNEL_CFLAGS += $(CC_O0) $(CC_g)
   else
-    URT_CFLAGS += $(CC_O) $(CC_D) NDEBUG
-    URT_CFLAGS_KERNEL += $(CC_O) $(CC_D) NDEBUG
+    URT_STATIC_CFLAGS += $(CC_O) $(CC_D) NDEBUG
+    URT_KERNEL_CFLAGS += $(CC_O) $(CC_D) NDEBUG
   endif
 
-  URT_CFLAGS += $(CC_Wall)
-  URT_CFLAGS_KERNEL += $(CC_Wall)
+  URT_STATIC_CFLAGS += $(CC_Wall)
+  URT_KERNEL_CFLAGS += $(CC_Wall)
 
-  URT_SHARED_CFLAGS := $(URT_CFLAGS) $(CC_PIC)
-  URT_SHARED_LDFLAGS := $(URT_LDFLAGS) $(LD_PIC)
+  URT_SHARED_CFLAGS := $(URT_STATIC_CFLAGS) $(CC_PIC)
+  URT_SHARED_LDFLAGS := $(URT_STATIC_LDFLAGS) $(LD_PIC)
 endif
 
 # Disable colors if called from vim
@@ -126,3 +147,5 @@ endif
 RM := rm -f
 MKDIR := mkdir
 CP := \cp -f
+
+endif

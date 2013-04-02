@@ -21,11 +21,14 @@
 #include <urt_task.h>
 #include <urt_mem.h>
 #include <urt_utils.h>
+#include <urt_log.h>
 
 void urt_task_delete(urt_task *task)
 {
+#ifdef __KERNEL__
+	rt_task_delete(&task->rt_task);
+#else
 	rt_task_delete(task->rt_task);
-#ifndef __KERNEL__
 	rt_thread_join(task->tid);
 #endif
 	urt_mem_delete(task);
@@ -71,7 +74,7 @@ static void *_task_wrapper(void *t)
 int urt_task_start(urt_task *task)
 {
 #ifdef __KERNEL__
-	int ret = rt_task_init(&task->rt_task, _task_wrapper, task, task->attr.stack_size, task->attr.priority, task->attr.uses_fpu, NULL);
+	int ret = rt_task_init(&task->rt_task, _task_wrapper, (long)task, task->attr.stack_size, task->attr.priority, task->attr.uses_fpu, NULL);
 	if (ret)
 		goto exit_bad_init;
 

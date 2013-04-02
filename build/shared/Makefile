@@ -9,13 +9,16 @@ all: $(TARGET)
 clean:
 	-$(RM) liburt*.so *.o
 
-BASE := $(abspath $(CURDIR)/../..)
+URT_BASE := $(abspath $(CURDIR)/../..)
 include ../Makefile.build
 include ../Makefile.src
 include ../Makefile.dep
 
+CFLAGS := $(URT_SHARED_CFLAGS)
+LDFLAGS := $(URT_SHARED_LDFLAGS)
+
 $(TARGET): $(LIB_OBJ)
 	-$(RM) liburt*.so
-	$(LD) $(SHARED_LDFLAGS) $(LD_o) $@ $^
+	$(LD) $(LDFLAGS) $(LD_o) $@ $^
 %.o: %.c
-	@$(CC) $(SHARED_CFLAGS) $(CC_o) $@ $< > /dev/null 2>&1
+	@$(CC) $(CFLAGS) $(CC_o) $@ $< > /dev/null 2>&1

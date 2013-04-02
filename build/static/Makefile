@@ -9,10 +9,13 @@ all: $(TARGET)
 clean:
 	-$(RM) $(TARGET) *.o
 
-BASE := $(abspath $(CURDIR)/../..)
+URT_BASE := $(abspath $(CURDIR)/../..)
 include ../Makefile.build
 include ../Makefile.src
 include ../Makefile.dep
+
+CFLAGS := $(URT_STATIC_CFLAGS)
+LDFLAGS := $(URT_STATIC_LDFLAGS)
 
 $(TARGET): $(LIB_OBJ)
 	$(AR) $(AR_o) $@ $^

@@ -20,6 +20,7 @@
 #include <urt_internal.h>
 #include <urt_lock.h>
 #include <urt_mem.h>
+#include <rtai_registry.h>
 
 #ifdef __KERNEL__
 # define rt_typed_named_sem_init(name, value, type) _rt_typed_named_sem_init(nam2num(name), value, type, NULL)
@@ -177,7 +178,7 @@ urt_rwlock *(urt_rwlock_new)(int *error, ...)
 }
 URT_EXPORT_SYMBOL(urt_rwlock_new);
 
-void urt_rwlock_delete(urt_rwlock *rwl)
+void urt_rwlock_detach(urt_rwlock *rwl)
 {
 	if (URT_LIKELY(rwl != NULL))
 		rt_rwl_delete(rwl);
@@ -230,7 +231,7 @@ int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 
 	return res == 0?URT_SUCCESS:URT_FAIL;
 }
-URT_EXPORT_SYMBOL(urt_shrwlock_read_lock);
+URT_EXPORT_SYMBOL(urt_rwlock_read_lock);
 
 int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 {
@@ -246,42 +247,42 @@ int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 
 	return res == 0?URT_SUCCESS:URT_FAIL;
 }
-URT_EXPORT_SYMBOL(urt_shrwlock_write_lock);
+URT_EXPORT_SYMBOL(urt_rwlock_write_lock);
 
 int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)
 {
 	int res = rt_rwl_rdlock_timed(rwl, nano2count(max_wait));
 	return res == RTE_TIMOUT?URT_NOT_LOCKED:res == 0?URT_SUCCESS:URT_FAIL;
 }
-URT_EXPORT_SYMBOL(urt_shrwlock_timed_read_lock);
+URT_EXPORT_SYMBOL(urt_rwlock_timed_read_lock);
 
 int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 {
 	int res = rt_rwl_wrlock_timed(rwl, nano2count(max_wait));
 	return res == RTE_TIMOUT?URT_NOT_LOCKED:res == 0?URT_SUCCESS:URT_FAIL;
 }
-URT_EXPORT_SYMBOL(urt_shrwlock_timed_write_lock);
+URT_EXPORT_SYMBOL(urt_rwlock_timed_write_lock);
 
 int urt_rwlock_try_read_lock(urt_rwlock *rwl)
 {
 	return rt_rwl_rdlock_if(rwl) == 0?URT_SUCCESS:URT_NOT_LOCKED;
 }
-URT_EXPORT_SYMBOL(urt_shrwlock_try_read_lock);
+URT_EXPORT_SYMBOL(urt_rwlock_try_read_lock);
 
 int urt_rwlock_try_write_lock(urt_rwlock *rwl)
 {
 	return rt_rwl_wrlock_if(rwl) == 0?URT_SUCCESS:URT_NOT_LOCKED;
 }
-URT_EXPORT_SYMBOL(urt_shrwlock_try_write_lock);
+URT_EXPORT_SYMBOL(urt_rwlock_try_write_lock);
 
 int urt_rwlock_read_unlock(urt_rwlock *rwl)
 {
 	return rt_rwl_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
 }
-URT_EXPORT_SYMBOL(urt_shrwlock_read_unlock);
+URT_EXPORT_SYMBOL(urt_rwlock_read_unlock);
 
 int urt_rwlock_write_unlock(urt_rwlock *rwl)
 {
 	return rt_rwl_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
 }
-URT_EXPORT_SYMBOL(urt_shrwlock_write_unlock);
+URT_EXPORT_SYMBOL(urt_rwlock_write_unlock);

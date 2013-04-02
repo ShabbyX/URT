@@ -1,8 +1,9 @@
-BASE := $(abspath $(M)/../..)
-include $(BASE)/Makefile.config
-include $(BASE)/Makefile.common
-include $(BASE)/build/Makefile.src
-include $(BASE)/build/Makefile.dep
+URT_BASE := $(abspath $(M)/../..)
+include $(URT_BASE)/Makefile.config
+URT_KERNEL_BUILD := y
+include $(URT_BASE)/Makefile.common
+include $(URT_BASE)/build/Makefile.src
+include $(URT_BASE)/build/Makefile.dep
 
 obj-m += urt.o
 urt-y := $(LIB_OBJ)

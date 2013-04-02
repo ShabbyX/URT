@@ -20,6 +20,7 @@
 #include <urt_internal.h>
 #include <urt_mem.h>
 #include <rtai_shm.h>
+#include <rtai_registry.h>
 
 void *(urt_mem_new)(size_t size, int *error, ...)
 {
