@@ -3,7 +3,12 @@ Makefile.config
 
 # Intermediate files
 *.o
+*.ko
 *.o.cmd
+*.ko.cmd
+.tmp_versions
+Module.symvers
+modules.order
 
 # Libraries
 *.a
@@ -30,3 +35,13 @@ src/urt_internal_config.h
 include/urt_version.h
 Makefile.dep
 build/build.txt
+
+
+
+
+#	.tmp_versions/
+#	.urt.ko.cmd
+#	Module.symvers
+#	modules.order
+#	urt.ko
+#	../../doc/generated/
