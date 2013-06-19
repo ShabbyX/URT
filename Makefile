@@ -42,3 +42,5 @@ install uninstall:
 .PHONY: clean
 clean:
 	-@$(MAKE) -C build clean
+	-@$(MAKE) -C tests clean
+	-@$(MAKE) -C tools clean
