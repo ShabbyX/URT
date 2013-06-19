@@ -275,15 +275,22 @@ urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error)
 		*error = URT_NO_SUPPORT;
 	return NULL;
 #else
-	urt_rwlock *rwl = urt_sys_shmem_new(name, sizeof(*rwl), error);
+	/*
+	 * Note: take care of the book keeping space since I'm doing shared memory
+	 * bypassing the size known in new_common.c
+	 */
+	urt_rwlock *rwl = urt_sys_shmem_new(name, sizeof(*rwl) + 16, error);
 	if (rwl == NULL)
 		goto exit_fail;
+	rwl = (void *)((char *)rwl + 16);
 
 	if (_shrwlock_common(rwl, error, PTHREAD_PROCESS_SHARED))
 		goto exit_bad_init;
 
-	return rwl;
+	/* Note: once returned, the book keeping in new_common.c will again add the +16 */
+	return (void *)((char *)rwl - 16);
 exit_bad_init:
+	/* Note: urt_shmem_delete will remove the +16 */
 	urt_shmem_delete(rwl);
 exit_fail:
 	return NULL;
@@ -304,6 +311,13 @@ static void _shrwlock_detach(void *rwl)
 
 void urt_shrwlock_detach(urt_rwlock *rwl)
 {
+	/* Note: unmap needs the correct allocated size of memory */
+	urt_registered_object *ro;
+
+	ro = urt_get_object_by_id(*(unsigned int *)((char *)rwl - 16));
+	if (ro == NULL)
+		return;
+	ro->size = sizeof(*rwl) + 16;
 	urt_shmem_detach_with_callback(rwl, _shrwlock_detach);
 }
 

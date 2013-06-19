@@ -36,6 +36,7 @@ include/urt_config.h
 src/urt_internal_config.h
 include/urt_version.h
 Makefile.dep
+doc/generated
 
 
 
@@ -45,4 +46,3 @@ Makefile.dep
 #	Module.symvers
 #	modules.order
 #	urt.ko
-#	../../doc/generated/
