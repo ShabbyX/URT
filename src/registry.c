@@ -88,22 +88,6 @@ static urt_registered_object *_find_by_name(const char *name)
 	return i > max_index?NULL:ro;
 }
 
-static urt_registered_object *_find_by_addr(void *address)
-{
-	unsigned int i;
-	urt_registered_object *ro = NULL;
-	unsigned int max_index = urt_global_mem->objects_max_index;
-
-	for (i = 0; i <= max_index; ++i)
-	{
-		ro = &urt_global_mem->objects[i];
-		if ((ro->reserved || ro->count != 0) && ro->address == address)
-			break;
-	}
-
-	return i > max_index?NULL:ro;
-}
-
 urt_registered_object *urt_reserve_name(const char *name, int *error)
 {
 	unsigned int i;
@@ -193,17 +177,6 @@ void urt_deregister_name(const char *name)
 	urt_sem_post(urt_global_sem);
 }
 
-void urt_deregister_addr(void *address)
-{
-	urt_registered_object *ro = NULL;
-
-	urt_sem_wait(urt_global_sem);
-	ro = _find_by_addr(address);
-	if (ro)
-		_dec_count_common(ro);
-	urt_sem_post(urt_global_sem);
-}
-
 void urt_force_clear_name(const char *name)
 {
 	urt_registered_object *ro = NULL;
@@ -222,23 +195,17 @@ void urt_force_clear_name(const char *name)
 	urt_sem_post(urt_global_sem);
 }
 
-urt_registered_object *urt_get_object_by_name(const char *name)
+urt_registered_object *urt_get_object_by_name_and_inc_count(const char *name)
 {
 	urt_registered_object *ro = NULL;
 
 	urt_sem_wait(urt_global_sem);
 	ro = _find_by_name(name);
-	urt_sem_post(urt_global_sem);
-
-	return ro;
-}
-
-urt_registered_object *urt_get_object_by_addr(void *address)
-{
-	urt_registered_object *ro = NULL;
-
-	urt_sem_wait(urt_global_sem);
-	ro = _find_by_addr(address);
+	if (ro)
+	{
+		++ro->count;
+		ro->reserved = false;
+	}
 	urt_sem_post(urt_global_sem);
 
 	return ro;

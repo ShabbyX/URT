@@ -69,17 +69,15 @@ URT_EXPORT_SYMBOL(urt_exit);
 
 void urt_recover(void)
 {
-	urt_sem *global_sem;
-
 	if (urt_sys_init() != URT_SUCCESS)
 		return;
 
-	global_sem = urt_global_sem_get(URT_GLOBAL_LOCK_NAME, NULL);
-	if (global_sem == NULL)
+	urt_global_sem = urt_global_sem_get(URT_GLOBAL_LOCK_NAME, NULL);
+	if (urt_global_sem == NULL)
 		return;
 
-	urt_sem_try_wait(global_sem);
-	urt_sem_post(global_sem);
+	urt_sem_try_wait(urt_global_sem);
+	urt_sem_post(urt_global_sem);
 	urt_global_sem_free(URT_GLOBAL_LOCK_NAME);
 
 	urt_sys_exit();

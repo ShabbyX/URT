@@ -134,7 +134,7 @@ static void _shmem_detach(struct urt_registered_object *ro)
 	void (*callback)(void *) = ro->user_data;
 
 	if (callback)
-		callback(ro->address);
+		callback((char *)ro->address + 16);
 
 	/* FIXME: return value of munmap for debug */
 	if (munmap(ro->address, ro->size))
@@ -152,9 +152,11 @@ void urt_shmem_detach_with_callback(void *mem, void (*f)(void *))
 {
 	urt_registered_object *ro;
 
-	ro = urt_get_object_by_addr(mem);
+	mem = (char *)mem - 16;
+	ro = urt_get_object_by_id(*(unsigned int *)mem);
 	if (ro == NULL)
 		return;
+	ro->address = mem;
 	ro->release = _shmem_detach;
 	ro->user_data = f;
 	urt_deregister(ro);

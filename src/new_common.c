@@ -20,7 +20,7 @@
 #include <urt_mem.h>
 #include "urt_internal.h"
 
-#define SHOBJ_NEW(name, error, typ, sz, call, TYPE)		\
+#define SHOBJ_NEW(name, error, typ, sz, call, TYPE, proc)	\
 do {								\
 	typ obj = NULL;						\
 	urt_registered_object *ro = NULL;			\
@@ -30,6 +30,7 @@ do {								\
 	obj = call;						\
 	if (obj == NULL)					\
 		goto exit_fail;					\
+	obj = proc(obj, ro - urt_global_mem->objects);		\
 	ro->type = URT_TYPE_##TYPE;				\
 	ro->address = obj;					\
 	ro->size = sz;						\
@@ -41,17 +42,17 @@ exit_fail:							\
 	return NULL;						\
 } while (0)
 
-#define SHOBJ_ATTACH(name, error, typ, call)			\
+#define SHOBJ_ATTACH(name, error, typ, call, proc)		\
 do {								\
 	typ obj = NULL;						\
 	urt_registered_object *ro = NULL;			\
-	ro = urt_get_object_by_name(name);			\
+	ro = urt_get_object_by_name_and_inc_count(name);	\
 	if (ro == NULL)						\
 		goto exit_no_obj;				\
 	obj = call;						\
 	if (obj == NULL)					\
 		goto exit_fail;					\
-	urt_inc_name_count(ro);					\
+	obj = proc(obj, ro - urt_global_mem->objects);		\
 	return obj;						\
 exit_no_obj:							\
 	if (error)						\
@@ -62,50 +63,78 @@ exit_fail:							\
 	return NULL;						\
 } while (0)
 
+static void *_add_mem_book_keeping(void *mem, unsigned int id)
+{
+	*(unsigned int *)mem = id;
+	return (char *)mem + 16;
+}
+
+static urt_sem *_add_sem_book_keeping(urt_sem *sem, unsigned int id)
+{
+	sem->id = id;
+	return sem;
+}
+
+static urt_mutex *_add_mutex_book_keeping(urt_mutex *mutex, unsigned int id)
+{
+	mutex->id = id;
+	return mutex;
+}
+
+static urt_rwlock *_add_rwlock_book_keeping(urt_rwlock *rwl, unsigned int id)
+{
+	rwl->id = id;
+	return rwl;
+}
+
 void *(urt_shmem_new)(const char *name, size_t size, int *error, ...)
 {
-	SHOBJ_NEW(name, error, void *, size, urt_sys_shmem_new(name, size, error), MEM);
+	/*
+	 * Note: there would be 16 bytes book keeping to keep
+	 * information such as index in registry
+	 */
+	SHOBJ_NEW(name, error, void *, size + 16, urt_sys_shmem_new(name, size + 16, error), MEM, _add_mem_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shmem_new);
 
 void *(urt_shmem_attach)(const char *name, int *error, ...)
 {
-	SHOBJ_ATTACH(name, error, void *, urt_sys_shmem_attach(name, error));
+	SHOBJ_ATTACH(name, error, void *, urt_sys_shmem_attach(name, error), _add_mem_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shmem_attach);
 
 urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_sem *, 0, urt_sys_shsem_new(name, init_value, error), SEM);
+	SHOBJ_NEW(name, error, urt_sem *, 0, urt_sys_shsem_new(name, init_value, error), SEM, _add_sem_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shsem_new);
 
 urt_sem *(urt_shsem_attach)(const char *name, int *error, ...)
 {
-	SHOBJ_ATTACH(name, error, urt_sem *, urt_sys_shsem_attach(name, error));
+	SHOBJ_ATTACH(name, error, urt_sem *, urt_sys_shsem_attach(name, error), _add_sem_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shsem_attach);
 
 urt_mutex *(urt_shmutex_new)(const char *name, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_mutex *, 0, urt_sys_shmutex_new(name, error), MUTEX);
+	SHOBJ_NEW(name, error, urt_mutex *, 0, urt_sys_shmutex_new(name, error), MUTEX, _add_mutex_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shmutex_new);
 
 urt_mutex *(urt_shmutex_attach)(const char *name, int *error, ...)
 {
-	SHOBJ_ATTACH(name, error, urt_mutex *, urt_sys_shmutex_attach(name, error));
+	SHOBJ_ATTACH(name, error, urt_mutex *, urt_sys_shmutex_attach(name, error), _add_mutex_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shmutex_attach);
 
 urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_rwlock *, 0, urt_sys_shrwlock_new(name, error), RWLOCK);
+	SHOBJ_NEW(name, error, urt_rwlock *, 0, urt_sys_shrwlock_new(name, error), RWLOCK, _add_rwlock_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shrwlock_new);
 
 urt_rwlock *(urt_shrwlock_attach)(const char *name, int *error, ...)
 {
-	SHOBJ_ATTACH(name, error, urt_rwlock *, urt_sys_shrwlock_attach(name, error));
+	SHOBJ_ATTACH(name, error, urt_rwlock *, urt_sys_shrwlock_attach(name, error), _add_rwlock_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shrwlock_attach);

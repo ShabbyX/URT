@@ -34,9 +34,10 @@ urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...)
 	if (sem == NULL)
 		goto exit_fail;
 
-	if (sem_init(sem, 0, init_value))
+	if (sem_init(&sem->sem, 0, init_value))
 		goto exit_bad_init;
 
+	sem->sem_ptr = &sem->sem;
 	return sem;
 exit_bad_init:
 	if (error)
@@ -55,20 +56,22 @@ exit_fail:
 void urt_sem_delete(urt_sem *sem)
 {
 	if (URT_LIKELY(sem != NULL))
-		sem_destroy(sem);
+		sem_destroy(&sem->sem);
 	urt_mem_delete(sem);
 }
 
 static urt_sem *_shsem_common(const char *name, unsigned int init_value, int *error, int flags)
 {
 	char n[URT_SYS_NAME_LEN];
-	urt_sem *sem = NULL;
+	urt_sem *sem = urt_mem_new(sizeof(*sem), error);
+	if (sem == NULL)
+		goto exit_fail;
 
 	if (urt_convert_name(n, name) != URT_SUCCESS)
 		goto exit_bad_name;
 
-	sem = sem_open(n, flags, S_IRWXU | S_IRWXG | S_IRWXO, init_value);
-	if (sem == SEM_FAILED)
+	sem->sem_ptr = sem_open(n, flags, S_IRWXU | S_IRWXG | S_IRWXO, init_value);
+	if (sem->sem_ptr == SEM_FAILED)
 		goto exit_bad_open;
 
 	return sem;
@@ -96,6 +99,7 @@ exit_bad_name:
 		*error= URT_BAD_NAME;
 	goto exit_fail;
 exit_fail:
+	free(sem);
 	return NULL;
 }
 
@@ -116,15 +120,18 @@ urt_sem *urt_sys_shsem_attach(const char *name, int *error)
 
 void urt_global_sem_free(const char *name)
 {
-	sem_close(urt_global_sem);
+	sem_close(urt_global_sem->sem_ptr);
 	/* Note: it's easier if urt_global_sem is never `sem_unlink`ed */
+	urt_mem_delete(urt_global_sem);
+	urt_global_sem = NULL;
 }
 
 static void _shsem_detach(struct urt_registered_object *ro)
 {
 	char n[URT_SYS_NAME_LEN];
+	urt_sem *sem = ro->address;
 
-	sem_close(ro->address);
+	sem_close(sem->sem_ptr);
 	if (ro->count == 0 && urt_convert_name(n, ro->name) == URT_SUCCESS)
 		sem_unlink(n);
 }
@@ -133,9 +140,10 @@ void urt_shsem_detach(urt_sem *sem)
 {
 	urt_registered_object *ro;
 
-	ro = urt_get_object_by_addr(sem);
+	ro = urt_get_object_by_id(sem->id);
 	if (ro == NULL)
 		return;
+	ro->address = sem;
 	ro->release = _shsem_detach;
 	urt_deregister(ro);
 }
@@ -156,11 +164,11 @@ int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
 			t += URT_LOCK_STOP_MAX_DELAY;
 			tp.tv_sec = t / 1000000000ll;
 			tp.tv_nsec = t % 1000000000ll;
-		} while ((res = sem_timedwait(sem, &tp)) == -1 && errno == ETIMEDOUT);
+		} while ((res = sem_timedwait(sem->sem_ptr, &tp)) == -1 && errno == ETIMEDOUT);
 	}
 	else
 		/* if sem_wait interrupted, retry */
-		while ((res = sem_wait(sem)) == -1 && errno == EINTR);
+		while ((res = sem_wait(sem->sem_ptr)) == -1 && errno == EINTR);
 
 	return res == 0?URT_SUCCESS:URT_FAIL;
 }
@@ -175,7 +183,7 @@ int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 	tp.tv_sec = t / 1000000000ll;
 	tp.tv_nsec = t % 1000000000ll;
 
-	while ((res = sem_timedwait(sem, &tp)) == -1 && errno == EINTR);
+	while ((res = sem_timedwait(sem->sem_ptr, &tp)) == -1 && errno == EINTR);
 
 	if (res == 0)
 		return URT_SUCCESS;
@@ -186,7 +194,7 @@ int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 
 int urt_sem_try_wait(urt_sem *sem)
 {
-	if (sem_trywait(sem) == -1)
+	if (sem_trywait(sem->sem_ptr) == -1)
 		return URT_FAIL;
 	if (errno == EAGAIN)
 		return URT_NOT_LOCKED;
@@ -195,7 +203,7 @@ int urt_sem_try_wait(urt_sem *sem)
 
 void urt_sem_post(urt_sem *sem)
 {
-	sem_post(sem);
+	sem_post(sem->sem_ptr);
 }
 
 urt_mutex *urt_sys_shmutex_new(const char *name, int *error)
@@ -216,7 +224,7 @@ static int _shrwlock_common(urt_rwlock *rwl, int *error, int flags)
 	pthread_rwlockattr_init(&attr);
 	pthread_rwlockattr_setpshared(&attr, flags);
 
-	if ((err = pthread_rwlock_init(rwl, &attr)))
+	if ((err = pthread_rwlock_init(&rwl->rwl, &attr)))
 		goto exit_bad_init;
 
 	pthread_rwlockattr_destroy(&attr);
@@ -254,8 +262,8 @@ exit_fail:
 void urt_rwlock_delete(urt_rwlock *rwl)
 {
 	if (URT_LIKELY(rwl != NULL))
-		while (pthread_rwlock_destroy(rwl) == EBUSY)
-			if (pthread_rwlock_unlock(rwl))
+		while (pthread_rwlock_destroy(&rwl->rwl) == EBUSY)
+			if (pthread_rwlock_unlock(&rwl->rwl))
 				break;
 	urt_mem_delete(rwl);
 }
@@ -289,8 +297,8 @@ urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error)
 
 static void _shrwlock_detach(void *rwl)
 {
-	while (pthread_rwlock_destroy(rwl) == EBUSY)
-		if (pthread_rwlock_unlock(rwl))
+	while (pthread_rwlock_destroy(&((urt_rwlock *)rwl)->rwl) == EBUSY)
+		if (pthread_rwlock_unlock(&((urt_rwlock *)rwl)->rwl))
 			break;
 }
 
@@ -315,10 +323,10 @@ int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 			t += URT_LOCK_STOP_MAX_DELAY;
 			tp.tv_sec = t / 1000000000ll;
 			tp.tv_nsec = t % 1000000000ll;
-		} while ((res = pthread_rwlock_timedrdlock(rwl, &tp)) == ETIMEDOUT);
+		} while ((res = pthread_rwlock_timedrdlock(&rwl->rwl, &tp)) == ETIMEDOUT);
 	}
 	else
-		res = pthread_rwlock_rdlock(rwl);
+		res = pthread_rwlock_rdlock(&rwl->rwl);
 
 	return res == 0?URT_SUCCESS:URT_FAIL;
 }
@@ -339,10 +347,10 @@ int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 			t += URT_LOCK_STOP_MAX_DELAY;
 			tp.tv_sec = t / 1000000000ll;
 			tp.tv_nsec = t % 1000000000ll;
-		} while ((res = pthread_rwlock_timedwrlock(rwl, &tp)) == ETIMEDOUT);
+		} while ((res = pthread_rwlock_timedwrlock(&rwl->rwl, &tp)) == ETIMEDOUT);
 	}
 	else
-		res = pthread_rwlock_wrlock(rwl);
+		res = pthread_rwlock_wrlock(&rwl->rwl);
 
 	return res == 0?URT_SUCCESS:URT_FAIL;
 }
@@ -357,7 +365,7 @@ int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)
 	tp.tv_sec = t / 1000000000ll;
 	tp.tv_nsec = t % 1000000000ll;
 
-	res = pthread_rwlock_timedrdlock(rwl, &tp);
+	res = pthread_rwlock_timedrdlock(&rwl->rwl, &tp);
 
 	if (res == 0)
 		return URT_SUCCESS;
@@ -376,7 +384,7 @@ int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 	tp.tv_sec = t / 1000000000ll;
 	tp.tv_nsec = t % 1000000000ll;
 
-	res = pthread_rwlock_timedwrlock(rwl, &tp);
+	res = pthread_rwlock_timedwrlock(&rwl->rwl, &tp);
 
 	if (res == 0)
 		return URT_SUCCESS;
@@ -387,7 +395,7 @@ int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 
 int urt_rwlock_try_read_lock(urt_rwlock *rwl)
 {
-	int res = pthread_rwlock_tryrdlock(rwl);
+	int res = pthread_rwlock_tryrdlock(&rwl->rwl);
 	if (res == 0)
 		return URT_SUCCESS;
 	else if (res == EBUSY)
@@ -397,7 +405,7 @@ int urt_rwlock_try_read_lock(urt_rwlock *rwl)
 
 int urt_rwlock_try_write_lock(urt_rwlock *rwl)
 {
-	int res = pthread_rwlock_trywrlock(rwl);
+	int res = pthread_rwlock_trywrlock(&rwl->rwl);
 	if (res == 0)
 		return URT_SUCCESS;
 	else if (res == EBUSY)
@@ -407,10 +415,10 @@ int urt_rwlock_try_write_lock(urt_rwlock *rwl)
 
 int urt_rwlock_read_unlock(urt_rwlock *rwl)
 {
-	return pthread_rwlock_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
+	return pthread_rwlock_unlock(&rwl->rwl) == 0?URT_SUCCESS:URT_FAIL;
 }
 
 int urt_rwlock_write_unlock(urt_rwlock *rwl)
 {
-	return pthread_rwlock_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
+	return pthread_rwlock_unlock(&rwl->rwl) == 0?URT_SUCCESS:URT_FAIL;
 }

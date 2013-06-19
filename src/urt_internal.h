@@ -45,7 +45,13 @@ typedef struct urt_registered_object
 	bool reserved;				/* count could be zero, but name reserved */
 	short int type;				/* type of object, one of URT_TYPE_* */
 	unsigned int count;			/* usage count */
-	void *address;				/* address of the registered object */
+	void *address;				/*
+						 * address of the registered object
+						 * Note: this address may be different per process, so it should not be
+						 * used in a shared way.  Currently, only used for holding the object
+						 * that is immediately going to be deleted, updated by each process
+						 * upon their own call to urt_*_detach
+						 */
 	size_t size;				/* size of memory, if object is shared memory */
 	void *user_data;			/* additional data to detach/free */
 	void (*release)(struct urt_registered_object *);
@@ -71,12 +77,11 @@ void urt_inc_name_count(urt_registered_object *ro);
 void urt_dec_name_count(urt_registered_object *ro);
 static inline void urt_deregister(urt_registered_object *ro) { urt_dec_name_count(ro); }
 void urt_deregister_name(const char *name);
-void urt_deregister_addr(void *address);
 void urt_force_clear_name(const char *name);
 
 /* registry lookup */
-urt_registered_object *urt_get_object_by_name(const char *name);
-urt_registered_object *urt_get_object_by_addr(void *address);
+urt_registered_object *urt_get_object_by_name_and_inc_count(const char *name);
+static inline urt_registered_object *urt_get_object_by_id(unsigned int id) { return &urt_global_mem->objects[id]; }
 
 /* global sem and mem registry skip */
 urt_sem *urt_global_sem_get(const char *name, int *error);

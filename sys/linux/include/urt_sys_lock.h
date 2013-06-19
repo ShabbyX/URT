@@ -25,9 +25,18 @@
 
 URT_DECL_BEGIN
 
-typedef sem_t urt_sem;
+typedef struct urt_sem
+{
+	sem_t sem;		/* private semaphore requires object (sem_ptr will point here) */
+	sem_t *sem_ptr;		/* shared semaphore requires pointer (sem is unused) */
+	unsigned int id;
+} urt_sem;
 typedef urt_sem urt_mutex;
-typedef pthread_rwlock_t urt_rwlock;
+typedef struct urt_rwlock
+{
+	pthread_rwlock_t rwl;
+	unsigned int id;
+} urt_rwlock;
 
 #define urt_mutex_new(...) urt_sem_new(1, ##__VA_ARGS__)
 #define urt_mutex_delete(m) urt_sem_delete(m)

@@ -28,9 +28,19 @@
 
 URT_DECL_BEGIN
 
-typedef SEM urt_sem;
-typedef SEM urt_mutex;
-typedef RWL urt_rwlock;
+typedef struct urt_sem
+{
+	SEM sem;		/* kernel semaphore requires object (sem_ptr will point here) */
+	SEM *sem_ptr;		/* user semaphore requires pointer (sem is unused) */
+	unsigned int id;
+} urt_sem;
+typedef urt_sem urt_mutex;
+typedef struct urt_rwlock
+{
+	RWL rwl;		/* similar to */
+	RWL *rwl_ptr;		/* urt_sem */
+	unsigned int id;
+} urt_rwlock;
 
 URT_ATTR_WARN_UNUSED urt_mutex *(urt_mutex_new)(int *error, ...);
 
