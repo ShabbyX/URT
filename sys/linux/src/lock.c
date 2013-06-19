@@ -224,7 +224,7 @@ static int _shrwlock_common(urt_rwlock *rwl, int *error, int flags)
 	pthread_rwlockattr_init(&attr);
 	pthread_rwlockattr_setpshared(&attr, flags);
 
-	if ((err = pthread_rwlock_init(&rwl->rwl, &attr)))
+	if ((err = pthread_rwlock_init(rwl, &attr)))
 		goto exit_bad_init;
 
 	pthread_rwlockattr_destroy(&attr);
@@ -262,8 +262,8 @@ exit_fail:
 void urt_rwlock_delete(urt_rwlock *rwl)
 {
 	if (URT_LIKELY(rwl != NULL))
-		while (pthread_rwlock_destroy(&rwl->rwl) == EBUSY)
-			if (pthread_rwlock_unlock(&rwl->rwl))
+		while (pthread_rwlock_destroy(rwl) == EBUSY)
+			if (pthread_rwlock_unlock(rwl))
 				break;
 	urt_mem_delete(rwl);
 }
@@ -297,8 +297,8 @@ urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error)
 
 static void _shrwlock_detach(void *rwl)
 {
-	while (pthread_rwlock_destroy(&((urt_rwlock *)rwl)->rwl) == EBUSY)
-		if (pthread_rwlock_unlock(&((urt_rwlock *)rwl)->rwl))
+	while (pthread_rwlock_destroy(rwl) == EBUSY)
+		if (pthread_rwlock_unlock(rwl))
 			break;
 }
 
@@ -323,10 +323,10 @@ int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 			t += URT_LOCK_STOP_MAX_DELAY;
 			tp.tv_sec = t / 1000000000ll;
 			tp.tv_nsec = t % 1000000000ll;
-		} while ((res = pthread_rwlock_timedrdlock(&rwl->rwl, &tp)) == ETIMEDOUT);
+		} while ((res = pthread_rwlock_timedrdlock(rwl, &tp)) == ETIMEDOUT);
 	}
 	else
-		res = pthread_rwlock_rdlock(&rwl->rwl);
+		res = pthread_rwlock_rdlock(rwl);
 
 	return res == 0?URT_SUCCESS:URT_FAIL;
 }
@@ -347,10 +347,10 @@ int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 			t += URT_LOCK_STOP_MAX_DELAY;
 			tp.tv_sec = t / 1000000000ll;
 			tp.tv_nsec = t % 1000000000ll;
-		} while ((res = pthread_rwlock_timedwrlock(&rwl->rwl, &tp)) == ETIMEDOUT);
+		} while ((res = pthread_rwlock_timedwrlock(rwl, &tp)) == ETIMEDOUT);
 	}
 	else
-		res = pthread_rwlock_wrlock(&rwl->rwl);
+		res = pthread_rwlock_wrlock(rwl);
 
 	return res == 0?URT_SUCCESS:URT_FAIL;
 }
@@ -365,7 +365,7 @@ int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)
 	tp.tv_sec = t / 1000000000ll;
 	tp.tv_nsec = t % 1000000000ll;
 
-	res = pthread_rwlock_timedrdlock(&rwl->rwl, &tp);
+	res = pthread_rwlock_timedrdlock(rwl, &tp);
 
 	if (res == 0)
 		return URT_SUCCESS;
@@ -384,7 +384,7 @@ int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 	tp.tv_sec = t / 1000000000ll;
 	tp.tv_nsec = t % 1000000000ll;
 
-	res = pthread_rwlock_timedwrlock(&rwl->rwl, &tp);
+	res = pthread_rwlock_timedwrlock(rwl, &tp);
 
 	if (res == 0)
 		return URT_SUCCESS;
@@ -395,7 +395,7 @@ int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 
 int urt_rwlock_try_read_lock(urt_rwlock *rwl)
 {
-	int res = pthread_rwlock_tryrdlock(&rwl->rwl);
+	int res = pthread_rwlock_tryrdlock(rwl);
 	if (res == 0)
 		return URT_SUCCESS;
 	else if (res == EBUSY)
@@ -405,7 +405,7 @@ int urt_rwlock_try_read_lock(urt_rwlock *rwl)
 
 int urt_rwlock_try_write_lock(urt_rwlock *rwl)
 {
-	int res = pthread_rwlock_trywrlock(&rwl->rwl);
+	int res = pthread_rwlock_trywrlock(rwl);
 	if (res == 0)
 		return URT_SUCCESS;
 	else if (res == EBUSY)
@@ -415,10 +415,10 @@ int urt_rwlock_try_write_lock(urt_rwlock *rwl)
 
 int urt_rwlock_read_unlock(urt_rwlock *rwl)
 {
-	return pthread_rwlock_unlock(&rwl->rwl) == 0?URT_SUCCESS:URT_FAIL;
+	return pthread_rwlock_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
 }
 
 int urt_rwlock_write_unlock(urt_rwlock *rwl)
 {
-	return pthread_rwlock_unlock(&rwl->rwl) == 0?URT_SUCCESS:URT_FAIL;
+	return pthread_rwlock_unlock(rwl) == 0?URT_SUCCESS:URT_FAIL;
 }

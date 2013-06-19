@@ -325,17 +325,17 @@ void urt_print_names(void)
 	urt_out_cont("name");
 	for (i = 0; i < URT_NAME_LEN - URT_NAME_LEN / 2 - 2; ++i)
 		urt_out_cont(" ");
-	urt_out_cont(" |  count  | reserved |  address   | size (bytes)\n");
+	urt_out_cont(" |  count  | reserved |      address       | size (bytes)\n");
 	urt_out_cont("---------+-");
 	for (i = 0; i < URT_NAME_LEN; ++i)
 		urt_out_cont("-");
-	urt_out_cont("-+---------+----------+------------+--------------\n");
+	urt_out_cont("-+---------+----------+--------------------+--------------\n");
 	for (i = 0; i < URT_MAX_OBJECTS; ++i)
 	{
 		obj = &urt_global_mem->objects[i];
 		if (!obj->reserved && obj->count == 0)
 			continue;
-		urt_out_cont(" %7u | %*s | %7u | %8s | %10p | %12zu\n", i, URT_NAME_LEN, obj->name, obj->count,
+		urt_out_cont(" %7u | %*s | %7u | %8s | %18p | %12zu\n", i, URT_NAME_LEN, obj->name, obj->count,
 				obj->reserved?"Yes":"No", obj->address, obj->size);
 	}
 	urt_out_cont("\nmax index: %u\n", urt_global_mem->objects_max_index);

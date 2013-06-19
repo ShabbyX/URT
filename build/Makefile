@@ -44,6 +44,7 @@ endif
 
 include Makefile.build
 include Makefile.src
+CFLAGS := $(URT_USER_CFLAGS) $(EXTRA_CFLAGS)
 dep: Makefile.dep
 	@$(SHELL_NOOP)
 Makefile.dep: $(LIB_SRC) $(LIB_HDR)
