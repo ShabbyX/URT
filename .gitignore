@@ -24,6 +24,8 @@ wait
 add
 read
 tools/urt_names/urt_names
+tools/urt_clear/urt_clear
+tools/urt_recover/urt_recover
 
 # Temp files
 *.swp

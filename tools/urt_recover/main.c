@@ -17,17 +17,10 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_SYS_SETUP_H
-#define URT_SYS_SETUP_H
+#include <urt.h>
 
-#include <urt_internal.h>
-
-URT_DECL_BEGIN
-
-static inline int urt_sys_init(void) { return URT_SUCCESS; }
-static inline void urt_sys_exit(void) {}
-void urt_sys_force_clear_name(urt_registered_object *ro);
-
-URT_DECL_END
-
-#endif
+int main()
+{
+	urt_recover();
+	return 0;
+}

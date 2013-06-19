@@ -42,6 +42,9 @@ URT_CONFIG_DEBUG=n
 # Whether it should use color in build
 URT_CONFIG_COLOR_BUILD=y
 
+# Whether it should keep build output more verbose
+URT_CONFIG_VERBOSE_BUILD=n
+
 # Whether this is a developer build
 URT_CONFIG_DEVELOPER_MODE=n
 

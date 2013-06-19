@@ -17,37 +17,43 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <urt.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <urt_sys_setup.h>
+#include "names.h"
 
-int main()
+void urt_sys_force_clear_name(urt_registered_object *ro)
 {
-	int ret;
-	int exit_status = 0;
+	char n[URT_SYS_NAME_LEN];
+	int fd = -1;
 	urt_sem *sem = NULL;
 
-	urt_out("starting test...\n");
-	ret = urt_init();
-	if (ret)
+	if (urt_convert_name(n, ro->name) != URT_SUCCESS)
+		goto exit_bad_name;
+
+	/* try cleaning name if it is shared memory */
+	fd = shm_open(n, O_RDWR, S_IRWXU | S_IRWXG | S_IRWXO);
+	if (fd != -1)
 	{
-		urt_out("init returned %d\n", ret);
-		exit_status = EXIT_FAILURE;
-		goto exit_no_init;
+		close(fd);
+		shm_unlink(n);
+		return;
 	}
-	sem = urt_shsem_new("TSTSEM", 1);
-	if (sem == NULL)
+
+	/* try cleaning name if it is semaphore */
+	sem = sem_open(n, 0, S_IRWXU | S_IRWXG | S_IRWXO, 0);
+	if (sem != SEM_FAILED)
 	{
-		urt_out("no shared sem\n");
-		exit_status = EXIT_FAILURE;
-		goto exit_no_sem;
+		sem_close(sem);
+		sem_unlink(n);
+		return;
 	}
-	urt_out("sem allocated\n");
-	urt_out("Sleeping for 5 seconds...\n");
-	urt_sleep(5000000000ll);
-	urt_shsem_delete(sem);
-exit_no_sem:
-	urt_exit();
-	urt_out("test done\n");
-exit_no_init:
-	return exit_status;
+
+	/* mutex and rwlock have been accounted for in shared memory case */
+exit_bad_name:
+	return;
 }

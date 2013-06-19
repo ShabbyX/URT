@@ -66,6 +66,7 @@ void urt_dec_name_count(urt_registered_object *ro);
 static inline void urt_deregister(urt_registered_object *ro) { urt_dec_name_count(ro); }
 void urt_deregister_name(const char *name);
 void urt_deregister_addr(void *address);
+void urt_force_clear_name(const char *name);
 
 /* registry lookup */
 urt_registered_object *urt_get_object_by_name(const char *name);

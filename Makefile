@@ -8,7 +8,7 @@
 
 -include Makefile.config
 
-ifneq ($(URT_CONFIG_DEBUG), y)
+ifneq ($(URT_CONFIG_VERBOSE_BUILD), y)
   MAKEFLAGS := $(MAKEFLAGS) --no-print-directory
 endif
 

@@ -5,12 +5,12 @@ include ../../Makefile.common
 
 URT_BASE := $(abspath $(CURDIR)/../..)
 include $(URT_BASE)/build/Makefile.build
-CFLAGS := $(URT_USER_CFLAGS)
+CFLAGS := $(URT_USER_CFLAGS) $(EXTRA_CFLAGS)
 # USE_SHARED defined in including Makefile decides whether to build against static or shared lib
 ifeq ($(USE_SHARED), y)
-  LDFLAGS := -L$(URT_BASE)/build/shared -lurt-$(URT_VERSION) $(URT_USER_LDFLAGS) $(LDFLAGS)
+  LDFLAGS := -L$(URT_BASE)/build/shared -lurt-$(URT_VERSION) $(URT_USER_LDFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
 else
-  LDFLAGS := -L$(URT_BASE)/build/static -lurt $(URT_USER_LDFLAGS) $(LDFLAGS)
+  LDFLAGS := -L$(URT_BASE)/build/static -lurt $(URT_USER_LDFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
 endif
 # TARGET and possibly TARGET2 defined by including Makefile
 

@@ -32,10 +32,12 @@ void urt_recover(void);
 /*
  * helper functions for tools
  *
- * These functions output information regarding internal states of URT.
- * `urt_init` and `urt_exit` need to be called by the tool itself.
+ * print_names		These functions output information regarding internal states of URT.
+ *			`urt_init` and `urt_exit` need to be called by the tool itself.
+ * force_clear_name	Make the name available, cleaning up as much as possible.
  */
 void urt_print_names(void);
+void urt_force_clear_name(const char *name);
 
 URT_DECL_END
 

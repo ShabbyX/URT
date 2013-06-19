@@ -19,6 +19,7 @@
 
 #include <urt_string.h>
 #include <urt_log.h>
+#include <urt_sys_setup.h>
 #include "urt_internal.h"
 
 static bool _name_eq(const char *n1, const char *n2)
@@ -162,6 +163,7 @@ static inline void _dec_count_common(urt_registered_object *ro)
 	/* take care of object cleanup */
 	if (ro->release)
 		ro->release(ro);
+	ro->release = NULL;	/* make NULL since it should be called only once */
 
 	/* if removing max_index used, lower max_index used */
 	if (URT_UNLIKELY(index == urt_global_mem->objects_max_index))
@@ -199,6 +201,24 @@ void urt_deregister_addr(void *address)
 	ro = _find_by_addr(address);
 	if (ro)
 		_dec_count_common(ro);
+	urt_sem_post(urt_global_sem);
+}
+
+void urt_force_clear_name(const char *name)
+{
+	urt_registered_object *ro = NULL;
+
+	urt_sem_wait(urt_global_sem);
+	ro = _find_by_name(name);
+	/* cleanup the related resources, too */
+	if (ro)
+	{
+		urt_sys_force_clear_name(ro);
+		do
+		{
+			_dec_count_common(ro);
+		} while (ro->count > 0);
+	}
 	urt_sem_post(urt_global_sem);
 }
 
