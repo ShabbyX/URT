@@ -34,10 +34,16 @@
 # endif
 #endif
 
+#define URT_TYPE_MEM 1
+#define URT_TYPE_SEM 2
+#define URT_TYPE_MUTEX 3
+#define URT_TYPE_RWLOCK 4
+
 typedef struct urt_registered_object
 {
 	char name[URT_NAME_LEN + 1];		/* name of object */
 	bool reserved;				/* count could be zero, but name reserved */
+	short int type;				/* type of object, one of URT_TYPE_* */
 	unsigned int count;			/* usage count */
 	void *address;				/* address of the registered object */
 	size_t size;				/* size of memory, if object is shared memory */

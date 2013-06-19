@@ -17,8 +17,9 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <urt_setup.h>
 #include <rtai_lxrt.h>
+//#include <rtai_registry.h>
+#include <urt_sys_setup.h>
 
 int urt_sys_init(void)
 {
@@ -34,4 +35,33 @@ int urt_sys_init(void)
 	mlockall(MCL_CURRENT | MCL_FUTURE);
 #endif
 	return URT_SUCCESS;
+}
+
+void urt_sys_force_clear_name(urt_registered_object *ro)
+{
+#ifndef __KERNEL__
+	void *adr;
+	rt_allow_nonroot_hrt();
+	switch (ro->type)
+	{
+	case URT_TYPE_MEM:
+		while ((adr = rt_get_adr(nam2num(ro->name))))
+			rt_shm_free(nam2num(ro->name));
+		break;
+	case URT_TYPE_SEM:
+	case URT_TYPE_MUTEX:
+		while ((adr = rt_get_adr(nam2num(ro->name))))
+			rt_named_sem_delete(adr);
+		break;
+	case URT_TYPE_RWLOCK:
+		while ((adr = rt_get_adr(nam2num(ro->name))))
+			rt_named_rwl_delete(adr);
+		break;
+	default:
+		urt_err("internal error: bad object type %d\n", ro->type);
+	}
+#else
+	while (rt_get_adr(nam2num(ro->name)))
+		rt_drg_on_name(nam2num(ro->name));
+#endif
 }

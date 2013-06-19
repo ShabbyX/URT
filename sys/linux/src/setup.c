@@ -23,37 +23,31 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <urt_log.h>
 #include <urt_sys_setup.h>
 #include "names.h"
 
 void urt_sys_force_clear_name(urt_registered_object *ro)
 {
 	char n[URT_SYS_NAME_LEN];
-	int fd = -1;
-	urt_sem *sem = NULL;
 
 	if (urt_convert_name(n, ro->name) != URT_SUCCESS)
 		goto exit_bad_name;
 
-	/* try cleaning name if it is shared memory */
-	fd = shm_open(n, O_RDWR, S_IRWXU | S_IRWXG | S_IRWXO);
-	if (fd != -1)
+	switch (ro->type)
 	{
-		close(fd);
+	case URT_TYPE_MEM:
+	case URT_TYPE_MUTEX:
+	case URT_TYPE_RWLOCK:
 		shm_unlink(n);
-		return;
-	}
-
-	/* try cleaning name if it is semaphore */
-	sem = sem_open(n, 0, S_IRWXU | S_IRWXG | S_IRWXO, 0);
-	if (sem != SEM_FAILED)
-	{
-		sem_close(sem);
+		break;
+	case URT_TYPE_SEM:
 		sem_unlink(n);
-		return;
+		break;
+	default:
+		urt_err("internal error: bad object type %d\n", ro->type);
 	}
 
-	/* mutex and rwlock have been accounted for in shared memory case */
 exit_bad_name:
 	return;
 }

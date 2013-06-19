@@ -20,9 +20,9 @@
 #include <urt_mem.h>
 #include "urt_internal.h"
 
-#define SHOBJ_NEW(name, error, type, sz, call)			\
+#define SHOBJ_NEW(name, error, typ, sz, call, TYPE)		\
 do {								\
-	type obj = NULL;					\
+	typ obj = NULL;						\
 	urt_registered_object *ro = NULL;			\
 	ro = urt_reserve_name(name, error);			\
 	if (ro == NULL)						\
@@ -30,6 +30,7 @@ do {								\
 	obj = call;						\
 	if (obj == NULL)					\
 		goto exit_fail;					\
+	ro->type = URT_TYPE_##TYPE;				\
 	ro->address = obj;					\
 	ro->size = sz;						\
 	urt_inc_name_count(ro);					\
@@ -40,9 +41,9 @@ exit_fail:							\
 	return NULL;						\
 } while (0)
 
-#define SHOBJ_ATTACH(name, error, type, call)			\
+#define SHOBJ_ATTACH(name, error, typ, call)			\
 do {								\
-	type obj = NULL;					\
+	typ obj = NULL;						\
 	urt_registered_object *ro = NULL;			\
 	ro = urt_get_object_by_name(name);			\
 	if (ro == NULL)						\
@@ -63,7 +64,7 @@ exit_fail:							\
 
 void *(urt_shmem_new)(const char *name, size_t size, int *error, ...)
 {
-	SHOBJ_NEW(name, error, void *, size, urt_sys_shmem_new(name, size, error));
+	SHOBJ_NEW(name, error, void *, size, urt_sys_shmem_new(name, size, error), MEM);
 }
 URT_EXPORT_SYMBOL(urt_shmem_new);
 
@@ -75,7 +76,7 @@ URT_EXPORT_SYMBOL(urt_shmem_attach);
 
 urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_sem *, 0, urt_sys_shsem_new(name, init_value, error));
+	SHOBJ_NEW(name, error, urt_sem *, 0, urt_sys_shsem_new(name, init_value, error), SEM);
 }
 URT_EXPORT_SYMBOL(urt_shsem_new);
 
@@ -87,7 +88,7 @@ URT_EXPORT_SYMBOL(urt_shsem_attach);
 
 urt_mutex *(urt_shmutex_new)(const char *name, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_mutex *, 0, urt_sys_shmutex_new(name, error));
+	SHOBJ_NEW(name, error, urt_mutex *, 0, urt_sys_shmutex_new(name, error), MUTEX);
 }
 URT_EXPORT_SYMBOL(urt_shmutex_new);
 
@@ -99,7 +100,7 @@ URT_EXPORT_SYMBOL(urt_shmutex_attach);
 
 urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_rwlock *, 0, urt_sys_shrwlock_new(name, error));
+	SHOBJ_NEW(name, error, urt_rwlock *, 0, urt_sys_shrwlock_new(name, error), RWLOCK);
 }
 URT_EXPORT_SYMBOL(urt_shrwlock_new);
 
