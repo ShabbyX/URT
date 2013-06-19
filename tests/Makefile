@@ -8,19 +8,19 @@ all:
 	@$(PRINTF) "$(STATUS_COLOR)Building tests...$(DEFAULT_COLOR)\n"
 	@for i in $(TESTS); do \
 		$(PRINTF) "$(SUB_STATUS_COLOR)$$i$(DEFAULT_COLOR)\n"; \
-		$(MAKE) --no-print-directory -C $$i; \
+		$(MAKE) -C $$i; \
 	done $(HIGHLIGHT)
 .PHONY: dep
 dep:
 	@for i in $(TESTS); do \
-		$(MAKE) --no-print-directory -C $$i dep; \
+		$(MAKE) -C $$i dep; \
 	done
 .PHONY: tests valgrind
 tests:
 	@$(PRINTF) "$(STATUS_COLOR)Executing tests...$(DEFAULT_COLOR)\n"
 	@for i in $(TESTS); do \
 		$(PRINTF) "$(SUB_STATUS_COLOR)$$i$(DEFAULT_COLOR)\n"; \
-		$(MAKE) --no-print-directory -C $$i execute_test || exit 1; \
+		$(MAKE) -C $$i execute_test || exit 1; \
 		$(PRINTF) "-- passed\n"; \
 	done
 valgrind:
@@ -28,7 +28,7 @@ valgrind:
 	@if command -v valgrind > /dev/null 2>&1; then \
 		for i in $(TESTS); do \
 			$(PRINTF) "$(SUB_STATUS_COLOR)$$i$(DEFAULT_COLOR)\n"; \
-			$(MAKE) --no-print-directory -C $$i valgrind_check; \
+			$(MAKE) -C $$i valgrind_check; \
 		done \
 	else \
 		$(PRINTF) "Valgrind not installed\n"; \
@@ -36,5 +36,5 @@ valgrind:
 .PHONY: clean
 clean:
 	@for i in $(TESTS); do \
-		$(MAKE) --no-print-directory -C $$i clean; \
+		$(MAKE) -C $$i clean; \
 	done

@@ -19,11 +19,11 @@ TEX_MAKE_FILES := $(addprefix $(TEX_DIR)/, documentation.tex Makefile Makefile.o
 all:
 ifeq ($(URT_CONFIG_BUILD_DOC), y)
 	@$(PRINTF) "$(STATUS_COLOR)Building documentation...$(DEFAULT_COLOR)\n"
-	@$(MAKE) --no-print-directory files
+	@$(MAKE) files
 	$(DOC_THIS) +css
 	-$(MKDIR) $(HTML_DIR)/files
 	-$(MKDIR) $(TEX_DIR)/files
-	@$(MAKE) --no-print-directory -C generated/tex
+	@$(MAKE) -C generated/tex
 else
 	@$(SHELL_NOOP)
 endif
@@ -39,5 +39,5 @@ $(TEX_MAKE_FILES):
 clean:
 	-$(RM) $(HTML_FILES) $(HTML_DIR)/globals.html
 	-$(RM) $(TEX_FILES) $(TEX_DIR)/globals.tex
-	-@$(MAKE) --no-print-directory -C generated/tex clean
+	-@$(MAKE) -C generated/tex clean
 	-$(RM) $(TEX_MAKE_FILES)

@@ -33,5 +33,5 @@ int urt_sys_init(void)
 #ifndef __KERNEL__
 	mlockall(MCL_CURRENT | MCL_FUTURE);
 #endif
-	return 0;
+	return URT_SUCCESS;
 }

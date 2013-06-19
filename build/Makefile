@@ -20,11 +20,11 @@ all: dep modules $(INC_BUILD_DEP)
 	@$(SHELL_NOOP)
 clean:
 ifeq ($(URT_MAKE_USER), y)
-	@$(MAKE) --no-print-directory -C static clean
-	@$(MAKE) --no-print-directory -C shared clean
+	@$(MAKE) -C static clean
+	@$(MAKE) -C shared clean
 endif
 ifeq ($(URT_MAKE_KERNEL), y)
-	@$(MAKE) --no-print-directory -C kernel clean
+	@$(MAKE) -C kernel clean
 	@-$(RM) kernel/*.c
 endif
 	-$(RM) Makefile.dep
@@ -32,14 +32,14 @@ modules:
 	@$(PRINTF) "$(STATUS_COLOR)Building URT API...$(DEFAULT_COLOR)\n"
 ifeq ($(URT_MAKE_USER), y)
 	@$(PRINTF) "$(SUB_STATUS_COLOR)As static library...$(DEFAULT_COLOR)\n"
-	@$(MAKE) --no-print-directory -C static $(HIGHLIGHT)
+	@$(MAKE) -C static $(HIGHLIGHT)
 	@$(PRINTF) "$(SUB_STATUS_COLOR)As shared library...$(DEFAULT_COLOR)\n"
-	@$(MAKE) --no-print-directory -C shared $(HIGHLIGHT)
+	@$(MAKE) -C shared $(HIGHLIGHT)
 endif
 ifeq ($(URT_MAKE_KERNEL), y)
 	@$(PRINTF) "$(SUB_STATUS_COLOR)As kernel module...$(DEFAULT_COLOR)\n"
-	@$(MAKE) --no-print-directory update_kernel_sources
-	@$(MAKE) --no-print-directory -C kernel $(HIGHLIGHT)
+	@$(MAKE) update_kernel_sources
+	@$(MAKE) -C kernel $(HIGHLIGHT)
 endif
 
 include Makefile.build

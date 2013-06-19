@@ -6,35 +6,39 @@
 # install: installs the software
 # uninstall: uninstalls the software
 
+-include Makefile.config
+
+ifneq ($(URT_CONFIG_DEBUG), y)
+  MAKEFLAGS := $(MAKEFLAGS) --no-print-directory
+endif
+
 VPATH := include:src
 
 .PHONY: all config library tools tests doc
 all: config library tools tests doc
 
-GENERATED_FILES := urt_config.h urt_internal_config.h urt_version.h
-
-config: $(GENERATED_FILES)
-$(GENERATED_FILES): Makefile.config
-	@$(MAKE) --no-print-directory -f Makefile.generate all
+config: Makefile.common
+Makefile.common: Makefile.config
+	@$(MAKE) -f Makefile.generate all
 	@$(RM) build/Makefile.dep tests/*/Makefile.dep
-	@$(MAKE) --no-print-directory -C build dep
-	@$(MAKE) --no-print-directory -C tools dep
-	@$(MAKE) --no-print-directory -C tests dep
+	@$(MAKE) -C build dep
+	@$(MAKE) -C tools dep
+	@$(MAKE) -C tests dep
+	@touch Makefile.common
 
-library: $(GENERATED_FILES)
-	@$(MAKE) --no-print-directory -C build
+library: config
+	@$(MAKE) -C build
 doc:
-	@$(MAKE) --no-print-directory -C doc
-tools: $(GENERATED_FILES)
-	@$(MAKE) --no-print-directory -C tools
-tests:
-	@$(MAKE) --no-print-directory -C tests
+	@$(MAKE) -C doc
+tools: config
+	@$(MAKE) -C tools
+tests: config
+	@$(MAKE) -C tests
 
 .PHONY: install uninstall
 install uninstall:
-	@$(MAKE) --no-print-directory -f Makefile.install $@
+	@$(MAKE) -f Makefile.install $@
 
 .PHONY: clean
 clean:
-	-@$(MAKE) --no-print-directory -f Makefile.generate clean
-	-@$(MAKE) --no-print-directory -C build clean
+	-@$(MAKE) -C build clean

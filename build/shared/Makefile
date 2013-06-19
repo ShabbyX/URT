@@ -21,4 +21,4 @@ $(TARGET): $(LIB_OBJ)
 	-$(RM) liburt*.so
 	$(LD) $(LDFLAGS) $(LD_o) $@ $^
 %.o: %.c
-	@$(CC) $(CFLAGS) $(CC_o) $@ $< > /dev/null 2>&1
+	$(CC) $(CFLAGS) $(CC_o) $@ $< > /dev/null 2>&1

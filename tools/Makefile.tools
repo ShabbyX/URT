@@ -1,0 +1,35 @@
+# this file is included by */Makefile
+
+include ../../Makefile.config
+include ../../Makefile.common
+
+URT_BASE := $(abspath $(CURDIR)/../..)
+include $(URT_BASE)/build/Makefile.build
+# USE_SHARED defined in including Makefile decides whether to build against static or shared lib
+ifeq ($(USE_SHARED), y)
+  LDFLAGS := -L$(URT_BASE)/build/shared -lurt-$(URT_VERSION) $(URT_SHARED_LDFLAGS) $(LDFLAGS)
+else
+  LDFLAGS := -L$(URT_BASE)/build/static -lurt $(URT_STATIC_LDFLAGS) $(LDFLAGS)
+endif
+
+.PHONY: all dep clean
+all: dep $(TARGET)
+	@$(SHELL_NOOP)
+clean:
+	-$(RM) $(TARGET) *.o Makefile.dep
+dep: Makefile.dep
+	@$(SHELL_NOOP)
+LIB_HDR :=
+include $(URT_BASE)/include/Makefile.src
+include $(URT_SYS)/include/Makefile.src
+VPATH := $(URT_BASE)/include:$(URT_SYS)/include
+# TOOL_SRC defines the source files of the tool
+Makefile.dep: $(TOOL_SRC) $(LIB_HDR)
+	$(CC) $(CFLAGS) $(CC_M) $(filter-out %.h,$^) > Makefile.dep
+
+$(TARGET): $(TOOL_SRC:.c=.o) $(URT_BASE)/build/shared/liburt-$(URT_VERSION).so
+	$(LD) $(LD_o) $@ $(filter-out %.so,$^) $(LDFLAGS)
+%.o: %.c
+	$(CC) $(CFLAGS) $(CC_o) $@ $<
+
+-include Makefile.dep
