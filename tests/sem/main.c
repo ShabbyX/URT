@@ -57,8 +57,10 @@ int main()
 	urt_sleep(3000000000ll);
 	for (i = 0; i < 15; ++i)
 		urt_sem_post(sem);
+	urt_out("main: waiting for children\n");
 	for (i = 0; i < 20; ++i)
 		wait(NULL);
+	urt_out("main: cleaning up\n");
 	urt_shsem_delete(sem);
 exit_no_sem:
 	urt_exit();

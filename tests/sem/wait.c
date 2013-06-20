@@ -50,6 +50,7 @@ int main()
 	}
 	urt_out("wait: sem attached\n");
 	urt_sem_wait(sem);
+	urt_out("wait: cleaning up\n");
 	urt_shsem_detach(sem);
 exit_no_sem:
 	urt_exit();
