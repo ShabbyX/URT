@@ -137,6 +137,30 @@ void urt_inc_name_count(urt_registered_object *ro)
 	urt_sem_post(urt_global_sem);
 }
 
+#ifndef NDEBUG
+static void _internal_mem_check(void)
+{
+	unsigned int i;
+	bool error_given = false;
+
+	for (i = 0; i < URT_MAX_OBJECTS; ++i)
+	{
+		obj = &urt_global_mem->objects[i];
+		if ((obj->reserved || obj->count > 0) && i > urt_global_mem->objects_max_index)
+		{
+			urt_global_mem->objects_max_index = i;
+			if (!error_given)
+			{
+				urt_err("internal error: objects_max_index too low");
+				error_given = true;
+			}
+		}
+	}
+}
+#else
+# define _internal_mem_check() ((void)0)
+#endif
+
 static inline void _dec_count_common(urt_registered_object *ro)
 {
 	unsigned int index = ro - urt_global_mem->objects;
@@ -157,6 +181,8 @@ static inline void _dec_count_common(urt_registered_object *ro)
 			--index;
 		urt_global_mem->objects_max_index = index;
 	}
+
+	_internal_mem_check();
 }
 
 void urt_dec_name_count(urt_registered_object *ro)

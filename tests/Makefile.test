@@ -41,8 +41,8 @@ endif
 
 .PHONY: execute_test valgrind_check
 execute_test:
-	@./$(TARGET) > /dev/null 2>&1
+	@./$(TARGET) 2>&1 | grep --color=never 'internal error'
 valgrind_check:
-	@valgrind --leak-check=full ./$(TARGET) 2>&1 | grep --color=never 'in use at exit:\|== Invalid'
+	@valgrind --leak-check=full ./$(TARGET) 2>&1 | grep --color=never 'in use at exit:\|== Invalid\|internal error'
 
 -include Makefile.dep
