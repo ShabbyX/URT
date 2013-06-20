@@ -69,6 +69,8 @@ URT_EXPORT_SYMBOL(urt_exit);
 
 void urt_recover(void)
 {
+	unsigned int i;
+
 	if (urt_sys_init() != URT_SUCCESS)
 		return;
 
@@ -76,7 +78,24 @@ void urt_recover(void)
 	if (urt_global_sem == NULL)
 		return;
 
+	/* fix the global semaphore */
 	urt_sem_try_wait(urt_global_sem);
+
+	/* while the global semaphore is locked, fix any global memory problems too */
+	urt_global_mem = urt_global_mem_get(URT_GLOBAL_MEM_NAME, sizeof(*urt_global_mem), NULL);
+	if (urt_global_mem == NULL)
+		goto no_mem;
+
+	urt_global_mem->objects_max_index = 0;
+	for (i = 0; i < URT_MAX_OBJECTS; ++i)
+	{
+		urt_registered_object *ro = &urt_global_mem->objects[i];
+		if (!ro->reserved && ro->count == 0 && urt_global_mem->objects_max_index < i)
+			urt_global_mem->objects_max_index = i;
+	}
+
+	urt_global_mem_free(URT_GLOBAL_MEM_NAME);
+no_mem:
 	urt_sem_post(urt_global_sem);
 	urt_global_sem_free(URT_GLOBAL_LOCK_NAME);
 

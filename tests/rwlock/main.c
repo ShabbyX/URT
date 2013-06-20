@@ -63,6 +63,7 @@ int main()
 	ret = urt_rwlock_write_lock(rwl);
 	urt_out("main: write lock returned: %d\n", ret);
 	urt_shrwlock_delete(rwl);
+	urt_out("main: waiting for children\n");
 	for (i = 0; i < 4; ++i)
 		wait(NULL);
 exit_no_rwl:

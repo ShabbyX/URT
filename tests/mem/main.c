@@ -71,11 +71,13 @@ int main()
 		urt_sem_wait(res);
 	if (!(mem[0] == 20 && mem[1] == 40 && mem[2] == 60 && mem[3] == -20))
 	{
-		urt_out("main: bad synchronization (wrong results)");
+		urt_out("main: bad synchronization (wrong results)\n");
 		exit_status = EXIT_FAILURE;
 	}
+	urt_out("main: waiting for children\n");
 	for (i = 0; i < 20; ++i)
 		wait(NULL);
+	urt_out("main: cleaning up\n");
 	urt_shmem_delete(mem);
 exit_no_mem:
 	if (req)

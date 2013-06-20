@@ -25,18 +25,22 @@ int main()
 	int exit_status = 0;
 	int ret;
 	urt_rwlock *rwl = NULL;
+	urt_time start;
 
 	urt_out("read: spawned\n");
 
 	ret = urt_init();
-	urt_sleep(100000000);	/* wait for main to create rwlock */
 	if (ret)
 	{
 		urt_out("read: init returned %d\n", ret);
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
-	rwl = urt_shrwlock_attach("TSTRWL");
+	start = urt_get_time();
+	do
+	{
+		rwl = urt_shrwlock_attach("TSTRWL");
+	} while (rwl == NULL && urt_get_time() - start < 1000000000ll);
 	if (rwl == NULL)
 	{
 		urt_out("read: no shared rwl\n");

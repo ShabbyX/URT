@@ -25,18 +25,23 @@ int main()
 	int exit_status = 0;
 	int ret;
 	urt_sem *sem = NULL;
+	urt_time start;
 
 	urt_out("wait: spawned\n");
 
 	ret = urt_init();	/* tests race condition for urt_init */
-	urt_sleep(100000000);		/* wait for main to create semaphore */
 	if (ret)
 	{
 		urt_out("wait: init returned %d\n", ret);
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
-	sem = urt_shsem_attach("TSTSEM");
+	start = urt_get_time();
+	do
+	{
+		sem = urt_shsem_attach("TSTSEM");
+		urt_sleep(10000000);
+	} while (sem == NULL && urt_get_time() - start < 1000000000ll);
 	if (sem == NULL)
 	{
 		urt_out("wait: no shared sem\n");
