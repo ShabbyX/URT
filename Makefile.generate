@@ -54,7 +54,7 @@ config_headers:
 	@$(PRINTF) $(CONFIG_HEADER) > include/urt_config.h
 	@$(PRINTF) $(INTERNAL_CONFIG_HEADER) > src/urt_internal_config.h
 
-VERSION_BUILD := $(shell wc -l src/build.txt 2>&1 | cut -d " " -f 1)
+URT_VERSION_BUILD := $(shell wc -l build/build.txt 2>&1 | cut -d " " -f 1)
 
 VERSION_HEADER := $(subst \n ,\n,"\#ifndef URT_VERSION_H\n\
 				\#define URT_VERSION_H\n\

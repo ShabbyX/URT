@@ -4,4 +4,5 @@
 
 Known issues
 - with linux
-  * the sem test deadlocks. It seems like wait.c, gets stuck at cleanup (?)
+- with RTAI (user space)
+- with RTAI (kernel space)
