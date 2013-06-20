@@ -99,7 +99,7 @@ exit_bad_name:
 		*error= URT_BAD_NAME;
 	goto exit_fail;
 exit_fail:
-	free(sem);
+	urt_mem_delete(sem);
 	return NULL;
 }
 
@@ -134,6 +134,7 @@ static void _shsem_detach(struct urt_registered_object *ro)
 	sem_close(sem->sem_ptr);
 	if (ro->count == 0 && urt_convert_name(n, ro->name) == URT_SUCCESS)
 		sem_unlink(n);
+	urt_mem_delete(sem);
 }
 
 void urt_shsem_detach(urt_sem *sem)
