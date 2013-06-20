@@ -109,7 +109,9 @@ urt_registered_object *urt_reserve_name(const char *name, int *error)
 	if (i == URT_MAX_OBJECTS)
 		goto exit_max_reached;
 
-	obj->reserved = true;
+	*obj = (urt_registered_object){
+		.reserved = true
+	};
 	_name_cpy(obj->name, name);
 	if (i > urt_global_mem->objects_max_index)
 		urt_global_mem->objects_max_index = i;
@@ -185,21 +187,18 @@ static inline void _dec_count_common(urt_registered_object *ro)
 	_internal_mem_check();
 }
 
-void urt_dec_name_count(urt_registered_object *ro)
+void urt_dec_name_count(urt_registered_object *ro,
+		void *address, size_t size,
+		void (*release)(struct urt_registered_object *),
+		void *user_data)
 {
 	urt_sem_wait(urt_global_sem);
+	ro->address = address;
+	if (size > 0)
+		ro->size = size;
+	ro->release = release;
+	ro->user_data = user_data;
 	_dec_count_common(ro);
-	urt_sem_post(urt_global_sem);
-}
-
-void urt_deregister_name(const char *name)
-{
-	urt_registered_object *ro = NULL;
-
-	urt_sem_wait(urt_global_sem);
-	ro = _find_by_name(name);
-	if (ro)
-		_dec_count_common(ro);
 	urt_sem_post(urt_global_sem);
 }
 

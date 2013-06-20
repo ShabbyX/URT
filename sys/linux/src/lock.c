@@ -144,9 +144,7 @@ void urt_shsem_detach(urt_sem *sem)
 	ro = urt_get_object_by_id(sem->id);
 	if (ro == NULL)
 		return;
-	ro->address = sem;
-	ro->release = _shsem_detach;
-	urt_deregister(ro);
+	urt_deregister(ro, sem, ro->size, _shsem_detach, NULL);
 }
 
 int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)

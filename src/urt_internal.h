@@ -74,9 +74,18 @@ extern urt_internal *urt_global_mem;
 void urt_registry_init(void);
 urt_registered_object *urt_reserve_name(const char *name, int *error);
 void urt_inc_name_count(urt_registered_object *ro);
-void urt_dec_name_count(urt_registered_object *ro);
-static inline void urt_deregister(urt_registered_object *ro) { urt_dec_name_count(ro); }
-void urt_deregister_name(const char *name);
+/* dec name count may call callbacks that need to be fixed per process */
+void urt_dec_name_count(urt_registered_object *ro,
+		void *address, size_t size,
+		void (*release)(struct urt_registered_object *),
+		void *user_data);
+static inline void urt_deregister(urt_registered_object *ro,
+		void *address, size_t size,
+		void (*release)(struct urt_registered_object *),
+		void *user_data)
+{
+	urt_dec_name_count(ro, address, size, release, user_data);
+}
 void urt_force_clear_name(const char *name);
 
 /* registry lookup */

@@ -39,7 +39,8 @@ do {								\
 	return obj;						\
 exit_fail:							\
 	if (ro)							\
-		urt_deregister(ro);				\
+		urt_deregister(ro, ro->address, ro->size,	\
+				ro->release, ro->user_data);	\
 	return NULL;						\
 } while (0)
 
@@ -60,7 +61,8 @@ exit_no_obj:							\
 		*error = URT_NO_OBJ;				\
 exit_fail:							\
 	if (ro)							\
-		urt_deregister(ro);				\
+		urt_deregister(ro, ro->address, ro->size,	\
+				ro->release, ro->user_data);	\
 	return NULL;						\
 } while (0)
 

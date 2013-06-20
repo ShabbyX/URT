@@ -156,8 +156,5 @@ void urt_shmem_detach_with_callback(void *mem, void (*f)(void *))
 	ro = urt_get_object_by_id(*(unsigned int *)mem);
 	if (ro == NULL)
 		return;
-	ro->address = mem;
-	ro->release = _shmem_detach;
-	ro->user_data = f;
-	urt_deregister(ro);
+	urt_deregister(ro, mem, ro->size, _shmem_detach, f);
 }

@@ -127,7 +127,7 @@ void urt_shsem_detach(urt_sem *sem)
 		return;
 	ro = urt_get_object_by_id(sem->id);
 	rt_named_sem_delete(sem->sem_ptr);
-	urt_deregister(ro);
+	urt_deregister(ro, ro->address, ro->size, NULL, NULL);
 }
 URT_EXPORT_SYMBOL(urt_shsem_detach);
 
@@ -261,7 +261,7 @@ void urt_shrwlock_detach(urt_rwlock *rwl)
 		return;
 	ro = urt_get_object_by_id(rwl->id);
 	rt_named_rwl_delete(rwl->rwl_ptr);
-	urt_deregister(ro);
+	urt_deregister(ro, ro->address, ro->size, NULL, NULL);
 }
 URT_EXPORT_SYMBOL(urt_shrwlock_detach);
 
