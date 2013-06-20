@@ -145,7 +145,7 @@ static void _internal_mem_check(void)
 
 	for (i = 0; i < URT_MAX_OBJECTS; ++i)
 	{
-		obj = &urt_global_mem->objects[i];
+		urt_registered_object *obj = &urt_global_mem->objects[i];
 		if ((obj->reserved || obj->count > 0) && i > urt_global_mem->objects_max_index)
 		{
 			urt_global_mem->objects_max_index = i;

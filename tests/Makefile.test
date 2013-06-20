@@ -41,7 +41,7 @@ endif
 
 .PHONY: execute_test valgrind_check
 execute_test:
-	@./$(TARGET) 2>&1 | grep --color=never 'internal error'
+	@./$(TARGET) 2>&1 | grep --color=never 'internal error'; exit $${PIPESTATUS[0]}
 valgrind_check:
 	@valgrind --leak-check=full ./$(TARGET) 2>&1 | grep --color=never 'in use at exit:\|== Invalid\|internal error'
 
