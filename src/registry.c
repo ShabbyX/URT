@@ -337,8 +337,8 @@ void urt_print_names(void)
 			continue;
 		urt_out_cont(" %7u | %*s | %7u | %8s | %18p | %12zu | %6s\n", i, URT_NAME_LEN, obj->name, obj->count,
 				obj->reserved?"Yes":"No", obj->address, obj->size,
-				obj->type == URT_TYPE_MEM?"MEM":
-				obj->type == URT_TYPE_SEM?"SEM":
+				obj->type == URT_TYPE_MEM?"MEM ":
+				obj->type == URT_TYPE_SEM?"SEM ":
 				obj->type == URT_TYPE_MUTEX?"MUTEX":
 				obj->type == URT_TYPE_RWLOCK?"RWLOCK":"??????");
 	}

@@ -43,6 +43,6 @@ endif
 execute_test:
 	@./$(TARGET) > /dev/null 2>&1
 valgrind_check:
-	@valgrind --leak-check=full ./$(TARGET) | grep --color=never 'in use at exit:\|== Invalid'
+	@valgrind --leak-check=full ./$(TARGET) 2>&1 | grep --color=never 'in use at exit:\|== Invalid'
 
 -include Makefile.dep
