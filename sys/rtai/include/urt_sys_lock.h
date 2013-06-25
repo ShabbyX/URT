@@ -42,7 +42,11 @@ typedef struct urt_rwlock
 	unsigned int id;
 } urt_rwlock;
 
+/* a helper macro is used for `, ##__VA_ARGS__` to correctly expand */
+#define urt_mutex_new(...) urt_mutex_new_(unused, ##__VA_ARGS__, NULL)
+#define urt_mutex_new_(unused, ...) urt_mutex_new(__VA_ARGS__)
 URT_ATTR_WARN_UNUSED urt_mutex *(urt_mutex_new)(int *error, ...);
+#define urt_mutex_delete(m) urt_sem_delete(m)
 
 #define urt_shmutex_detach(m) urt_shsem_detach(m)
 

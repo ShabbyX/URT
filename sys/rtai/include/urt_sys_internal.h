@@ -26,19 +26,19 @@ static inline void *urt_sys_add_mem_book_keeping(void *mem, unsigned int id)
 	return (char *)mem + 16;
 }
 
-static inline urt_sem *_add_sem_book_keeping(urt_sem *sem, unsigned int id)
+static inline urt_sem *urt_sys_add_sem_book_keeping(urt_sem *sem, unsigned int id)
 {
 	sem->id = id;
 	return sem;
 }
 
-static inline urt_mutex *_add_mutex_book_keeping(urt_mutex *mutex, unsigned int id)
+static inline urt_mutex *urt_sys_add_mutex_book_keeping(urt_mutex *mutex, unsigned int id)
 {
 	mutex->id = id;
 	return mutex;
 }
 
-static inline urt_rwlock *_add_rwlock_book_keeping(urt_rwlock *rwl, unsigned int id)
+static inline urt_rwlock *urt_sys_add_rwlock_book_keeping(urt_rwlock *rwl, unsigned int id)
 {
 	rwl->id = id;
 	return rwl;

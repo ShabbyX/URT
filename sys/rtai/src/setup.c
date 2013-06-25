@@ -18,8 +18,11 @@
  */
 
 #include <rtai_lxrt.h>
-//#include <rtai_registry.h>
+#include <rtai_shm.h>
+#include <rtai_registry.h>
 #include <urt_sys_setup.h>
+#include <urt_mem.h>
+#include <urt_log.h>
 
 int urt_sys_init(void)
 {
