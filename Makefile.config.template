@@ -10,8 +10,10 @@ URT_CONFIG_CC=gcc
 #     rtai:             Real-time library and kernel module for Linux  (In implementation)
 #     rtai-kernel-only: Real-time kernel module for Linux  (In implementation)
 #     rtai-user-only:   Real-time library for Linux  (In implementation)
+#     xenomai:		Real-time library for Linux (Not yet implemented)
 #     qnx:              Real-time library for QNX  (Not yet implemented)
 #     vxworks:          Real-time library for VxWorks  (Not yet implemented)
+#     rtlinux:		Real-time patches (RT-Linux) for the Linux kernel (Not yet implemented)
 #
 # In the future, other systems may also be considered, such as mac or even windows.
 URT_CONFIG_RT_SUBSYSTEM=linux
@@ -22,8 +24,10 @@ URT_CONFIG_RT_SUBSYSTEM=linux
 # RTAI:
 #     rtai tool: path to rtai-config script
 URT_CONFIG_RTAI_TOOL=/usr/realtime/bin/rtai-config
+# Xenomai: None
 # QNX: None
 # VxWorks: None
+# RT-Linux: None
 
 # Parameters
 #
