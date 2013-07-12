@@ -1,8 +1,6 @@
-- Is it possible to ensure urt_shx_detach would always imply urt_shx_delete if usage count reaches zero? If so, do ensure and write that in docs.
-  * Note: currently, urt_shsem_detach only does a sem_close, while urt_shsem_delete also does a sem_unlink. Possibly, after sem_unlink no other
-  processes can attach to the semaphore, so calling sem_unlink from urt_shsem_detach is probably not correct.
-
 Known issues
 - with linux
 - with RTAI (user space)
+  * setup functions cannot call urt_sem_wait because they are not in RT context.  In fact, all registry functions do urt_sem_wait
+    which needs RT context.  See here for ideas: http://stackoverflow.com/q/17391276/912144
 - with RTAI (kernel space)
