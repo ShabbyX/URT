@@ -54,7 +54,7 @@ static void normal(urt_task *task, void *data)
 	urt_sem_post(done_sem);
 }
 
-int main()
+int main(void)
 {
 	int ret;
 	int exit_status = 0;

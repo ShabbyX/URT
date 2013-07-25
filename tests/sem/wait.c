@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <urt.h>
 
-int main()
+int main(void)
 {
 	int exit_status = 0;
 	int ret;

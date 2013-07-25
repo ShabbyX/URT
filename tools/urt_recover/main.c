@@ -19,7 +19,7 @@
 
 #include <urt.h>
 
-int main()
+int main(void)
 {
 	urt_recover();
 	return 0;

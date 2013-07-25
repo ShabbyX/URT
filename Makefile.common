@@ -44,7 +44,7 @@ URT_VERSION := $(URT_VERSION_MAJOR).$(URT_VERSION_MINOR).$(URT_VERSION_REVISION)
 ifndef IGNORE_BUILD_OPTIONS
   # Set compiler variables
   ifeq ($(URT_CONFIG_CC), gcc)
-    CC := gcc -c
+    CC := gcc -c -std=gnu99
     AR := ar rcs
     LD := gcc
     CC_LD := gcc

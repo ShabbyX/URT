@@ -21,6 +21,7 @@
 #include <rtai_shm.h>
 #include <rtai_registry.h>
 #include <urt_sys_setup.h>
+#include <urt_sys_lock.h>
 #include <urt_mem.h>
 #include <urt_log.h>
 

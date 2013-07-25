@@ -22,7 +22,7 @@
 #include <sys/wait.h>
 #include <urt.h>
 
-int main()
+int main(void)
 {
 	int ret;
 	int exit_status = 0;
