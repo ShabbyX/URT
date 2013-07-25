@@ -10,9 +10,6 @@ else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-kernel-only)
   URT_SYS_DIR = rtai
 else
-ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-user-only)
-  URT_SYS_DIR = rtai
-else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), xenomai)
   URT_SYS_DIR = xenomai
 else
@@ -24,7 +21,6 @@ ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
 else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtlinux)
   URT_SYS_DIR = rtlinux
-endif
 endif
 endif
 endif
@@ -90,11 +86,6 @@ ifndef IGNORE_BUILD_OPTIONS
     URT_KERNEL_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --module-cflags)
     URT_KERNEL_SYMBOLS += $(RTAI_HOME)/modules/Module.symvers
   else
-  ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-user-only)
-    RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
-    URT_STATIC_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-cflags)
-    URT_STATIC_LDFLAGS +=  $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-ldflags)
-  else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), xenomai)
     URT_STATIC_CFLAGS +=
   else
@@ -108,7 +99,6 @@ ifndef IGNORE_BUILD_OPTIONS
     URT_MAKE_USER = n
     URT_MAKE_KERNEL = y
     URT_STATIC_CFLAGS +=
-  endif
   endif
   endif
   endif

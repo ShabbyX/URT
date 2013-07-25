@@ -40,9 +40,7 @@ check:
 	@$(MAKE) -C tests tests
 ifneq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
   ifneq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-kernel-only)
-    ifneq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-user-only)
 	@$(MAKE) -C tests valgrind
-    endif
   endif
 endif
 
