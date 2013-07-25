@@ -93,7 +93,7 @@ urt_registered_object *urt_reserve_name(const char *name, int *error)
 	unsigned int i;
 	urt_registered_object *obj = NULL;
 
-	urt_sem_wait(urt_global_sem);
+	urt_global_sem_wait();
 
 	/* make sure name doesn't exist */
 	if (_find_by_name(name) != NULL)
@@ -116,7 +116,7 @@ urt_registered_object *urt_reserve_name(const char *name, int *error)
 	if (i > urt_global_mem->objects_max_index)
 		urt_global_mem->objects_max_index = i;
 
-	urt_sem_post(urt_global_sem);
+	urt_global_sem_post();
 
 	return obj;
 exit_exists:
@@ -127,16 +127,16 @@ exit_max_reached:
 	if (error)
 		*error = URT_MAX_REACHED;
 exit_fail:
-	urt_sem_post(urt_global_sem);
+	urt_global_sem_post();
 	return NULL;
 }
 
 void urt_inc_name_count(urt_registered_object *ro)
 {
-	urt_sem_wait(urt_global_sem);
+	urt_global_sem_wait();
 	++ro->count;
 	ro->reserved = false;
-	urt_sem_post(urt_global_sem);
+	urt_global_sem_post();
 }
 
 #ifndef NDEBUG
@@ -192,21 +192,21 @@ void urt_dec_name_count(urt_registered_object *ro,
 		void (*release)(struct urt_registered_object *),
 		void *user_data)
 {
-	urt_sem_wait(urt_global_sem);
+	urt_global_sem_wait();
 	ro->address = address;
 	if (size > 0)
 		ro->size = size;
 	ro->release = release;
 	ro->user_data = user_data;
 	_dec_count_common(ro);
-	urt_sem_post(urt_global_sem);
+	urt_global_sem_post();
 }
 
 void urt_force_clear_name(const char *name)
 {
 	urt_registered_object *ro = NULL;
 
-	urt_sem_wait(urt_global_sem);
+	urt_global_sem_wait();
 	ro = _find_by_name(name);
 	/* cleanup the related resources, too */
 	if (ro)
@@ -217,21 +217,21 @@ void urt_force_clear_name(const char *name)
 			_dec_count_common(ro);
 		} while (ro->count > 0);
 	}
-	urt_sem_post(urt_global_sem);
+	urt_global_sem_post();
 }
 
 urt_registered_object *urt_get_object_by_name_and_inc_count(const char *name)
 {
 	urt_registered_object *ro = NULL;
 
-	urt_sem_wait(urt_global_sem);
+	urt_global_sem_wait();
 	ro = _find_by_name(name);
 	if (ro)
 	{
 		++ro->count;
 		ro->reserved = false;
 	}
-	urt_sem_post(urt_global_sem);
+	urt_global_sem_post();
 
 	return ro;
 }
@@ -314,7 +314,7 @@ int urt_get_free_name(char *name)
 	int ret;
 	char *next_name;
 
-	urt_sem_wait(urt_global_sem);
+	urt_global_sem_wait();
 
 	if (URT_UNLIKELY(urt_global_mem->names_exhausted))
 		_check_and_get_free_name(name);
@@ -329,10 +329,10 @@ int urt_get_free_name(char *name)
 			goto exit_fail;
 	}
 
-	urt_sem_post(urt_global_sem);
+	urt_global_sem_post();
 	return URT_SUCCESS;
 exit_fail:
-	urt_sem_post(urt_global_sem);
+	urt_global_sem_post();
 	return URT_FAIL;
 }
 URT_EXPORT_SYMBOL(urt_get_free_name);
@@ -342,7 +342,7 @@ void urt_print_names(void)
 	unsigned int i;
 	urt_registered_object *obj = NULL;
 
-	urt_sem_wait(urt_global_sem);
+	urt_global_sem_wait();
 
 	urt_out_cont("  index  | ");
 	for (i = 0; i < URT_NAME_LEN / 2 - 2; ++i)
@@ -371,5 +371,5 @@ void urt_print_names(void)
 	urt_out_cont("next free name: %*s%s\n", URT_NAME_LEN, urt_global_mem->next_free_name,
 			urt_global_mem->names_exhausted?" (cycled)":"");
 
-	urt_sem_post(urt_global_sem);
+	urt_global_sem_post();
 }

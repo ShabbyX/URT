@@ -67,7 +67,6 @@ typedef struct urt_internal
 	bool initialized;			/* whether registry is already initialized */
 } urt_internal;
 
-extern urt_sem *urt_global_sem;
 extern urt_internal *urt_global_mem;
 
 /* registry manipulation */
@@ -92,11 +91,14 @@ void urt_force_clear_name(const char *name);
 urt_registered_object *urt_get_object_by_name_and_inc_count(const char *name);
 static inline urt_registered_object *urt_get_object_by_id(unsigned int id) { return &urt_global_mem->objects[id]; }
 
-/* global sem and mem registry skip */
-urt_sem *urt_global_sem_get(const char *name, int *error);
+/* global sem and mem registry.  Note that global sem is a non-real-time semaphore */
+int urt_global_sem_get(const char *name, int *error);
 void *urt_global_mem_get(const char *name, size_t size, int *error);
 void urt_global_sem_free(const char *name);
 void urt_global_mem_free(const char *name);
+void urt_global_sem_wait(void);
+void urt_global_sem_try_wait(void);
+void urt_global_sem_post(void);
 
 /* system specific parts of object new/attach */
 void *urt_sys_shmem_new(const char *name, size_t size, int *error);

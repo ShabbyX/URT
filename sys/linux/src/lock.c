@@ -28,6 +28,9 @@
 #include "mem_internal.h"
 #include "time_internal.h"
 
+/* in POSIX systems, the native semaphore type is the urt_sem type */
+static urt_sem *urt_global_sem;
+
 urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...)
 {
 	urt_sem *sem = urt_mem_new(sizeof(*sem), error);
@@ -103,9 +106,10 @@ exit_fail:
 	return NULL;
 }
 
-urt_sem *urt_global_sem_get(const char *name, int *error)
+int urt_global_sem_get(const char *name, int *error)
 {
-	return _shsem_common(name, 1, error, O_CREAT);
+	urt_global_sem = _shsem_common(name, 1, error, O_CREAT);
+	return urt_global_sem?0:-1;
 }
 
 urt_sem *urt_sys_shsem_new(const char *name, unsigned int init_value, int *error)
@@ -124,6 +128,21 @@ void urt_global_sem_free(const char *name)
 	/* Note: it's easier if urt_global_sem is never `sem_unlink`ed */
 	urt_mem_delete(urt_global_sem);
 	urt_global_sem = NULL;
+}
+
+void urt_global_sem_wait(void)
+{
+	urt_sem_wait(urt_global_sem);
+}
+
+void urt_global_sem_try_wait(void)
+{
+	urt_sem_try_wait(urt_global_sem);
+}
+
+void urt_global_sem_post(void)
+{
+	urt_sem_post(urt_global_sem);
 }
 
 static void _shsem_detach(struct urt_registered_object *ro)

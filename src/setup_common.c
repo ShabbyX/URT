@@ -23,7 +23,6 @@
 #include "urt_internal.h"
 #include <urt_sys_setup.h>
 
-urt_sem *urt_global_sem = NULL;
 urt_internal *urt_global_mem = NULL;
 
 int urt_init(void)
@@ -32,14 +31,14 @@ int urt_init(void)
 	if (error != URT_SUCCESS)
 		return error;
 
-	/* get global lock */
-	if (urt_global_sem != NULL || urt_global_mem != NULL)
+	if (urt_global_mem != NULL)
 		return URT_ALREADY;
-	urt_global_sem = urt_global_sem_get(URT_GLOBAL_LOCK_NAME, &error);
-	if (urt_global_sem == NULL)
+
+	/* get global lock */
+	if (urt_global_sem_get(URT_GLOBAL_LOCK_NAME, &error))
 		goto exit_no_sem;
 
-	urt_sem_wait(urt_global_sem);
+	urt_global_sem_wait();
 
 	/* get global memory */
 	urt_global_mem = urt_global_mem_get(URT_GLOBAL_MEM_NAME, sizeof(*urt_global_mem), &error);
@@ -49,7 +48,7 @@ int urt_init(void)
 	urt_registry_init();
 
 exit_no_mem:
-	urt_sem_post(urt_global_sem);
+	urt_global_sem_post();
 exit_no_sem:
 	return error;
 }
@@ -57,7 +56,7 @@ URT_EXPORT_SYMBOL(urt_init);
 
 void urt_exit(void)
 {
-	if (urt_global_sem == NULL || urt_global_mem == NULL)
+	if (urt_global_mem == NULL)
 		return;
 
 	urt_global_mem_free(URT_GLOBAL_MEM_NAME);
@@ -74,12 +73,11 @@ void urt_recover(void)
 	if (urt_sys_init() != URT_SUCCESS)
 		return;
 
-	urt_global_sem = urt_global_sem_get(URT_GLOBAL_LOCK_NAME, NULL);
-	if (urt_global_sem == NULL)
+	if (urt_global_sem_get(URT_GLOBAL_LOCK_NAME, NULL))
 		return;
 
 	/* fix the global semaphore */
-	urt_sem_try_wait(urt_global_sem);
+	urt_global_sem_try_wait();
 
 	/* while the global semaphore is locked, fix any global memory problems too */
 	urt_global_mem = urt_global_mem_get(URT_GLOBAL_MEM_NAME, sizeof(*urt_global_mem), NULL);
@@ -97,7 +95,7 @@ void urt_recover(void)
 
 	urt_global_mem_free(URT_GLOBAL_MEM_NAME);
 no_mem:
-	urt_sem_post(urt_global_sem);
+	urt_global_sem_post();
 	urt_global_sem_free(URT_GLOBAL_LOCK_NAME);
 
 	urt_sys_exit();
