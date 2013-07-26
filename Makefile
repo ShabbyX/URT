@@ -18,7 +18,7 @@ VPATH := include:src
 all: config library tools tests doc
 
 config: Makefile.common
-Makefile.common: Makefile.config
+Makefile.common: Makefile.config Makefile.generate
 	@$(MAKE) -f Makefile.generate all
 	@$(RM) build/Makefile.dep tests/*/Makefile.dep
 	@$(MAKE) -C build dep
