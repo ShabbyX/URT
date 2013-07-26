@@ -92,7 +92,7 @@ urt_registered_object *urt_get_object_by_name_and_inc_count(const char *name);
 static inline urt_registered_object *urt_get_object_by_id(unsigned int id) { return &urt_global_mem->objects[id]; }
 
 /* global sem and mem registry.  Note that global sem is a non-real-time semaphore */
-int urt_global_sem_get(const char *name, int *error);
+int urt_global_sem_get(const char *name);
 void *urt_global_mem_get(const char *name, size_t size, int *error);
 void urt_global_sem_free(const char *name);
 void urt_global_mem_free(const char *name);

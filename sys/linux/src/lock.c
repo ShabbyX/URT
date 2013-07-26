@@ -106,10 +106,10 @@ exit_fail:
 	return NULL;
 }
 
-int urt_global_sem_get(const char *name, int *error)
+int urt_global_sem_get(const char *name)
 {
 	urt_global_sem = _shsem_common(name, 1, error, O_CREAT);
-	return urt_global_sem?0:-1;
+	return urt_global_sem?URT_SUCCESS:URT_FAIL;
 }
 
 urt_sem *urt_sys_shsem_new(const char *name, unsigned int init_value, int *error)

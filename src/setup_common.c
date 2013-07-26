@@ -35,7 +35,8 @@ int urt_init(void)
 		return URT_ALREADY;
 
 	/* get global lock */
-	if (urt_global_sem_get(URT_GLOBAL_LOCK_NAME, &error))
+	error = urt_global_sem_get(URT_GLOBAL_LOCK_NAME);
+	if (error)
 		goto exit_no_sem;
 
 	urt_global_sem_wait();
@@ -73,7 +74,7 @@ void urt_recover(void)
 	if (urt_sys_init() != URT_SUCCESS)
 		return;
 
-	if (urt_global_sem_get(URT_GLOBAL_LOCK_NAME, NULL))
+	if (urt_global_sem_get(URT_GLOBAL_LOCK_NAME))
 		return;
 
 	/* fix the global semaphore */

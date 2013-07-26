@@ -95,7 +95,7 @@ exit_no_mem:
 	return NULL;
 }
 
-int urt_global_sem_get(const char *name, int *error)
+int urt_global_sem_get(const char *name)
 {
 #ifdef __KERNEL__
 	return 0;
@@ -103,7 +103,7 @@ int urt_global_sem_get(const char *name, int *error)
 	if (urt_global_sem >= 0)
 		close(urt_global_sem);
 	urt_global_sem = open("/sys/urt/global_sem", O_WRONLY);
-	return urt_global_sem >= 0?0:-1;
+	return urt_global_sem >= 0?URT_SUCCESS:URT_FAIL;
 #endif
 }
 
