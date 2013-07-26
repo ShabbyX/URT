@@ -20,7 +20,6 @@ TYPE urt_time: int64_t
 	in time.
 
 FUNCTION urt_get_time: (): urt_time
-NOTICE RT
 	Get current time
 
 	This function retrieves the current time (from an unknown origin) in nanoseconds.
