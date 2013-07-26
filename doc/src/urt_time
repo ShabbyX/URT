@@ -48,7 +48,6 @@ NOTICE RT
 		Execution time of the calling thread, possibly _not_ starting from zero.
 
 FUNCTION urt_sleep: (t: urt_time): void
-NOTICE RT
 	Sleep for some time
 
 	This function suspends execution time of the calling thread for _at least_ **`t`** nanoseconds.

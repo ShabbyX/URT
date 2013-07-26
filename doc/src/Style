@@ -12,9 +12,9 @@ next index
 
 ## Function Call Context
 Initialization, finalization and resource allocation functions can only be called from **non**<>-real-time context. Functions that
-access a resource (for example `[urt_sem_wait](urt_lock)`) or request a real-time functionality (for example `[urt_sleep](urt_time)`)
+access a resource (for example `[#urt_sem_wait](urt_lock)`) or request a real-time functionality (for example `[#urt_get_exec_time](urt_time)`)
 can only be called from real-time context.  Throughout the documentation, functions that can only be called from real-time context are marked with
-`RT` as well as a notice.  Other functions (for example `[urt_log](urt_log)`) are callable from both contexts.
+`RT` as well as a notice.  Other functions (for example `[#urt_log](urt_log)` or `[#urt_sleep](urt_time)`) are callable from both contexts.
 
 ## Shared Resources
 Shared resources in URT are identified by at-most-`[#URT_NAME_LEN](constants)`-character names, comprising of capital letters (`'A'-'Z'`), digits (`'0'-'9'`)
