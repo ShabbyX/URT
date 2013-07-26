@@ -19,11 +19,15 @@
 
 #ifdef __KERNEL__
 
-#include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/sysfs.h>
+#include <linux/kobject.h>
 #include <urt.h>
 #include <urt_internal.h>
 #include <urt_sys_internal.h>
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Shahbaz Youssefi");
 
 /* setup sysfs for user-space global sem wait/post */
 static struct kobject *_kobj = NULL;
@@ -56,7 +60,13 @@ URT_EXPORT_SYMBOL(urt_global_sem);
 
 static int __init _urt_rtai_init(void)
 {
-	int ret = urt_init();
+	int ret;
+
+	/* make urt_global_sem ready */
+	sema_init(&urt_global_sem, 1);
+
+	ret = urt_init();
+
 	if (ret != URT_SUCCESS && ret != URT_ALREADY)
 	{
 		urt_err("Could not initialize URT\n");
@@ -79,8 +89,6 @@ static int __init _urt_rtai_init(void)
 		goto no_sysfs;
 	}
 no_sysfs:
-	/* make urt_global_sem ready */
-	sema_init(&urt_global_sem, 1);
 
 	return 0;
 }
