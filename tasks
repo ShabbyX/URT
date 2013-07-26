@@ -1,6 +1,4 @@
 Known issues
 - with linux
 - with RTAI (user space)
-  * setup functions cannot call urt_sem_wait because they are not in RT context.  In fact, all registry functions do urt_sem_wait
-    which needs RT context.  See here for ideas: http://stackoverflow.com/q/17391276/912144
 - with RTAI (kernel space)
