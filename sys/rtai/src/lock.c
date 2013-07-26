@@ -98,7 +98,7 @@ exit_no_mem:
 int urt_global_sem_get(const char *name)
 {
 #ifdef __KERNEL__
-	return 0;
+	return URT_SUCCESS;
 #else
 	if (urt_global_sem >= 0)
 		close(urt_global_sem);

@@ -1,0 +1,5 @@
+NOTICE RT
+Callable only from real-time context.
+
+NOTICE NON-RT
+Must be called from non-real-time context.

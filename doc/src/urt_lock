@@ -114,6 +114,7 @@ FUNCTION urt_shsem_detach: (sem: urt_sem *): void
 		See `[#urt_shsem_delete]`.
 
 FUNCTION urt_sem_wait: (sem: urt_sem *, stop: bool * = NULL): int
+NOTICE RT
 	Wait on a semaphore
 
 	This function waits on semaphore **`sem`**. If the semaphore is not available, it will stay blocked until either it is [posted](#urt_sem_post),
@@ -131,6 +132,7 @@ FUNCTION urt_sem_wait: (sem: urt_sem *, stop: bool * = NULL): int
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_sem_timed_wait: (sem: urt_sem *, wait_time: urt_time): int
+NOTICE RT
 	Wait on a semaphore for a maximum of given time
 
 	This function waits on semaphore **`sem`**. If the semaphore is not available until **`wait_time`** nanoseconds has passed, the function
@@ -148,6 +150,7 @@ FUNCTION urt_sem_timed_wait: (sem: urt_sem *, wait_time: urt_time): int
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_sem_try_wait: (sem: urt_sem *): int
+NOTICE RT
 	Try waiting on a semaphore
 
 	This function tries to wait on semaphore **`sem`**. If the semaphore is not available it will immediately return.
@@ -162,6 +165,7 @@ FUNCTION urt_sem_try_wait: (sem: urt_sem *): int
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_sem_post: (sem: urt_sem *): void
+NOTICE RT
 	Post a semaphore
 
 	This function posts semaphore **`sem`**. If there are threads waiting on the semaphore, one of them arbitrarily is chosen and unblocked.
@@ -248,6 +252,7 @@ FUNCTION urt_shmutex_detach: (mutex: urt_mutex *): void
 		See `[#urt_shmutex_delete]`.
 
 FUNCTION urt_mutex_lock: (mutex: urt_mutex *, stop: bool * = NULL): int
+NOTICE RT
 	Lock a mutex
 
 	This function locks mutex **`mutex`**. If the mutex is not available, it will stay blocked until either it is [unlocked](#urt_mutex_unlock),
@@ -265,6 +270,7 @@ FUNCTION urt_mutex_lock: (mutex: urt_mutex *, stop: bool * = NULL): int
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_mutex_timed_lock: (mutex: urt_mutex *, wait_time: urt_time): int
+NOTICE RT
 	Lock a mutex if possible in a maximum of given time
 
 	This function locks mutex **`mutex`**. If the mutex is not available until **`wait_time`** nanoseconds has passed, the function
@@ -282,6 +288,7 @@ FUNCTION urt_mutex_timed_lock: (mutex: urt_mutex *, wait_time: urt_time): int
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_mutex_try_lock: (mutex: urt_mutex *): int
+NOTICE RT
 	Try locking a mutex
 
 	This function tries to lock mutex **`mutex`**. If the mutex is not available it will immediately return.
@@ -296,6 +303,7 @@ FUNCTION urt_mutex_try_lock: (mutex: urt_mutex *): int
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_mutex_unlock: (mutex: urt_mutex *): void
+NOTICE RT
 	Unlock a mutex
 
 	This function unlocks mutex **`mutex`**. If there are threads waiting on the mutex, one of them arbitrarily is chosen and unblocked.
@@ -385,6 +393,7 @@ FUNCTION urt_shrwlock_detach: (rwlock: urt_rwlock *): void
 		See `[#urt_shrwlock_delete]`.
 
 FUNCTION urt_rwlock_read_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
+NOTICE RT
 	Read-lock a readers-writers lock
 
 	This function read-locks readers-writers lock **`rwlock`**. If the lock is not available, it will stay blocked until either it is
@@ -405,6 +414,7 @@ FUNCTION urt_rwlock_read_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_write_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
+NOTICE RT
 	Write-lock a readers-writers lock
 
 	This function write-locks readers-writers lock **`rwlock`**. If the lock is not available, it will stay blocked until either it is
@@ -425,6 +435,7 @@ FUNCTION urt_rwlock_write_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_timed_read_lock: (rwlock: urt_rwlock *, wait_time: urt_time): int
+NOTICE RT
 	Read-lock a readers-writers lock if possible in a maximum of given time
 
 	This function read-locks readers-writers lock **`rwlock`**. If the lock is not available until **`wait_time`** nanoseconds has passed, the function
@@ -442,6 +453,7 @@ FUNCTION urt_rwlock_timed_read_lock: (rwlock: urt_rwlock *, wait_time: urt_time)
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_timed_write_lock: (rwlock: urt_rwlock *, wait_time: urt_time): int
+NOTICE RT
 	Write-lock a readers-writers lock if possible in a maximum of given time
 
 	This function write-locks readers-writers lock **`rwlock`**. If the lock is not available until **`wait_time`** nanoseconds has passed, the function
@@ -459,6 +471,7 @@ FUNCTION urt_rwlock_timed_write_lock: (rwlock: urt_rwlock *, wait_time: urt_time
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_try_read_lock: (rwlock: urt_rwlock *): int
+NOTICE RT
 	Try read-locking a readers-writers lock
 
 	This function tries to read-lock readers-writers lock **`rwlock`**. If the lock is not available it will immediately return.
@@ -473,6 +486,7 @@ FUNCTION urt_rwlock_try_read_lock: (rwlock: urt_rwlock *): int
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_try_write_lock: (rwlock: urt_rwlock *): int
+NOTICE RT
 	Try write-locking a readers-writers lock
 
 	This function tries to write-lock readers-writers lock **`rwlock`**. If the lock is not available it will immediately return.
@@ -487,6 +501,7 @@ FUNCTION urt_rwlock_try_write_lock: (rwlock: urt_rwlock *): int
 		- `[#URT_FAIL](constants)` otherwise.
 
 FUNCTION urt_rwlock_read_unlock: (rwlock: urt_rwlock *): void
+NOTICE RT
 	Read-unlock a readers-writers lock
 
 	This function read-unlocks readers-writers lock **`rwlock`**. If there are threads waiting on the lock, one of them arbitrarily is chosen and unblocked.
@@ -495,6 +510,7 @@ FUNCTION urt_rwlock_read_unlock: (rwlock: urt_rwlock *): void
 		The readers-writers lock to unlock.
 
 FUNCTION urt_rwlock_write_unlock: (rwlock: urt_rwlock *): void
+NOTICE RT
 	Write-unlock a readers-writers lock
 
 	This function write-unlocks readers-writers lock **`rwlock`**. If there are threads waiting on the lock, one of them arbitrarily is chosen and unblocked.

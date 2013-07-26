@@ -29,8 +29,8 @@ else
 endif
 files: $(TEX_MAKE_FILES) $(HTML_FILES) $(HTML_DIR)/globals.html $(TEX_FILES) $(TEX_DIR)/globals.tex
 	@$(SHELL_NOOP)
-$(HTML_DIR)/%.html $(TEX_DIR)/%.tex: src/%
-	$(DOC_THIS) $< +html +tex
+$(HTML_DIR)/%.html $(TEX_DIR)/%.tex: src/% src/notices
+	$(DOC_THIS) $< +html +tex +notices src/notices
 $(HTML_DIR)/globals.html $(TEX_DIR)/globals.tex: src/globals $(SOURCE_FILES_DEF)
 	$(DOC_THIS) $< +html +tex
 $(TEX_MAKE_FILES):

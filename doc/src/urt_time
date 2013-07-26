@@ -20,6 +20,7 @@ TYPE urt_time: int64_t
 	in time.
 
 FUNCTION urt_get_time: (): urt_time
+NOTICE RT
 	Get current time
 
 	This function retrieves the current time (from an unknown origin) in nanoseconds.
@@ -28,6 +29,7 @@ FUNCTION urt_get_time: (): urt_time
 		Current time in nanoseconds.
 
 FUNCTION urt_get_exec_time: (): urt_time
+NOTICE RT
 	Get execution time
 
 	This function retrieves execution time of the current thread since it's beginning.
@@ -46,6 +48,7 @@ FUNCTION urt_get_exec_time: (): urt_time
 		Execution time of the calling thread, possibly _not_ starting from zero.
 
 FUNCTION urt_sleep: (t: urt_time): void
+NOTICE RT
 	Sleep for some time
 
 	This function suspends execution time of the calling thread for _at least_ **`t`** nanoseconds.
