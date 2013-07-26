@@ -39,6 +39,31 @@ void urt_recover(void);
 void urt_print_names(void);
 void urt_force_clear_name(const char *name);
 
+/*
+ * helper macros for abstracting from kernel space and user space execution model.
+ *
+ * The URT_GLUE macro takes five parameters:
+ * - init: A small function to be called on program start.  In kernel space, this is
+ *   the __init function.
+ * - body: A non-real-time thread (which is the main thread in user space) that handles
+ *   allocation of resources and various other operations.  The purpose of this function
+ *   is to allow the init function to finish, which in kernel space signals the end of insmod.
+ *   This way, rmmod can be called asynchronous to the execution of body.
+ *   After the execution of body, the program waits for interrupt (user space) or
+ *   rmmod (kernel space) before calling the exit function.
+ * - exit: A function to be called on program exit.  In kernel space, this is
+ *   the __exit funcion.
+ * - interrupted: the name of a variable (defined by this macro) that would become non-zero
+ *   when the program is interrupted (user space) or rmmod'ed (kernel space).
+ * - done: the name of a variable (defined by this macro) that should be set by the user
+ *   (in body for example) which indicates that it is safe to call the exit function.
+ *
+ * URT_GLUE_NO_INTERRUPT is similar to URT_GLUE, except that it does not install an interrupt
+ * handler.  This is useful if the user wants to install her own interrupt handler.
+ */
+/* #define URT_GLUE(init, body, exit, interrupted, done) */
+/* #define URT_GLUE_NO_INTERRUPT(init, body, exit) */
+
 URT_DECL_END
 
 #endif

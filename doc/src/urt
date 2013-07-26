@@ -43,3 +43,96 @@ FUNCTION urt_recover: (): void
 	crash. Therefore, calling this function while another user is present may likely corrupt the system.
 
 	Note: `urt_init` should **not** need to be called before this function.
+
+MACRO URT_GLUE: (init, body, exit, interrupted, done)
+	Glue code to connect parts of the application
+
+	This macro connects parts of the application, namely initialization, body, finalization and interrupt handling
+	to abstract from differences between kernel space and user space applications.
+
+	The user application could therefore look like this:
+
+	```
+	#include \<urt.h\>
+
+	static int _init(void);
+	static void _body(void);
+	static void _exit(void);
+
+	URT_GLUE(_init, _body, _exit, _interrupted, _done)
+
+	static int _init(void)
+	{
+		/* other initialization */
+		urt_init();
+		return 0;
+	}
+
+	static void _body(void)
+	{
+		/* allocate some resources */
+		if (_interrupted)
+			goto exit_interrupted;
+
+		/* some calculations */
+
+		/* wait for something to happen */
+		while (!_interrupted \&\& get_command() != SOME_COMMAND)
+			urt_sleep(SOME_TIME);
+		if (_interrupted)
+			goto exit_interrupted;
+
+		/* other similar situations */
+
+		goto exit_done;
+	exit_interrupted:
+		urt_log("body interrupted\\n");
+	exit_done:
+		_done = 1;
+	}
+
+	static void _exit(void)
+	{
+		/* cleanup */
+		urt_exit();
+	}
+	```
+
+	INPUT init
+		A small function to be called on program start.  In kernel space, this is
+		the `__init` function.
+
+		The of this function is `int (*)(void)`.
+	INPUT body
+		A non-real-time thread (which is the main thread in user space) that handles
+		allocation of resources and various other operations.  The purpose of this function
+		is to allow the init function to finish, which in kernel space signals the end of `insmod`.
+		This way, `rmmod` can be called asynchronous to the execution of **`body`**.
+		After the execution of **`body`**, the program waits for interrupt (user space) or
+		`rmmod` (kernel space) before calling the **`exit`** function.
+
+		The of this function is `void (*)(void)`.
+	INPUT exit
+		A function to be called on program exit.  In kernel space, this is
+		the `__exit` funcion.
+
+		The of this function is `void (*)(void)`.
+	INPUT interrupted
+		The name of a variable (defined by this macro) that would become non-zero
+		when the program is interrupted (user space) or `rmmod`ed (kernel space).
+	INPUT done
+		The name of a variable (defined by this macro) that should be set by the user
+		(in **`body`** for example) which indicates that it is safe to call the **`exit`** function.
+
+MACRO URT_GLUE_NO_INTERRUPT: (init, body, exit)
+	Similar to `URT_GLUE` without interrupt handling
+
+	This macro is similar to `[#URT_GLUE]` except that it does not install an interrupt handler.  It would thus be
+	the responsibility of the programmer herself to ensure that **`exit`** waits for **`body`** to finish.
+
+	INPUT init
+		See `[#URT_GLUE]`.
+	INPUT body
+		See `[#URT_GLUE]`.
+	INPUT exit
+		See `[#URT_GLUE]`.
