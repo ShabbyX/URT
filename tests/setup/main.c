@@ -43,7 +43,9 @@ int main(void)
 	}
 	urt_out("sem allocated\n");
 	urt_out("Sleeping for 5 seconds...\n");
+	urt_out("Time before sleep: %llu\n", urt_get_time());
 	urt_sleep(5000000000ll);
+	urt_out("Time after sleep: %llu\n", urt_get_time());
 	urt_shsem_delete(sem);
 exit_no_sem:
 	urt_exit();

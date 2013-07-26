@@ -34,6 +34,7 @@ URT_DECL_BEGIN
 typedef int64_t urt_time;
 
 #define urt_get_time rt_get_time_ns
+
 static inline void urt_sleep(urt_time t)
 {
 	if (urt_is_rt_context())
