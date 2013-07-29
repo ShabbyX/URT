@@ -152,6 +152,9 @@ void urt_shmem_detach_with_callback(void *mem, void (*f)(void *))
 {
 	urt_registered_object *ro;
 
+	if (mem == NULL)
+		return;
+
 	mem = (char *)mem - 16;
 	ro = urt_get_object_by_id(*(unsigned int *)mem);
 	if (ro == NULL)

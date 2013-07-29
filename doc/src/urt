@@ -55,13 +55,13 @@ MACRO URT_GLUE: (init, body, exit, interrupted, done)
 	```
 	#include \<urt.h\>
 
-	static int _init(void);
+	static int _start(void);
 	static void _body(void);
-	static void _exit(void);
+	static void _end(void);
 
-	URT_GLUE(_init, _body, _exit, _interrupted, _done)
+	URT_GLUE(_start, _body, _end, _interrupted, _done)
 
-	static int _init(void)
+	static int _start(void)
 	{
 		/* other initialization */
 		urt_init();
@@ -91,7 +91,7 @@ MACRO URT_GLUE: (init, body, exit, interrupted, done)
 		_done = 1;
 	}
 
-	static void _exit(void)
+	static void _end(void)
 	{
 		/* cleanup */
 		urt_exit();
