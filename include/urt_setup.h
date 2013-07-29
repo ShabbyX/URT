@@ -22,6 +22,7 @@
 
 #include "urt_compiler.h"
 #include "urt_consts.h"
+#include <urt_sys_setup.h>
 
 URT_DECL_BEGIN
 
@@ -63,6 +64,12 @@ void urt_force_clear_name(const char *name);
  */
 /* #define URT_GLUE(init, body, exit, interrupted, done) */
 /* #define URT_GLUE_NO_INTERRUPT(init, body, exit) */
+
+/*
+ * TODO: add URT_DEFINE_ARG(type, name) so in kernel it would define a parameter and in user space it
+ * would parse --name value from argv.  Not all types need to be supported, the ones supported by
+ * kernel are enough
+ */
 
 URT_DECL_END
 
