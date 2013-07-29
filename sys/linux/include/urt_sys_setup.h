@@ -20,7 +20,6 @@
 #ifndef URT_SYS_SETUP_H
 #define URT_SYS_SETUP_H
 
-#include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
 #include <urt_internal.h>
@@ -31,47 +30,47 @@ static inline int urt_sys_init(void) { return URT_SUCCESS; }
 static inline void urt_sys_exit(void) {}
 void urt_sys_force_clear_name(urt_registered_object *ro);
 
-#define URT_GLUE(init, body, exit, interrupted, done)		\
-static volatile sig_atomic_t interrupted = 0;			\
-static int done = 0;						\
-static void urt_sig_handler_(int signum)			\
-{								\
-	interrupted = 1;					\
-}								\
-int main(int argc, char **argv)					\
-{								\
-	int urt_err_;						\
-	/* set signal handler */				\
-	struct sigaction urt_sa_;				\
-	urt_sa_ = (struct sigaction){.sa_handler = NULL};	\
-	urt_sa_.sa_handler = urt_sig_handler_;			\
-	sigemptyset(&urt_sa_.sa_mask);				\
-	sigaction(SIGINT, &urt_sa_, NULL);			\
-	sigaction(SIGHUP, &urt_sa_, NULL);			\
-	sigaction(SIGTERM, &urt_sa_, NULL);			\
-	sigaction(SIGQUIT, &urt_sa_, NULL);			\
-	sigaction(SIGUSR1, &urt_sa_, NULL);			\
-	sigaction(SIGUSR2, &urt_sa_, NULL);			\
-	urt_err_ = init();					\
-	if (urt_err_)						\
-		return urt_err_;				\
-	body();							\
-	/* wait for done */					\
-	while (!done)						\
-		usleep(10000);					\
-	exit();							\
-	return 0;						\
+#define URT_GLUE(init, body, exit, interrupted, done)	\
+static volatile sig_atomic_t interrupted = 0;		\
+static int done = 0;					\
+static void urt_sig_handler_(int signum)		\
+{							\
+	interrupted = 1;				\
+}							\
+int main(int argc, char **argv)				\
+{							\
+	int err;					\
+	/* set signal handler */			\
+	struct sigaction sa;				\
+	sa = (struct sigaction){.sa_handler = NULL};	\
+	sa.sa_handler = urt_sig_handler_;		\
+	sigemptyset(&sa.sa_mask);			\
+	sigaction(SIGINT, &sa, NULL);			\
+	sigaction(SIGHUP, &sa, NULL);			\
+	sigaction(SIGTERM, &sa, NULL);			\
+	sigaction(SIGQUIT, &sa, NULL);			\
+	sigaction(SIGUSR1, &sa, NULL);			\
+	sigaction(SIGUSR2, &sa, NULL);			\
+	err = init();					\
+	if (err)					\
+		return err;				\
+	body();						\
+	/* wait for done */				\
+	while (!done)					\
+		usleep(10000);				\
+	exit();						\
+	return 0;					\
 }
 
-#define URT_GLUE_NO_INTERRUPT(init, body, exit)			\
-int main(int argc, char **argv)					\
-{								\
-	int urt_err_ = init();					\
-	if (urt_err_)						\
-		return urt_err_;				\
-	body();							\
-	exit();							\
-	return 0;						\
+#define URT_GLUE_NO_INTERRUPT(init, body, exit)		\
+int main(int argc, char **argv)				\
+{							\
+	int err = init();				\
+	if (err)					\
+		return err;				\
+	body();						\
+	exit();						\
+	return 0;					\
 }
 
 URT_DECL_END
