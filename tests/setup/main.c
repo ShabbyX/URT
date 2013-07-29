@@ -23,57 +23,15 @@ static int _start(void);
 static void _body(void);
 static void _end(void);
 
-URT_GLUE(_start, _body, _end, interrupted, done)
+URT_GLUE_NO_INTERRUPT(_start, _body, _end)
 
-static int exit_status;
 static urt_sem *sem = NULL;
+static int done = 0;
 
 static int _start(void)
 {
 	int ret;
-
-	urt_out("starting test...\n");
-	ret = urt_init();
-	if (ret)
-	{
-		urt_out("init returned %d\n", ret);
-		exit_status = EXIT_FAILURE;
-	}
-	return exit_status;
-}
-
-static void _body(void)
-{
-	sem = urt_shsem_new("TSTSEM", 1);
-	if (sem == NULL)
-	{
-		urt_out("no shared sem\n");
-		exit_status = EXIT_FAILURE;
-		goto exit_fail;
-	}
-	urt_out("sem allocated\n");
-	urt_out("Sleeping for 5 seconds...\n");
-	urt_out("Time before sleep: %llu\n", urt_get_time());
-	urt_sleep(5000000000ll);
-	urt_out("Time after sleep: %llu\n", urt_get_time());
-exit_fail:
-	done = 1;
-}
-
-static void _end(void)
-{
-	if (sem)
-		urt_shsem_delete(sem);
-	urt_exit();
-	urt_out("test done\n");
-}
-
-#if 0
-int main(void)
-{
-	int ret;
-	int exit_status = 0;
-	urt_sem *sem = NULL;
+	int exit_status;
 
 	urt_out("starting test...\n");
 	ret = urt_init();
@@ -91,15 +49,27 @@ int main(void)
 		goto exit_no_sem;
 	}
 	urt_out("sem allocated\n");
+exit_no_init:
+	return exit_status;
+exit_no_sem:
+	urt_exit();
+	goto exit_no_init;
+}
+
+static void _body(void)
+{
 	urt_out("Sleeping for 5 seconds...\n");
 	urt_out("Time before sleep: %llu\n", urt_get_time());
 	urt_sleep(5000000000ll);
 	urt_out("Time after sleep: %llu\n", urt_get_time());
+	done = 1;
+}
+
+static void _end(void)
+{
+	while (!done)
+		urt_sleep(10000000);
 	urt_shsem_delete(sem);
-exit_no_sem:
 	urt_exit();
 	urt_out("test done\n");
-exit_no_init:
-	return exit_status;
 }
-#endif

@@ -20,8 +20,16 @@
 #include <urt.h>
 #include <stdlib.h>
 
+static int _start(void);
+static void _body(void);
+static void _end(void);
+
+URT_GLUE(_start, _body, _end, interrupted, done)
+
 static urt_sem *sync_sem = NULL;
 static urt_sem *done_sem = NULL;
+static urt_task *tp = NULL, *tn = NULL;
+static bool stop_other_thread = false;
 
 static void periodic(urt_task *task, void *data)
 {
@@ -29,7 +37,7 @@ static void periodic(urt_task *task, void *data)
 	urt_sem *sem = data;
 	urt_time start_time = urt_get_time();
 
-	for (i = 0; i < 20; ++i)
+	for (i = 0; i < 20 && !interrupted; ++i)
 	{
 		urt_out("Periodic: %llu: Time to next period: %llu (exec time: %llu)\n", urt_get_time() - start_time,
 				urt_task_period_time_left(task), urt_get_exec_time());
@@ -37,6 +45,7 @@ static void periodic(urt_task *task, void *data)
 		urt_sem_post(sem);
 	}
 
+	stop_other_thread = true;
 	urt_sem_post(done_sem);
 }
 
@@ -46,20 +55,32 @@ static void normal(urt_task *task, void *data)
 
 	for (i = 0; i < 20; ++i)
 	{
-		urt_sem_wait(sync_sem);
+		if (urt_sem_wait(sync_sem, &stop_other_thread))
+		{
+			urt_out("Normal: Canceled by periodic task\n");
+			break;
+		}
 		urt_sleep(1000000);
 		urt_out("Normal: Signaled by periodic task\n");
 	}
 
-	urt_sem_post(done_sem);
+	urt_sem_wait(done_sem);
+	done = 1;
 }
 
-int main(void)
+static void _cleanup(void)
+{
+	urt_task_delete(tn);
+	urt_task_delete(tp);
+	urt_sem_delete(sync_sem);
+	urt_sem_delete(done_sem);
+	urt_exit();
+}
+
+static int _start(void)
 {
 	int ret;
-	int exit_status = 0;
-	urt_task *tp, *tn;
-	urt_task_attr attr;
+	int exit_status = EXIT_FAILURE;
 
 	urt_out("starting test...\n");
 	ret = urt_init();
@@ -78,6 +99,17 @@ int main(void)
 		goto exit_no_sem;
 	}
 	urt_out("sem allocated\n");
+	return 0;
+exit_no_sem:
+	_cleanup();
+exit_no_init:
+	return exit_status;
+}
+
+static void _body(void)
+{
+	int ret;
+	urt_task_attr attr;
 
 	tn = urt_task_new(normal);
 	attr = (urt_task_attr){
@@ -90,23 +122,18 @@ int main(void)
 		urt_out("failed to create tasks\n");
 		if (tp == NULL)
 			urt_out("periodic task creation returned %d\n", ret);
-		exit_status = EXIT_FAILURE;
 		goto exit_no_task;
 	}
 
 	urt_task_start(tn);
 	urt_task_start(tp);
-
-	urt_sem_wait(done_sem);
-	urt_sem_wait(done_sem);
+	return;
 exit_no_task:
-	urt_task_delete(tn);
-	urt_task_delete(tp);
-exit_no_sem:
-	urt_sem_delete(sync_sem);
-	urt_sem_delete(done_sem);
-	urt_exit();
+	done = 1;
+}
+
+static void _end(void)
+{
+	_cleanup();
 	urt_out("test done\n");
-exit_no_init:
-	return exit_status;
 }
