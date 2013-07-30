@@ -15,9 +15,14 @@ ifeq ($(URT_CONFIG_DEVELOPER_MODE), y)
   INC_BUILD_DEP := $(INC_BUILD) $(BUILD_FILE)
 endif
 
+include Makefile.build
+include Makefile.src
+
 .PHONY: all modules dep clean
 all: dep modules $(INC_BUILD_DEP)
 	@$(SHELL_NOOP)
+quiet_cmd_clean = CLEAN   $(CURDIR)/
+      cmd_clean = $(RM) Makefile.dep
 clean:
 ifeq ($(URT_MAKE_USER), y)
 	@$(MAKE) -C static clean
@@ -27,7 +32,7 @@ ifeq ($(URT_MAKE_KERNEL), y)
 	@$(MAKE) -C kernel clean
 	@-$(RM) kernel/*.c
 endif
-	-$(RM) Makefile.dep
+	-$(call cmd,clean)
 modules:
 	@$(PRINTF) "$(STATUS_COLOR)Building URT API...$(DEFAULT_COLOR)\n"
 ifeq ($(URT_MAKE_USER), y)
@@ -42,13 +47,13 @@ ifeq ($(URT_MAKE_KERNEL), y)
 	@$(MAKE) -C kernel $(HIGHLIGHT)
 endif
 
-include Makefile.build
-include Makefile.src
 CFLAGS := $(URT_USER_CFLAGS) $(EXTRA_CFLAGS)
 dep: Makefile.dep
 	@$(SHELL_NOOP)
+quiet_cmd_dep = UPDATE  $(CURDIR)/$@
+      cmd_dep = $(CC) $(CFLAGS) $(CC_M) $(filter-out %.h,$^) > $@
 Makefile.dep: $(LIB_SRC) $(LIB_HDR)
-	$(CC) $(CFLAGS) $(CC_M) $(filter-out %.h,$^) > Makefile.dep
+	$(call cmd,dep)
 
 ifeq ($(URT_MAKE_KERNEL), y)
 # Note: Currently, you can't build object files in a directory other than the source with kbuild
@@ -62,8 +67,13 @@ $(CURDIR)/kernel/%.c: %.c
 	@$(CP) '$<' '$@'
 endif
 
-$(BUILD_FILE): $(INC_BUILD_TARGET)
-	$(INC_BUILD) $@
+quiet_cmd_inc_build = INC     $(CURDIR)/$@
+      cmd_inc_build = $(INC_BUILD) $@
+quiet_cmd_cc_ld = CC+LD   $(CURDIR)/$@
+      cmd_cc_ld = $(CC_LD) $(CC_o) $@ $< -lrt
 # TODO: -lrt is probably platform dependent
+
+$(BUILD_FILE): $(INC_BUILD_TARGET)
+	$(call cmd,inc_build)
 $(INC_BUILD): increase_build.c
-	$(CC_LD) $(CC_o) $@ $< -lrt
+	$(call cmd,cc_ld)

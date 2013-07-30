@@ -16,21 +16,33 @@ endif
 .PHONY: all dep clean
 all: dep $(TARGET)
 	@$(SHELL_NOOP)
+quiet_cmd_clean = CLEAN   $(CURDIR)/
+      cmd_clean = $(RM) $(TARGET) *.o Makefile.dep
 clean:
-	-$(RM) $(TARGET) *.o Makefile.dep
+	-$(call cmd,clean)
+
 dep: Makefile.dep
 	@$(SHELL_NOOP)
 LIB_HDR :=
 include $(URT_BASE)/include/Makefile.src
 include $(URT_SYS)/include/Makefile.src
 VPATH := $(URT_BASE)/include:$(URT_SYS)/include
+
+quiet_cmd_dep = UPDATE  $(CURDIR)/$@
+      cmd_dep = $(CC) $(CFLAGS) $(CC_M) $(filter-out %.h,$^) > $@
+
 # TOOL_SRC defines the source files of the tool
 Makefile.dep: $(TOOL_SRC) $(LIB_HDR)
-	$(CC) $(CFLAGS) $(CC_M) $(filter-out %.h,$^) > Makefile.dep
+	$(call cmd,dep)
+
+quiet_cmd_ld = LD      $(CURDIR)/$@
+      cmd_ld = $(LD) $(LD_o) $@ $(filter-out %.so,$^) $(LDFLAGS)
+quiet_cmd_cc = CC      $(CURDIR)/$@
+      cmd_cc = $(CC) $(CFLAGS) $(CC_o) $@ $<
 
 $(TARGET): $(TOOL_SRC:.c=.o) $(URT_BASE)/build/shared/liburt-$(URT_VERSION).so
-	$(LD) $(LD_o) $@ $(filter-out %.so,$^) $(LDFLAGS)
+	$(call cmd,ld)
 %.o: %.c
-	$(CC) $(CFLAGS) $(CC_o) $@ $<
+	$(call cmd,cc)
 
 -include Makefile.dep

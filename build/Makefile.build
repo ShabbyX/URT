@@ -12,3 +12,20 @@ URT_USER_CFLAGS := $(URT_STATIC_CFLAGS)
 URT_USER_LDFLAGS := $(URT_STATIC_LDFLAGS)
 
 KBUILD_EXTRA_SYMBOLS += $(URT_KERNEL_SYMBOLS)
+
+ifeq ($(URT_CONFIG_VERBOSE_BUILD), y)
+  URT_QUIET:=
+else
+  URT_QUIET:=quiet_
+endif
+
+# This is a function inspired by the Linux kernel build system.
+# if URT_CONFIG_VERBOSE_BUILD variable is not defined to y, it would show short messages.
+
+# Convenient variables
+squote  := '
+###
+# Escape single quote for use in echo statements
+escsq = $(subst $(squote),'\$(squote)',$1)
+# print and execute commands
+cmd = @echo '  $(call escsq,$($(URT_QUIET)cmd_$(1)))'; $(cmd_$(1))

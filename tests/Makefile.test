@@ -17,8 +17,11 @@ endif
 .PHONY: all dep clean
 all: dep $(TARGET) $(TARGET2)
 	@$(SHELL_NOOP)
+quiet_cmd_clean = CLEAN   $(CURDIR)/
+      cmd_clean = $(RM) $(TARGET) $(TARGET2) *.o Makefile.dep
 clean:
-	-$(RM) $(TARGET) $(TARGET2) *.o Makefile.dep
+	-$(call cmd,clean)
+
 dep: Makefile.dep
 	@$(SHELL_NOOP)
 LIB_HDR :=
@@ -26,18 +29,27 @@ include $(URT_BASE)/include/Makefile.src
 include $(URT_SYS)/include/Makefile.src
 VPATH := $(URT_BASE)/include:$(URT_SYS)/include
 # source dependencies of Makefile.dep defined in including Makefile
+
+quiet_cmd_dep = UPDATE  $(CURDIR)/$@
+      cmd_dep = $(CC) $(CFLAGS) $(CC_M) $(filter-out %.h,$^) > $@
+
 Makefile.dep: $(LIB_HDR)
-	$(CC) $(CFLAGS) $(CC_M) $(filter-out %.h,$^) > Makefile.dep
+	$(call cmd,dep)
+
+quiet_cmd_ld = LD      $(CURDIR)/$@
+      cmd_ld = $(LD) $(LD_o) $@ $(filter-out %.so,$^) $(LDFLAGS)
+quiet_cmd_cc = CC      $(CURDIR)/$@
+      cmd_cc = $(CC) $(CFLAGS) $(CC_o) $@ $<
 
 # further dependencies of TARGET and possibly TARGET2 defined by including Makefile
 $(TARGET): $(URT_BASE)/build/shared/liburt-$(URT_VERSION).so
-	$(LD) $(LD_o) $@ $(filter-out %.so,$^) $(LDFLAGS)
+	$(call cmd,ld)
 ifdef TARGET2
 $(TARGET2): $(URT_BASE)/build/shared/liburt-$(URT_VERSION).so
-	$(LD) $(LD_o) $@ $(filter-out %.so,$^) $(LDFLAGS)
+	$(call cmd,ld)
 endif
 %.o: %.c
-	$(CC) $(CFLAGS) $(CC_o) $@ $<
+	$(call cmd,cc)
 
 .PHONY: execute_test valgrind_check
 execute_test:

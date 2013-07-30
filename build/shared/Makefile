@@ -6,8 +6,10 @@ TARGET := liburt-$(URT_VERSION).so
 .PHONY: all clean
 all: $(TARGET)
 	@$(SHELL_NOOP)
+quiet_cmd_clean = CLEAN   $(CURDIR)/
+      cmd_clean = $(RM) liburt*.so *.o
 clean:
-	-$(RM) liburt*.so *.o
+	-$(call cmd,clean)
 
 URT_BASE := $(abspath $(CURDIR)/../..)
 include ../Makefile.build
@@ -17,12 +19,17 @@ include ../Makefile.dep
 CFLAGS := $(URT_SHARED_CFLAGS)
 LDFLAGS := $(URT_SHARED_LDFLAGS)
 
+quiet_cmd_shld = SHLD    $(CURDIR)/$@
+      cmd_shld = $(LD) $(LDFLAGS) $(LD_o) $@ $^
+quiet_cmd_shcc = SHCC    $(CURDIR)/$@
+      cmd_shcc = $(CC) $(CFLAGS) $(CC_o) $@ $<
+
 $(TARGET): $(LIB_OBJ)
-	-$(RM) liburt*.so
-	$(LD) $(LDFLAGS) $(LD_o) $@ $^
+	-@$(RM) liburt*.so
+	$(call cmd,shld)
 %.o: %.c
 ifeq ($(URT_CONFIG_DEBUG), y)
-	$(CC) $(CFLAGS) $(CC_o) $@ $<
+	$(call cmd,shcc)
 else
-	@$(CC) $(CFLAGS) $(CC_o) $@ $< > /dev/null 2>&1
+	@$(cmd_shcc) > /dev/null 2>&1
 endif
