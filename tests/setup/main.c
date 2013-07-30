@@ -31,7 +31,7 @@ static int done = 0;
 static int _start(void)
 {
 	int ret;
-	int exit_status;
+	int exit_status = 0;
 
 	urt_out("starting test...\n");
 	ret = urt_init();
