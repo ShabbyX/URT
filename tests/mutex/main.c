@@ -20,11 +20,20 @@
 #include <urt.h>
 #include <stdlib.h>
 
+static int _start(void);
+static void _body(void);
+static void _end(void);
+
+URT_GLUE(_start, _body, _end, interrupted, done)
+
 static urt_mutex *sync_mutex = NULL;
 static urt_sem *done_sem = NULL;
-int num = 0;
+static urt_task *tasks[10] = {NULL};
+static urt_task *check_task = NULL;
+static int tasks_made = 0;
+static int num = 0;
 
-static void task(urt_task *task, void *data)
+static void _task(urt_task *task, void *data)
 {
 	int i;
 
@@ -38,20 +47,34 @@ static void task(urt_task *task, void *data)
 	urt_sem_post(done_sem);
 }
 
-int main(void)
+static void _check_task(urt_task *task, void *data)
+{
+	int i;
+	for (i = 0; i < tasks_made; ++i)
+		urt_sem_wait(done_sem);
+	done = 1;
+}
+
+static void _cleanup(void)
+{
+	int i;
+	for (i = 0; i < 10; ++i)
+		urt_task_delete(tasks[i]);
+	urt_task_delete(check_task);
+	urt_mutex_delete(sync_mutex);
+	urt_sem_delete(done_sem);
+	urt_exit();
+}
+
+static int _start(void)
 {
 	int ret;
-	int exit_status = 0;
-	int i;
-	int tasks_made = 0;
-	urt_task *tasks[10];
 
 	urt_out("starting test...\n");
 	ret = urt_init();
 	if (ret)
 	{
 		urt_out("init returned %d\n", ret);
-		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
 	sync_mutex = urt_mutex_new();
@@ -59,18 +82,26 @@ int main(void)
 	if (sync_mutex == NULL || done_sem == NULL)
 	{
 		urt_out("no sem/mutex\n");
-		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
 	urt_out("sem allocated\n");
 
+	return 0;
+exit_no_init:
+exit_no_sem:
+	_cleanup();
+	return EXIT_FAILURE;
+}
+
+static void _body(void)
+{
+	int i;
 	for (i = 0; i < 10; ++i)
 	{
-		tasks[i] = urt_task_new(task);
+		tasks[i] = urt_task_new(_task);
 		if (tasks[i] == NULL)
 		{
 			urt_out("failed to create tasks\n");
-			exit_status = EXIT_FAILURE;
 			goto exit_no_task;
 		}
 	}
@@ -80,21 +111,26 @@ int main(void)
 		else
 			++tasks_made;
 
-	for (i = 0; i < tasks_made; ++i)
-		urt_sem_wait(done_sem);
+	check_task = urt_task_new(_check_task);
+	if (check_task == NULL)
+	{
+		urt_out("failed to create check task\n");
+		goto exit_no_task;
+	}
+	if (urt_task_start(check_task))
+		urt_out("failed to start check task\n");
 
-	if (num != 10 * 20)
-		urt_out("Wrong synchronization. Num is %d instead of 200\n", num);
+	return;
+exit_no_task:
+	done = 1;
+}
+
+static void _end(void)
+{
+	_cleanup();
+	if (num != tasks_made * 20)
+		urt_out("Wrong synchronization. Num is %d instead of %d\n", num, tasks_made * 20);
 	else
 		urt_out("Successful synchronization\n");
-exit_no_task:
-	for (i = 0; i < 10; ++i)
-		urt_task_delete(tasks[i]);
-exit_no_sem:
-	urt_mutex_delete(sync_mutex);
-	urt_sem_delete(done_sem);
-	urt_exit();
 	urt_out("test done\n");
-exit_no_init:
-	return exit_status;
 }

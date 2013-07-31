@@ -25,12 +25,15 @@
 
 void urt_task_delete(urt_task *task)
 {
+	if (URT_LIKELY(task != NULL))
+	{
 #ifdef __KERNEL__
-	rt_task_delete(&task->rt_task);
+		rt_task_delete(&task->rt_task);
 #else
-	rt_task_delete(task->rt_task);
-	rt_thread_join(task->tid);
+		rt_task_delete(task->rt_task);
+		rt_thread_join(task->tid);
 #endif
+	}
 	urt_mem_delete(task);
 }
 URT_EXPORT_SYMBOL(urt_task_delete);
