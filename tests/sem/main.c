@@ -17,54 +17,74 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <urt.h>
 
-int main(void)
+static int _start(void);
+static void _body(void);
+static void _end(void);
+
+URT_GLUE(_start, _body, _end, interrupted, done)
+
+static urt_sem *sem = NULL;
+static urt_task *check_task = NULL;
+
+static void _check(urt_task *task, void *data)
+{
+	int i;
+	urt_out("main: waiting for 3 seconds\n");
+	urt_sleep(3000000000ll);
+	for (i = 0; i < 15; ++i)
+		urt_sem_post(sem);
+	done = 1;
+}
+
+static void _cleanup(void)
+{
+	urt_task_delete(check_task);
+	urt_shsem_delete(sem);
+	urt_exit();
+}
+
+static int _start(void)
 {
 	int ret;
-	int exit_status = 0;
-	int i;
-	urt_sem *sem = NULL;
-
 	urt_out("main: starting test...\n");
-
-	for (i = 0; i < 20; ++i)
-		if (fork() == 0)
-		{
-			execl("./wait", "./wait", (void *)NULL);
-			_Exit(EXIT_FAILURE);
-		}
-
 	ret = urt_init();
 	if (ret)
 	{
 		urt_out("main: init returned %d\n", ret);
-		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
 	sem = urt_shsem_new("TSTSEM", 5);
 	if (sem == NULL)
 	{
 		urt_out("main: no shared sem\n");
-		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
 	urt_out("main: sem allocated\n");
-	urt_out("main: waiting for 3 seconds\n");
-	urt_sleep(3000000000ll);
-	for (i = 0; i < 15; ++i)
-		urt_sem_post(sem);
-	urt_out("main: waiting for children\n");
-	for (i = 0; i < 20; ++i)
-		wait(NULL);
-	urt_out("main: cleaning up\n");
-	urt_shsem_delete(sem);
+	return 0;
 exit_no_sem:
-	urt_exit();
-	urt_out("main: test done\n");
+	_cleanup();
 exit_no_init:
-	return exit_status;
+	return EXIT_FAILURE;
+}
+
+static void _body(void)
+{
+	check_task = urt_task_new(_check);
+	if (check_task == NULL)
+	{
+		urt_out("main: failed to create task\n");
+		goto exit_no_task;
+	}
+	urt_task_start(check_task);
+	return;
+exit_no_task:
+	done = 1;
+}
+
+static void _end(void)
+{
+	_cleanup();
+	urt_out("main: test done\n");
 }
