@@ -2,7 +2,7 @@ TARGET := test
 TARGET2 := wait
 USE_SHARED := y
 
-include ../Makefile.test
+include ../Makefile.test.u
 
 Makefile.dep: main.c wait.c
 

@@ -23,6 +23,7 @@
 #ifdef __KERNEL__
 # include <linux/module.h>
 # include <linux/init.h>
+# include <linux/kthread.h>
 #else
 # include <signal.h>
 # include <unistd.h>

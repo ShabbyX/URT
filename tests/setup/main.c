@@ -19,16 +19,16 @@
 
 #include <urt.h>
 
-static int _start(void);
-static void _body(void);
-static void _end(void);
+static int test_start(void);
+static void test_body(void);
+static void test_end(void);
 
-URT_GLUE_NO_INTERRUPT(_start, _body, _end)
+URT_GLUE_NO_INTERRUPT(test_start, test_body, test_end)
 
 static urt_sem *sem = NULL;
 static int done = 0;
 
-static int _start(void)
+static int test_start(void)
 {
 	int ret;
 	int exit_status = 0;
@@ -56,7 +56,7 @@ exit_no_sem:
 	goto exit_no_init;
 }
 
-static void _body(void)
+static void test_body(void)
 {
 	urt_out("Sleeping for 5 seconds...\n");
 	urt_out("Time before sleep: %llu\n", urt_get_time());
@@ -65,7 +65,7 @@ static void _body(void)
 	done = 1;
 }
 
-static void _end(void)
+static void test_end(void)
 {
 	while (!done)
 		urt_sleep(10000000);

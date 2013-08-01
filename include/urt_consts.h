@@ -35,4 +35,13 @@
 #define URT_AGAIN -9		/* currently impossible operation, but may work on retry */
 #define URT_NO_SUPPORT -10	/* operation is not supported */
 
+#ifdef __KERNEL__
+# ifndef EXIT_FAILURE
+#  define EXIT_FAILURE -EINVAL	/* something wrong, but I wouldn't know.  Isn't there a generic EFAIL? */
+# endif
+# ifndef EXIT_FAILURE
+#  define EXIT_SUCCESS 0
+# endif
+#endif
+
 #endif

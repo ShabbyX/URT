@@ -18,13 +18,12 @@
  */
 
 #include <urt.h>
-#include <stdlib.h>
 
-static int _start(void);
-static void _body(void);
-static void _end(void);
+static int test_start(void);
+static void test_body(void);
+static void test_end(void);
 
-URT_GLUE(_start, _body, _end, interrupted, done)
+URT_GLUE(test_start, test_body, test_end, interrupted, done)
 
 static urt_sem *sync_sem = NULL;
 static urt_sem *done_sem = NULL;
@@ -77,7 +76,7 @@ static void _cleanup(void)
 	urt_exit();
 }
 
-static int _start(void)
+static int test_start(void)
 {
 	int ret;
 	int exit_status = EXIT_FAILURE;
@@ -106,7 +105,7 @@ exit_no_init:
 	return exit_status;
 }
 
-static void _body(void)
+static void test_body(void)
 {
 	int ret;
 	urt_task_attr attr;
@@ -132,7 +131,7 @@ exit_no_task:
 	done = 1;
 }
 
-static void _end(void)
+static void test_end(void)
 {
 	_cleanup();
 	urt_out("test done\n");

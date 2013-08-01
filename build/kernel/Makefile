@@ -16,9 +16,9 @@ include $(URT_BASE)/build/Makefile.src
 
 .PHONY: all clean
 all:
-	@$(MAKE) --no-print-directory -C /lib/modules/$(shell uname -r)/build M=$(CURDIR)\
+	@$(MAKE) -C /lib/modules/$(shell uname -r)/build M=$(CURDIR)\
 		EXTRA_CFLAGS="$(URT_KERNEL_CFLAGS)" KBUILD_EXTRA_SYMBOLS="$(KBUILD_EXTRA_SYMBOLS)" modules
 clean:
-	@$(MAKE) --no-print-directory -C /lib/modules/$(shell uname -r)/build M=$(CURDIR) clean
+	@$(MAKE) -C /lib/modules/$(shell uname -r)/build M=$(CURDIR) clean
 
 endif

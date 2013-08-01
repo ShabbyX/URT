@@ -15,7 +15,16 @@ endif
 # TARGET and possibly TARGET2 defined by including Makefile
 
 .PHONY: all dep clean
-all: dep $(TARGET) $(TARGET2)
+all: dep
+ifeq ($(URT_MAKE_USER), y)
+	@$(MAKE) $(TARGET)
+  ifdef TARGET2
+	@$(MAKE) $(TARGET2)
+  endif
+endif
+ifeq ($(URT_MAKE_KERNEL), y)
+	@$(MAKE) -C kernel
+endif
 	@$(SHELL_NOOP)
 quiet_cmd_clean = CLEAN   $(CURDIR)/
       cmd_clean = $(RM) $(TARGET) $(TARGET2) *.o Makefile.dep

@@ -1,7 +1,7 @@
 TARGET := test
 USE_SHARED := y
 
-include ../Makefile.test
+include ../Makefile.test.u
 
 Makefile.dep: main.c
 

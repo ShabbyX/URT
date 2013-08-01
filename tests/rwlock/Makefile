@@ -2,7 +2,7 @@ TARGET := test
 TARGET2 := read
 USE_SHAED := n
 
-include ../Makefile.test
+include ../Makefile.test.u
 
 Makefile.dep: main.c read.c
 
