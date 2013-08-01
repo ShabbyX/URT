@@ -22,6 +22,7 @@
 
 #ifdef __KERNEL__
 # include <linux/kernel.h>
+# include <linux/delay.h>
 # include <asm/div64.h>
 #else
 # include <unistd.h>

@@ -25,51 +25,70 @@
 
 void urt_task_delete(urt_task *task)
 {
+	if (URT_LIKELY(task != NULL))
+	{
 #ifdef __KERNEL__
-	rt_task_delete(&task->rt_task);
+		rt_task_delete(&task->rt_task);
 #else
-	rt_task_delete(task->rt_task);
-	rt_thread_join(task->tid);
+		rt_task_delete(task->rt_task);
+		rt_thread_join(task->tid);
 #endif
+	}
 	urt_mem_delete(task);
 }
 URT_EXPORT_SYMBOL(urt_task_delete);
 
 #ifdef __KERNEL__
 static void _task_wrapper(long t)
-#else
-static void *_task_wrapper(void *t)
-#endif
 {
 	urt_task *task = (void *)t;
 
+	/* align to start time, or set it if not set */
 	if (task->attr.start_time == 0)
 		task->attr.start_time = urt_get_time();
 	else
 		urt_sleep(task->attr.start_time - urt_get_time());
 
-#ifndef __KERNEL__
-	if (task->attr.period > 0)
-	{
-		char name[URT_NAME_LEN + 1];
-		if (urt_get_free_name(name) != URT_SUCCESS)
-			return NULL;
-		if ((task->rt_task = rt_task_init_schmod(nam2num(name), task->attr.priority,
-				task->attr.stack_size, 0, SCHED_FIFO, 0xff)) == NULL)
-			return NULL;
-	}
-	rt_make_hard_real_time();
-#endif
+	/* simply call the function since this is already real-time context */
+	task->func(task, task->data);
+}
+#else
+static void *_task_wrapper(void *t)
+{
+	urt_task *task = (void *)t;
 
+	/* pass the function to real-time context */
+	char name[URT_NAME_LEN + 1];
+	if (urt_get_free_name(name) != URT_SUCCESS)
+		return NULL;
+	if ((task->rt_task = rt_task_init_schmod(nam2num(name), task->attr.priority,
+					task->attr.stack_size, 0, SCHED_FIFO, 0xff)) == NULL)
+		return NULL;
+	rt_make_hard_real_time();
+
+	/* if periodic, make it periodic */
+	if (task->attr.period > 0)
+		if (rt_task_make_periodic(task->rt_task, nano2count(task->attr.start_time),
+				nano2count(task->attr.period)))
+			goto exit_no_periodic;
+
+	/* align to start time, or set it if not set */
+	if (task->attr.start_time == 0)
+		task->attr.start_time = urt_get_time();
+	else
+		urt_sleep(task->attr.start_time - urt_get_time());
+
+	/* finally, call the user function */
 	task->func(task, task->data);
 
-#ifndef __KERNEL__
+exit_no_periodic:
+	/* get the task back from real-time context and into Linux */
 	rt_make_soft_real_time();
 	rt_task_delete(NULL);
 
 	return NULL;
-#endif
 }
+#endif
 
 int urt_task_start(urt_task *task)
 {

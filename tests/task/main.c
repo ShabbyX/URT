@@ -79,14 +79,12 @@ static void _cleanup(void)
 static int test_start(void)
 {
 	int ret;
-	int exit_status = EXIT_FAILURE;
 
 	urt_out("starting test...\n");
 	ret = urt_init();
 	if (ret)
 	{
 		urt_out("init returned %d\n", ret);
-		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
 	sync_sem = urt_sem_new(0);
@@ -94,7 +92,6 @@ static int test_start(void)
 	if (sync_sem == NULL || done_sem == NULL)
 	{
 		urt_out("no sem\n");
-		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
 	urt_out("sem allocated\n");
@@ -102,7 +99,7 @@ static int test_start(void)
 exit_no_sem:
 	_cleanup();
 exit_no_init:
-	return exit_status;
+	return EXIT_FAILURE;
 }
 
 static void test_body(void)

@@ -241,7 +241,7 @@ static int _increment_name(char *name)
 	int i;
 	char digit;
 
-	for (i = URT_NAME_LEN - 1; i >= 0; --i)
+	for (i = URT_NAME_LEN - 2; i >= 0; --i)
 	{
 		bool finished = true;
 		digit = name[i];
