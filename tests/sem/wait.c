@@ -20,11 +20,11 @@
 #include <stdlib.h>
 #include <urt.h>
 
-static int _start(void);
-static void _body(void);
-static void _end(void);
+static int test_start(void);
+static void test_body(void);
+static void test_end(void);
 
-URT_GLUE(_start, _body, _end, interrupted, done)
+URT_GLUE(test_start, test_body, test_end, interrupted, done)
 
 static urt_sem *sem = NULL;
 static urt_task *test_task = NULL;
@@ -42,7 +42,7 @@ static void _cleanup(void)
 	urt_exit();
 }
 
-static int _start(void)
+static int test_start(void)
 {
 	int ret;
 	urt_time start;
@@ -72,7 +72,7 @@ exit_no_init:
 	return EXIT_FAILURE;
 }
 
-static void _body(void)
+static void test_body(void)
 {
 	test_task = urt_task_new(_test);
 	if (test_task == NULL)
@@ -86,7 +86,7 @@ exit_no_task:
 	done = 1;
 }
 
-static void _end(void)
+static void test_end(void)
 {
 	_cleanup();
 	urt_out("wait: test done\n");
