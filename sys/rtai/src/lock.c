@@ -73,7 +73,7 @@ URT_EXPORT_SYMBOL(urt_sem_new);
 
 void urt_sem_delete(urt_sem *sem)
 {
-	if (URT_LIKELY(sem != NULL))
+	if (sem != NULL)
 		rt_sem_delete(sem->sem_ptr);
 	urt_mem_delete(sem);
 }
@@ -265,7 +265,7 @@ URT_EXPORT_SYMBOL(urt_rwlock_new);
 
 void urt_rwlock_detach(urt_rwlock *rwl)
 {
-	if (URT_LIKELY(rwl != NULL))
+	if (rwl != NULL)
 		rt_rwl_delete(rwl->rwl_ptr);
 	urt_mem_delete(rwl);
 }

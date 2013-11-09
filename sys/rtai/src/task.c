@@ -25,7 +25,7 @@
 
 void urt_task_delete(urt_task *task)
 {
-	if (URT_LIKELY(task != NULL))
+	if (task != NULL)
 	{
 #ifdef __KERNEL__
 		rt_task_delete(&task->rt_task);

@@ -58,7 +58,7 @@ exit_fail:
 
 void urt_sem_delete(urt_sem *sem)
 {
-	if (URT_LIKELY(sem != NULL))
+	if (sem != NULL)
 		sem_destroy(&sem->sem);
 	urt_mem_delete(sem);
 }
@@ -160,6 +160,9 @@ static void _shsem_detach(struct urt_registered_object *ro)
 void urt_shsem_detach(urt_sem *sem)
 {
 	urt_registered_object *ro;
+
+	if (sem == NULL)
+		return;
 
 	ro = urt_get_object_by_id(sem->id);
 	if (ro == NULL)
@@ -280,7 +283,7 @@ exit_fail:
 
 void urt_rwlock_delete(urt_rwlock *rwl)
 {
-	if (URT_LIKELY(rwl != NULL))
+	if (rwl != NULL)
 		while (pthread_rwlock_destroy(rwl) == EBUSY)
 			if (pthread_rwlock_unlock(rwl))
 				break;
@@ -332,6 +335,9 @@ void urt_shrwlock_detach(urt_rwlock *rwl)
 {
 	/* Note: unmap needs the correct allocated size of memory */
 	urt_registered_object *ro;
+
+	if (rwl == NULL)
+		return;
 
 	ro = urt_get_object_by_id(*(unsigned int *)((char *)rwl - 16));
 	if (ro == NULL)

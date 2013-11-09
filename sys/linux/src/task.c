@@ -24,7 +24,7 @@
 
 void urt_task_delete(urt_task *task)
 {
-	if (URT_LIKELY(task != NULL))
+	if (task != NULL)
 		pthread_join(task->tid, NULL);
 	urt_mem_delete(task);
 }
