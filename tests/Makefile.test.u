@@ -23,7 +23,7 @@ ifeq ($(URT_MAKE_USER), y)
   endif
 endif
 ifeq ($(URT_MAKE_KERNEL), y)
-	@$(MAKE) -C kernel
+	@$(MAKE) -C kernel all
 endif
 	@$(SHELL_NOOP)
 quiet_cmd_clean = CLEAN   $(CURDIR)/
