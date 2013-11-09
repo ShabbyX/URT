@@ -3,6 +3,8 @@ ifneq ($(KERNELRELEASE),)
   include Kbuild
 else
 
+TARGET := test.ko
+
 include ../../Makefile.test.k
 
 .PHONY: all

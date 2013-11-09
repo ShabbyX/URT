@@ -59,8 +59,9 @@ static void normal(urt_task *task, void *data)
 			urt_out("Normal: Canceled by periodic task\n");
 			break;
 		}
+		else
+			urt_out("Normal: Signaled by periodic task\n");
 		urt_sleep(1000000);
-		urt_out("Normal: Signaled by periodic task\n");
 	}
 
 	urt_sem_wait(done_sem);

@@ -17,3 +17,14 @@ KBUILD_EXTRA_SYMBOLS += $(URT_BASE)/build/kernel/Module.symvers
 modules clean:
 	@$(MAKE) -C /lib/modules/$(shell uname -r)/build M=$(CURDIR)\
 		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" KBUILD_EXTRA_SYMBOLS="$(KBUILD_EXTRA_SYMBOLS)" $@
+
+TEST_PARAMS := "$(TARGET)"
+ifdef TARGET2
+  ifndef COUNT
+    COUNT := 1
+  endif
+  TEST_PARAMS += "$(TARGET2)" "$(COUNT)"
+endif
+.PHONY: execute_kernel_test
+execute_kernel_test:
+	@$(URT_BASE)/tests/execute_test.bash $(TEST_PARAMS)

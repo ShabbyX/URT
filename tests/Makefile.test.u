@@ -60,10 +60,17 @@ endif
 %.o: %.c
 	$(call cmd,cc)
 
+TEST_PARAMS := "$(TARGET)"
+ifdef TARGET2
+  ifndef COUNT
+    COUNT := 1
+  endif
+  TEST_PARAMS += "$(TARGET2)" "$(COUNT)"
+endif
 .PHONY: execute_test valgrind_check
 execute_test:
-	@./$(TARGET) 2>&1 | grep --color=never 'internal error'; exit $${PIPESTATUS[0]}
+	@$(URT_BASE)/tests/execute_test.bash $(TEST_PARAMS)
 valgrind_check:
-	@valgrind --leak-check=full ./$(TARGET) 2>&1 | grep --color=never 'in use at exit:\|== Invalid\|internal error'
+	@$(URT_BASE)/tests/execute_test.bash valgrind $(TEST_PARAMS)
 
 -include Makefile.dep
