@@ -12,5 +12,4 @@ all: main.c modules
 %.c: ../%.c
 	@$(CP) '$<' '$@'
 
-
 endif

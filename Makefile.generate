@@ -10,15 +10,11 @@ else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
   URT_SYS_DEF := \#ifdef __KERNEL__\n\# define URT_SYS_RTAI_KERNEL\n\#else\n\# define URT_SYS_RTAI_USER\n\#endif\n
 else
-ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai-kernel-only)
-  URT_SYS_DEF := \#define URT_SYS_RTAI_KERNEL\n
-else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
   URT_SYS_DEF := \#define URT_SYS_QNX\n
 else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
   URT_SYS_DEF := \#define URT_SYS_VXWORKS\n
-endif
 endif
 endif
 endif
