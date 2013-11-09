@@ -1,5 +1,6 @@
 TARGET := test
 TARGET2 := add
+COUNT := 20
 USE_SHARED := y
 
 include ../Makefile.test.u

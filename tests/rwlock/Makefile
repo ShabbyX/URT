@@ -1,5 +1,6 @@
 TARGET := test
 TARGET2 := read
+COUNT := 4
 USE_SHAED := n
 
 include ../Makefile.test.u
