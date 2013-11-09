@@ -17,38 +17,20 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
 #include <urt.h>
 
-int main(void)
+static int test_start(void);
+static void test_body(void);
+static void test_end(void);
+
+URT_GLUE(test_start, test_body, test_end, interrupted, done)
+
+static urt_rwlock *rwl = NULL;
+static urt_task *test_task = NULL;
+
+static void _test(urt_task *task, void *data)
 {
-	int exit_status = 0;
 	int ret;
-	urt_rwlock *rwl = NULL;
-	urt_time start;
-
-	urt_out("read: spawned\n");
-
-	ret = urt_init();
-	if (ret)
-	{
-		urt_out("read: init returned %d\n", ret);
-		exit_status = EXIT_FAILURE;
-		goto exit_no_init;
-	}
-	start = urt_get_time();
-	do
-	{
-		rwl = urt_shrwlock_attach("TSTRWL");
-		urt_sleep(10000000);
-	} while (rwl == NULL && urt_get_time() - start < 1000000000ll);
-	if (rwl == NULL)
-	{
-		urt_out("read: no shared rwl\n");
-		exit_status = EXIT_FAILURE;
-		goto exit_no_rwl;
-	}
-	urt_out("read: rwl attached\n");
 	urt_sleep(500000000);
 	ret = urt_rwlock_try_read_lock(rwl);
 	urt_out("read: try read lock returned: %d\n", ret);
@@ -73,10 +55,61 @@ int main(void)
 		urt_out("read: read unlock\n");
 		urt_rwlock_read_unlock(rwl);
 	}
+	done = 1;
+}
+
+static void _cleanup(void)
+{
+	urt_task_delete(test_task);
 	urt_shrwlock_detach(rwl);
-exit_no_rwl:
 	urt_exit();
-	urt_out("read: test done\n");
+}
+
+static int test_start(void)
+{
+	int ret;
+	urt_time start;
+	urt_out("read: spawned\n");
+	ret = urt_init();
+	if (ret)
+	{
+		urt_out("read: init returned %d\n", ret);
+		goto exit_no_init;
+	}
+	start = urt_get_time();
+	do
+	{
+		rwl = urt_shrwlock_attach("TSTRWL");
+		urt_sleep(10000000);
+	} while (rwl == NULL && urt_get_time() - start < 1000000000ll);
+	if (rwl == NULL)
+	{
+		urt_out("read: no shared rwl\n");
+		goto exit_no_rwl;
+	}
+	urt_out("read: rwl attached\n");
+exit_no_rwl:
+	_cleanup();
 exit_no_init:
-	return exit_status;
+	return EXIT_FAILURE;
+}
+
+static void test_body(void)
+{
+	test_task = urt_task_new(_test);
+	if (test_task == NULL)
+	{
+		urt_out("wait: failed to create task\n");
+		goto exit_no_task;
+	}
+	urt_task_start(test_task);
+	return;
+exit_no_task:
+	done = 1;
+}
+
+static void test_end(void)
+{
+	_cleanup();
+	urt_out("read: test done\n");
 }
