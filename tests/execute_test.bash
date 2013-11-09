@@ -2,10 +2,10 @@
 
 # check if doing valgrind check
 pre_command=
-grep_pattern='internal error\|bad\|error\|wrong\|fail'
+grep_pattern="internal error\\|bad\\|error\\|wrong\\|fail"
 if [ "$1" == valgrind ]; then
 	pre_command=valgrind
-	grep_pattern='in use at exit:\|== Invalid\|'$grep_pattern
+	grep_pattern="in use at exit:\\|== Invalid\\|""$grep_pattern"
 	shift;
 fi
 
@@ -23,7 +23,7 @@ if $kernel_module; then
 	sudo insmod "$(dirname "$0")"/../build/kernel/urt.ko || exit 1
 	sudo insmod "$1"
 else
-	$pre_command (./"$1" 2>&1 | grep --color=never $grep_pattern; ret=${PIPESTATUS[0]}) &
+	($pre_command ./"$1" 2>&1 | grep --color=never "$grep_pattern"; ret=${PIPESTATUS[0]}) &
 fi
 # if children processes, spawn them too
 if [ $# -gt 2 ]; then
@@ -31,7 +31,7 @@ if [ $# -gt 2 ]; then
 		if $kernel_module; then
 			sudo insmod "$2_$i"
 		else
-			$pre_command (./"$2" 2>&1 | grep --color=never $grep_pattern; ret2[$i]=${PIPESTATUS[0]}) &
+			($pre_command ./"$2" 2>&1 | grep --color=never "$grep_pattern"; ret2[$i]=${PIPESTATUS[0]}) &
 		fi
 	done
 fi
