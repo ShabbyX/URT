@@ -1,3 +1,7 @@
+TODO
+- Add optional parameter to URT_GLUE to pass a parameter to init, body and exit functions.  This is to avoid
+  globals.
+
 Known issues
 - with linux
 - with RTAI (user space)

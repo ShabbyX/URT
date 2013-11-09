@@ -2,7 +2,7 @@
 
 # check if doing valgrind check
 pre_command=
-grep_pattern='internal error'
+grep_pattern='internal error\|bad\|error\|wrong\|fail'
 if [ "$1" == valgrind ]; then
 	pre_command=valgrind
 	grep_pattern='in use at exit:\|== Invalid\|'$grep_pattern

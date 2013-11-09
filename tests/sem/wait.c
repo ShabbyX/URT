@@ -17,7 +17,6 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
 #include <urt.h>
 
 static int test_start(void);

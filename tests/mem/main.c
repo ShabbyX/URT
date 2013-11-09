@@ -17,34 +17,45 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <urt.h>
 
-int main(void)
+static int test_start(void);
+static void test_body(void);
+static void test_end(void);
+
+URT_GLUE(test_start, test_body, test_end, interrupted, done)
+
+static urt_sem *req = NULL;
+static urt_sem *res = NULL;
+static int *mem = NULL;
+static urt_task *check_task = NULL;
+
+static void _check(urt_task *task, void *data)
+{
+	int i;
+	for (i = 0; i < 20; ++i)
+		urt_sem_post(req);
+	for (i = 0; i < 20; ++i)
+		urt_sem_wait(res);
+	done = 1;
+}
+
+static void _cleanup(void)
+{
+	urt_task_delete(check_task);
+	urt_shsem_delete(req);
+	urt_shsem_delete(res);
+	urt_exit();
+}
+
+static int test_start(void)
 {
 	int ret;
-	int exit_status = 0;
-	int i;
-	int *mem = NULL;
-	urt_sem *req = NULL;
-	urt_sem *res = NULL;
-
 	urt_out("main: starting test...\n");
-
-	for (i = 0; i < 20; ++i)
-		if (fork() == 0)
-		{
-			execl("./add", "./add", (void *)NULL);
-			_Exit(EXIT_FAILURE);
-		}
-
 	ret = urt_init();
 	if (ret)
 	{
 		urt_out("main: init returned %d\n", ret);
-		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
 	req = urt_shsem_new("TSTREQ", 0);
@@ -52,7 +63,6 @@ int main(void)
 	if (req == NULL || res == NULL)
 	{
 		urt_out("main: no shared sem\n");
-		exit_status = EXIT_FAILURE;
 		goto exit_no_sem;
 	}
 	urt_out("main: sem allocated\n");
@@ -60,33 +70,36 @@ int main(void)
 	if (mem == NULL)
 	{
 		urt_out("main: no shared mem\n");
-		exit_status = EXIT_FAILURE;
 		goto exit_no_mem;
 	}
 	urt_out("main: mem allocated\n");
 	mem[0] = mem[1] = mem[2] = mem[3] = 0;
-	for (i = 0; i < 20; ++i)
-		urt_sem_post(req);
-	for (i = 0; i < 20; ++i)
-		urt_sem_wait(res);
-	if (!(mem[0] == 20 && mem[1] == 40 && mem[2] == 60 && mem[3] == -20))
-	{
-		urt_out("main: bad synchronization (wrong results)\n");
-		exit_status = EXIT_FAILURE;
-	}
-	urt_out("main: waiting for children\n");
-	for (i = 0; i < 20; ++i)
-		wait(NULL);
-	urt_out("main: cleaning up\n");
-	urt_shmem_delete(mem);
-exit_no_mem:
-	if (req)
-		urt_shsem_delete(req);
-	if (res)
-		urt_shsem_delete(res);
+	return 0;
 exit_no_sem:
-	urt_exit();
-	urt_out("main: test done\n");
+exit_no_mem:
+	_cleanup();
 exit_no_init:
-	return exit_status;
+	return EXIT_FAILURE;
+}
+
+static void test_body(void)
+{
+	check_task = urt_task_new(_check);
+	if (check_task == NULL)
+	{
+		urt_out("main: failed to create task\n");
+		goto exit_no_task;
+	}
+	urt_task_start(check_task);
+	return;
+exit_no_task:
+	done = 1;
+}
+
+static void test_end(void)
+{
+	if (!(mem[0] == 20 && mem[1] == 40 && mem[2] == 60 && mem[3] == -20))
+		urt_out("main: bad synchronization (wrong results)\n");
+	_cleanup();
+	urt_out("main: test done\n");
 }
