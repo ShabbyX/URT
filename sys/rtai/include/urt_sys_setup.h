@@ -74,7 +74,7 @@ module_init(urt_app_init_);				\
 module_exit(urt_app_exit_);
 
 # define URT_GLUE_NO_INTERRUPT(init, body, exit)	\
-static int skink_init_thread(void *arg)			\
+static int urt_app_body_(void *arg)			\
 {							\
 	body();						\
 	do_exit(0);					\
