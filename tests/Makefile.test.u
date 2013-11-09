@@ -67,10 +67,14 @@ ifdef TARGET2
   endif
   TEST_PARAMS += "$(TARGET2)" "$(COUNT)"
 endif
-.PHONY: execute_test valgrind_check
+.PHONY: execute_test valgrind_check verbose_test verbose_valgrind_check
 execute_test:
 	@$(URT_BASE)/tests/execute_test.bash $(TEST_PARAMS)
 valgrind_check:
 	@$(URT_BASE)/tests/execute_test.bash valgrind $(TEST_PARAMS)
+verbose_test:
+	@$(URT_BASE)/tests/execute_test.bash verbose $(TEST_PARAMS)
+verbose_valgrind_check:
+	@$(URT_BASE)/tests/execute_test.bash valgrind verbose $(TEST_PARAMS)
 
 -include Makefile.dep

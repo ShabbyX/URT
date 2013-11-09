@@ -2,11 +2,17 @@
 
 # check if doing valgrind check
 pre_command=
-grep_pattern="internal error\\|bad\\|error\\|wrong\\|fail"
+grep_pattern="internal error\\|bad\\|error:\\|wrong\\|fail"
 if [ "$1" == valgrind ]; then
 	pre_command=valgrind
 	grep_pattern="in use at exit:\\|== Invalid\\|""$grep_pattern"
 	shift;
+fi
+
+# check if verbose output (for debugging each test manually)
+if [ "$1" == verbose ]; then
+	grep_pattern=""
+	shift
 fi
 
 # check if executing user application or kernel module
