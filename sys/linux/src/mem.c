@@ -94,7 +94,7 @@ exit_bad_map:
 	goto exit_fail;
 exit_bad_name:
 	if (error)
-		*error= URT_BAD_NAME;
+		*error = URT_BAD_NAME;
 	goto exit_fail;
 exit_fail:
 	if (fd != -1)

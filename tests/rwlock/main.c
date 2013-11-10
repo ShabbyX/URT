@@ -40,7 +40,6 @@ static void _check(urt_task *task, void *data)
 	urt_out("main: waiting for write lock\n");
 	ret = urt_rwlock_write_lock(rwl);
 	urt_out("main: write lock returned: %d\n", ret);
-	urt_shrwlock_delete(rwl);
 	done = 1;
 }
 
