@@ -52,6 +52,7 @@ static void _cleanup(void)
 	urt_task_delete(test_task);
 	urt_shsem_delete(req);
 	urt_shsem_delete(res);
+	urt_shmem_delete(mem);
 	urt_exit();
 }
 

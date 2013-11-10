@@ -33,6 +33,8 @@ static urt_task *check_task = NULL;
 static void _check(urt_task *task, void *data)
 {
 	int i;
+	urt_out("main: waiting for 3 seconds\n");
+	urt_sleep(3000000000ll);
 	for (i = 0; i < 20; ++i)
 		urt_sem_post(req);
 	for (i = 0; i < 20; ++i)
@@ -45,6 +47,7 @@ static void _cleanup(void)
 	urt_task_delete(check_task);
 	urt_shsem_delete(req);
 	urt_shsem_delete(res);
+	urt_shmem_delete(mem);
 	urt_exit();
 }
 
