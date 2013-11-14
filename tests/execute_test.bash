@@ -35,7 +35,7 @@ fi
 if [ $# -gt 2 ]; then
 	for (( i=0; i<$3; ++i )); do
 		if $kernel_module; then
-			sudo insmod "$2_$i"
+			sudo insmod "${2%.ko}_$i.ko"
 		else
 			($pre_command ./"$2" 2>&1 | grep --color=never "$grep_pattern"; ret2[$i]=${PIPESTATUS[0]}) &
 		fi
@@ -56,7 +56,7 @@ if [ $# -gt 2 ]; then
 	for (( i=0; i<$3; ++i )); do
 		if ! ${ret2[$i]}; then
 			if $kernel_module; then
-				sudo rmmod "$2_$i"
+				sudo rmmod "${2%.ko}_$i"
 			else
 				$ret=1
 			fi
@@ -64,7 +64,7 @@ if [ $# -gt 2 ]; then
 	done
 fi
 if $kernel_module; then
-	sudo rmmod "$1"
+	sudo rmmod "${1%.ko}"
 	sudo rmmod urt
 	printf -- " *** Please check dmesg for results\n"
 fi

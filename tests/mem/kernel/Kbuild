@@ -1,0 +1,28 @@
+include $(M)/../Makefile.dep
+
+obj-m += test.o add_0.o add_1.o add_2.o add_3.o add_4.o add_5.o add_6.o add_7.o add_8.o add_9.o \
+	 add_10.o add_11.o add_12.o add_13.o add_14.o add_15.o add_16.o add_17.o add_18.o add_19.o
+test-y := main.o
+add_0-y := add.o
+add_1-y := add.o
+add_2-y := add.o
+add_3-y := add.o
+add_4-y := add.o
+add_5-y := add.o
+add_6-y := add.o
+add_7-y := add.o
+add_8-y := add.o
+add_9-y := add.o
+add_10-y := add.o
+add_11-y := add.o
+add_12-y := add.o
+add_13-y := add.o
+add_14-y := add.o
+add_15-y := add.o
+add_16-y := add.o
+add_17-y := add.o
+add_18-y := add.o
+add_19-y := add.o
+
+%.o: %.c
+main.o: main.c

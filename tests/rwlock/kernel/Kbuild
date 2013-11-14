@@ -1,0 +1,10 @@
+include $(M)/../Makefile.dep
+
+obj-m += test.o read_0.o read_1.o read_2.o read_3.o
+test-y := main.o
+read_0-y := read.o
+read_1-y := read.o
+read_2-y := read.o
+read_3-y := read.o
+
+%.o: %.c
