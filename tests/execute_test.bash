@@ -1,5 +1,12 @@
 #! /bin/bash
 
+# check if needs main kernel module
+needs_ko=false
+if [ "$1" == needs_ko ]; then
+	needs_ko=true
+	shift
+fi
+
 # check if doing valgrind check
 pre_command=
 grep_pattern="internal error\\|bad\\|error:\\|wrong\\|fail"
@@ -24,7 +31,7 @@ fi
 # spawn main process
 urt_ko=
 urt=
-if $kernel_module; then
+if $needs_ko; then
 	urt_ko="$(find "$(dirname "$0")"/../build/kernel -name "urt*.ko" | head -1)"
 	if [ -z "$urt_ko" ]; then
 		printf -- " Error: URT not built for kernel\n"
@@ -35,6 +42,8 @@ if $kernel_module; then
 		sudo rmmod "$urt"
 	fi
 	sudo insmod "$urt_ko" || exit 1
+fi
+if $kernel_module; then
 	sudo insmod "$1"
 else
 	($pre_command ./"$1" 2>&1 | grep --color=never "$grep_pattern"; ret=${PIPESTATUS[0]}) &
@@ -73,7 +82,9 @@ if [ $# -gt 2 ]; then
 fi
 if $kernel_module; then
 	sudo rmmod "${1%.ko}"
-	sudo rmmod "$urt"
 	printf -- " *** Please check dmesg for results\n"
+fi
+if $needs_ko; then
+	sudo rmmod "$urt"
 fi
 exit $ret

@@ -25,6 +25,10 @@ ifdef TARGET2
   endif
   TEST_PARAMS += "$(TARGET2)" "$(COUNT)"
 endif
+LOAD_KO=
+ifeq ($(URT_NEEDS_KO), y)
+  LOAD_KO=needs_ko
+endif
 .PHONY: execute_kernel_test
 execute_kernel_test:
-	@$(URT_BASE)/tests/execute_test.bash $(TEST_PARAMS)
+	@$(URT_BASE)/tests/execute_test.bash $(LOAD_KO) $(TEST_PARAMS)

@@ -67,17 +67,21 @@ ifdef TARGET2
   endif
   TEST_PARAMS += "$(TARGET2)" "$(COUNT)"
 endif
+LOAD_KO=
+ifeq ($(URT_NEEDS_KO), y)
+  LOAD_KO=needs_ko
+endif
 .PHONY: execute_test verbose_test
 execute_test:
-	@$(URT_BASE)/tests/execute_test.bash $(TEST_PARAMS)
+	@$(URT_BASE)/tests/execute_test.bash $(LOAD_KO) $(TEST_PARAMS)
 verbose_test:
-	@$(URT_BASE)/tests/execute_test.bash verbose $(TEST_PARAMS)
+	@$(URT_BASE)/tests/execute_test.bash $(LOAD_KO) verbose $(TEST_PARAMS)
 ifeq ($(URT_CAN_VALGRIND), y)
 .PHONY: valgrind_check verbose_valgrind_check
 valgrind_check:
-	@$(URT_BASE)/tests/execute_test.bash valgrind $(TEST_PARAMS)
+	@$(URT_BASE)/tests/execute_test.bash $(LOAD_KO) valgrind $(TEST_PARAMS)
 verbose_valgrind_check:
-	@$(URT_BASE)/tests/execute_test.bash valgrind verbose $(TEST_PARAMS)
+	@$(URT_BASE)/tests/execute_test.bash $(LOAD_KO) valgrind verbose $(TEST_PARAMS)
 endif
 
 -include Makefile.dep
