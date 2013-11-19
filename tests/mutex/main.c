@@ -18,7 +18,6 @@
  */
 
 #include <urt.h>
-#include <stdlib.h>
 
 static int test_start(void);
 static void test_body(void);
