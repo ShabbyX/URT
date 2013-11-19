@@ -14,7 +14,9 @@ URT_CONFIG_CC=gcc
 #     rtlinux:		Real-time patches (RT-Linux) for the Linux kernel (Not yet implemented)
 #
 # In the future, other systems may also be considered, such as mac or even windows.
+# Suffix can be used to distinguish between multiple builds of URT on the same machine.
 URT_CONFIG_RT_SUBSYSTEM=linux
+URT_CONFIG_SUFFIX=
 
 # Platform dependent configurations:
 #

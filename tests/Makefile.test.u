@@ -8,9 +8,9 @@ include $(URT_BASE)/build/Makefile.build
 CFLAGS := $(URT_USER_CFLAGS) $(EXTRA_CFLAGS)
 # USE_SHARED defined in including Makefile decides whether to build against static or shared lib
 ifeq ($(USE_SHARED), y)
-  LDFLAGS := -L$(URT_BASE)/build/shared -lurt-$(URT_VERSION) $(URT_USER_LDFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
+  LDFLAGS := -L$(URT_BASE)/build/shared -lurt$(URT_CONFIG_SUFFIX)-$(URT_VERSION) $(URT_USER_LDFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
 else
-  LDFLAGS := -L$(URT_BASE)/build/static -lurt $(URT_USER_LDFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
+  LDFLAGS := -L$(URT_BASE)/build/static -lurt$(URT_CONFIG_SUFFIX) $(URT_USER_LDFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
 endif
 # TARGET and possibly TARGET2 defined by including Makefile
 
@@ -51,10 +51,10 @@ quiet_cmd_cc = CC      $(CURDIR)/$@
       cmd_cc = $(CC) $(CFLAGS) $(CC_o) $@ $<
 
 # further dependencies of TARGET and possibly TARGET2 defined by including Makefile
-$(TARGET): $(URT_BASE)/build/shared/liburt-$(URT_VERSION).so
+$(TARGET): $(URT_BASE)/build/shared/liburt$(URT_CONFIG_SUFFIX)-$(URT_VERSION).so
 	$(call cmd,ld)
 ifdef TARGET2
-$(TARGET2): $(URT_BASE)/build/shared/liburt-$(URT_VERSION).so
+$(TARGET2): $(URT_BASE)/build/shared/liburt$(URT_CONFIG_SUFFIX)-$(URT_VERSION).so
 	$(call cmd,ld)
 endif
 %.o: %.c
@@ -70,10 +70,10 @@ endif
 .PHONY: execute_test valgrind_check verbose_test verbose_valgrind_check
 execute_test:
 	@$(URT_BASE)/tests/execute_test.bash $(TEST_PARAMS)
-valgrind_check:
-	@$(URT_BASE)/tests/execute_test.bash valgrind $(TEST_PARAMS)
 verbose_test:
 	@$(URT_BASE)/tests/execute_test.bash verbose $(TEST_PARAMS)
+valgrind_check:
+	@$(URT_BASE)/tests/execute_test.bash valgrind $(TEST_PARAMS)
 verbose_valgrind_check:
 	@$(URT_BASE)/tests/execute_test.bash valgrind verbose $(TEST_PARAMS)
 

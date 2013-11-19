@@ -22,11 +22,15 @@ if [[ "$1" == *.ko ]]; then
 fi
 
 # spawn main process
+urt_ko=
+urt=
 if $kernel_module; then
-	if lsmod | grep -q urt; then
-		sudo rmmod urt
+	urt_ko="$(dirname "$0")"/../build/kernel/urt*.ko
+	urt="$(basename "$(urt_ko)")"
+	if lsmod | grep -q '^urt'; then
+		sudo rmmod "$urt"
 	fi
-	sudo insmod "$(dirname "$0")"/../build/kernel/urt.ko || exit 1
+	sudo insmod "$urt_ko" || exit 1
 	sudo insmod "$1"
 else
 	($pre_command ./"$1" 2>&1 | grep --color=never "$grep_pattern"; ret=${PIPESTATUS[0]}) &
@@ -65,7 +69,7 @@ if [ $# -gt 2 ]; then
 fi
 if $kernel_module; then
 	sudo rmmod "$1"
-	sudo rmmod urt
+	sudo rmmod "$urt"
 	printf -- " *** Please check dmesg for results\n"
 fi
 exit $ret

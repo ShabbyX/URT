@@ -1,7 +1,7 @@
 include ../../Makefile.config
 include ../../Makefile.common
 
-TARGET := liburt-$(URT_VERSION).so
+TARGET := liburt$(URT_CONFIG_SUFFIX)-$(URT_VERSION).so
 
 .PHONY: all clean
 all: $(TARGET)

@@ -1,13 +1,13 @@
 include ../../Makefile.config
 include ../../Makefile.common
 
-TARGET := liburt.a
+TARGET := liburt$(URT_CONFIG_SUFFIX).a
 
 .PHONY: all clean
 all: $(TARGET)
 	@$(SHELL_NOOP)
 quiet_cmd_clean = CLEAN   $(CURDIR)/
-      cmd_clean = $(RM) $(TARGET) *.o
+      cmd_clean = $(RM) liburt*.a *.o
 clean:
 	-$(call cmd,clean)
 

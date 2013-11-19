@@ -8,9 +8,9 @@ include $(URT_BASE)/build/Makefile.build
 CFLAGS := $(URT_USER_CFLAGS) $(EXTRA_CFLAGS)
 # USE_SHARED defined in including Makefile decides whether to build against static or shared lib
 ifeq ($(USE_SHARED), y)
-  LDFLAGS := -L$(URT_BASE)/build/shared -lurt-$(URT_VERSION) $(URT_USER_LDFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
+  LDFLAGS := -L$(URT_BASE)/build/shared -lurt$(URT_CONFIG_SUFFIX)-$(URT_VERSION) $(URT_USER_LDFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
 else
-  LDFLAGS := -L$(URT_BASE)/build/static -lurt $(URT_USER_LDFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
+  LDFLAGS := -L$(URT_BASE)/build/static -lurt$(URT_CONFIG_SUFFIX) $(URT_USER_LDFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
 endif
 
 .PHONY: all dep clean
@@ -40,7 +40,7 @@ quiet_cmd_ld = LD      $(CURDIR)/$@
 quiet_cmd_cc = CC      $(CURDIR)/$@
       cmd_cc = $(CC) $(CFLAGS) $(CC_o) $@ $<
 
-$(TARGET): $(TOOL_SRC:.c=.o) $(URT_BASE)/build/shared/liburt-$(URT_VERSION).so
+$(TARGET): $(TOOL_SRC:.c=.o) $(URT_BASE)/build/shared/liburt$(URT_CONFIG_SUFFIX)-$(URT_VERSION).so
 	$(call cmd,ld)
 %.o: %.c
 	$(call cmd,cc)

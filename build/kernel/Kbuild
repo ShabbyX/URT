@@ -5,5 +5,5 @@ include $(URT_BASE)/Makefile.common
 include $(URT_BASE)/build/Makefile.src
 include $(URT_BASE)/build/Makefile.dep
 
-obj-m += urt.o
-urt-y := $(LIB_OBJ)
+obj-m += urt$(URT_CONFIG_SUFFIX).o
+urt$(URT_CONFIG_SUFFIX)-y := $(LIB_OBJ)

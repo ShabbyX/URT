@@ -6,9 +6,9 @@ INC_BUILD := ./increase_build
 BUILD_FILE := build.txt
 
 ifeq ($(URT_MAKE_USER), y)
-  INC_BUILD_TARGET := static/liburt.a
+  INC_BUILD_TARGET := static/liburt$(URT_CONFIG_SUFFIX).a
 else
-  INC_BUILD_TARGET := kernel/urt.ko
+  INC_BUILD_TARGET := kernel/urt$(URT_CONFIG_SUFFIX).ko
 endif
 
 ifeq ($(URT_CONFIG_DEVELOPER_MODE), y)
