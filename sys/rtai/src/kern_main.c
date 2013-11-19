@@ -90,6 +90,7 @@ static int __init _urt_rtai_init(void)
 	}
 no_sysfs:
 
+	urt_out("Loaded\n");
 	return 0;
 }
 
@@ -99,6 +100,7 @@ static void __exit _urt_rtai_exit(void)
 		kobject_put(_kobj);
 	_kobj = NULL;
 	urt_exit();
+	urt_out("Unloaded\n");
 }
 
 module_init(_urt_rtai_init);
