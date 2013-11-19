@@ -30,6 +30,9 @@ quiet_cmd_clean = CLEAN   $(CURDIR)/
       cmd_clean = $(RM) $(TARGET) $(TARGET2) *.o Makefile.dep
 clean:
 	-$(call cmd,clean)
+ifeq ($(URT_MAKE_KERNEL), y)
+	@$(MAKE) -C kernel clean
+endif
 
 dep: Makefile.dep
 	@$(SHELL_NOOP)
@@ -71,10 +74,10 @@ LOAD_KO=
 ifeq ($(URT_NEEDS_KO), y)
   LOAD_KO=needs_ko
 endif
-.PHONY: execute_test verbose_test
-execute_test:
+.PHONY: execute_user_test verbose_user_test
+execute_user_test:
 	@$(URT_BASE)/tests/execute_test.bash $(LOAD_KO) $(TEST_PARAMS)
-verbose_test:
+verbose_user_test:
 	@$(URT_BASE)/tests/execute_test.bash $(LOAD_KO) verbose $(TEST_PARAMS)
 ifeq ($(URT_CAN_VALGRIND), y)
 .PHONY: valgrind_check verbose_valgrind_check

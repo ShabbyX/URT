@@ -37,9 +37,14 @@ tests: config
 
 .PHONY: check
 check:
-	@$(MAKE) -C tests tests
-ifeq ($(URT_CAN_VALGRIND), y)
+ifeq ($(URT_MAKE_USER), y)
+	@$(MAKE) -C tests user
+  ifeq ($(URT_CAN_VALGRIND), y)
 	@$(MAKE) -C tests valgrind
+  endif
+endif
+ifeq ($(URT_MAKE_KERNEL), y)
+	@$(MAKE) -C tests kernel
 endif
 
 .PHONY: install uninstall

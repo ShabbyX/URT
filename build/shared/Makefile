@@ -14,7 +14,7 @@ clean:
 URT_BASE := $(abspath $(CURDIR)/../..)
 include ../Makefile.build
 include ../Makefile.src
-include ../Makefile.dep
+-include ../Makefile.dep
 
 CFLAGS := $(URT_SHARED_CFLAGS)
 LDFLAGS := $(URT_SHARED_LDFLAGS)

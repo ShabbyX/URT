@@ -1,4 +1,4 @@
-include $(M)/../Makefile.dep
+-include $(M)/../Makefile.dep
 
 obj-m += test.o wait_0.o wait_1.o wait_2.o wait_3.o wait_4.o wait_5.o wait_6.o wait_7.o wait_8.o \
 	 wait_9.o wait_10.o wait_11.o wait_12.o wait_13.o wait_14.o wait_15.o wait_16.o wait_17.o wait_18.o wait_19.o

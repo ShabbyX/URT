@@ -15,14 +15,16 @@ dep:
 	@for i in $(TESTS); do \
 		$(MAKE) -C $$i dep; \
 	done
-.PHONY: tests
-tests:
-	@$(PRINTF) "$(STATUS_COLOR)Executing tests...$(DEFAULT_COLOR)\n"
+ifeq ($(URT_MAKE_USER), y)
+.PHONY: user
+user:
+	@$(PRINTF) "$(STATUS_COLOR)Executing user tests...$(DEFAULT_COLOR)\n"
 	@for i in $(TESTS); do \
 		$(PRINTF) "$(SUB_STATUS_COLOR)$$i$(DEFAULT_COLOR)\n"; \
-		$(MAKE) -C $$i execute_test || exit 1; \
+		$(MAKE) -C $$i execute_user_test || exit 1; \
 		$(PRINTF) "-- passed\n"; \
 	done
+endif
 ifeq ($(URT_CAN_VALGRIND), y)
 .PHONY: valgrind
 valgrind:
@@ -35,6 +37,15 @@ valgrind:
 	else \
 		$(PRINTF) "Valgrind not installed\n"; \
 	fi
+endif
+ifeq ($(URT_MAKE_KERNEL), y)
+.PHONY: kernel
+kernel:
+	@$(PRINTF) "$(STATUS_COLOR)Executing kernel tests...$(DEFAULT_COLOR)\n"
+	@for i in $(TESTS); do \
+		$(PRINTF) "$(SUB_STATUS_COLOR)$$i$(DEFAULT_COLOR)\n"; \
+		$(MAKE) -C $$i/kernel execute_kernel_test; \
+	done
 endif
 .PHONY: clean
 clean:

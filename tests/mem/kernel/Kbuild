@@ -1,4 +1,4 @@
-include $(M)/../Makefile.dep
+-include $(M)/../Makefile.dep
 
 obj-m += test.o add_0.o add_1.o add_2.o add_3.o add_4.o add_5.o add_6.o add_7.o add_8.o add_9.o \
 	 add_10.o add_11.o add_12.o add_13.o add_14.o add_15.o add_16.o add_17.o add_18.o add_19.o

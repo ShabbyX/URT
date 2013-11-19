@@ -1,4 +1,4 @@
-include $(M)/../Makefile.dep
+-include $(M)/../Makefile.dep
 
 obj-m += test.o read_0.o read_1.o read_2.o read_3.o
 test-y := main.o
