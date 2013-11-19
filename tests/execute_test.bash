@@ -25,8 +25,12 @@ fi
 urt_ko=
 urt=
 if $kernel_module; then
-	urt_ko="$(dirname "$0")"/../build/kernel/urt*.ko
-	urt="$(basename "$(urt_ko)")"
+	urt_ko="$(find "$(dirname "$0")"/../build/kernel -name "urt*.ko" | head -1)"
+	if [ -z "$urt_ko" ]; then
+		printf -- " Error: URT not built for kernel\n"
+		exit 1
+	fi
+	urt="$(basename "${urt_ko%.ko}")"
 	if lsmod | grep -q '^urt'; then
 		sudo rmmod "$urt"
 	fi
