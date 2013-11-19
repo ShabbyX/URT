@@ -163,12 +163,14 @@ static void _internal_mem_check(void)
 # define _internal_mem_check() ((void)0)
 #endif
 
-static inline void _dec_count_common(urt_registered_object *ro)
+static void _dec_count_common(urt_registered_object *ro)
 {
 	unsigned int index = ro - urt_global_mem->objects;
-	if (URT_LIKELY(ro->count > 0))
+	if (ro->count > 0)
 		--ro->count;
 	ro->reserved = false;
+
+	/* TODO: wait, shouldn't here be if (ro->count > 0) return; ?!! */
 
 	/* take care of object cleanup */
 	if (ro->release)
@@ -323,9 +325,9 @@ int urt_get_free_name(char *name)
 		next_name = urt_global_mem->next_free_name;
 		strncpy(name, next_name, URT_NAME_LEN);
 		ret = _increment_name(next_name);
-		if (URT_UNLIKELY(ret))
+		if (ret)
 			urt_global_mem->names_exhausted = true;
-		if (URT_UNLIKELY(ret < 0))
+		if (ret < 0)
 			goto exit_fail;
 	}
 
