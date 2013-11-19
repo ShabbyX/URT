@@ -32,7 +32,12 @@ int urt_init(void)
 		return error;
 
 	if (urt_global_mem != NULL)
+#ifdef __KERNEL__
+		/* in kernel space, urt_global_* variables are not per process, but reside in main kernel module */
+		return URT_SUCCESS;
+#else
 		return URT_ALREADY;
+#endif
 
 	/* get global lock */
 	error = urt_global_sem_get(URT_GLOBAL_LOCK_NAME);
