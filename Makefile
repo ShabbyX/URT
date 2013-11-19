@@ -38,7 +38,7 @@ tests: config
 .PHONY: check
 check:
 	@$(MAKE) -C tests tests
-ifneq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
+ifeq ($(URT_CAN_VALGRIND), y)
 	@$(MAKE) -C tests valgrind
 endif
 

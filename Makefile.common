@@ -32,8 +32,10 @@ SHELL_NOOP := :
 
 URT_VERSION_MAJOR := 0
 URT_VERSION_MINOR := 2
-URT_VERSION_REVISION := 0
+URT_VERSION_REVISION := 1
 URT_VERSION := $(URT_VERSION_MAJOR).$(URT_VERSION_MINOR).$(URT_VERSION_REVISION)
+
+URT_CAN_VALGRIND := n
 
 # If IGNORE_BUILD_OPTIONS is defined, ignore this section.
 # This is useful for having the other part of the file defined, while skipping this part
@@ -66,6 +68,7 @@ ifndef IGNORE_BUILD_OPTIONS
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
     URT_STATIC_CFLAGS +=
     URT_STATIC_LDFLAGS += -lrt
+    URT_CAN_VALGRIND := y
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
     URT_MAKE_KERNEL = y

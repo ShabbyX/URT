@@ -15,7 +15,7 @@ dep:
 	@for i in $(TESTS); do \
 		$(MAKE) -C $$i dep; \
 	done
-.PHONY: tests valgrind
+.PHONY: tests
 tests:
 	@$(PRINTF) "$(STATUS_COLOR)Executing tests...$(DEFAULT_COLOR)\n"
 	@for i in $(TESTS); do \
@@ -23,6 +23,8 @@ tests:
 		$(MAKE) -C $$i execute_test || exit 1; \
 		$(PRINTF) "-- passed\n"; \
 	done
+ifeq ($(URT_CAN_VALGRIND), y)
+.PHONY: valgrind
 valgrind:
 	@$(PRINTF) "$(STATUS_COLOR)Executing valgrind tests...$(DEFAULT_COLOR)\n"
 	@if command -v valgrind > /dev/null 2>&1; then \
@@ -33,6 +35,7 @@ valgrind:
 	else \
 		$(PRINTF) "Valgrind not installed\n"; \
 	fi
+endif
 .PHONY: clean
 clean:
 	@for i in $(TESTS); do \
