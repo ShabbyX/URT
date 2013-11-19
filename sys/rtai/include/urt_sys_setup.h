@@ -37,6 +37,10 @@ static inline void urt_sys_exit(void) {}
 void urt_sys_force_clear_name(urt_registered_object *ro);
 
 #ifdef __KERNEL__
+
+#define URT_MODULE_LICENSE(...) MODULE_LICENSE(__VA_ARGS__)
+#define URT_MODULE_AUTHOR(...) MODULE_AUTHOR(__VA_ARGS__)
+
 # define URT_GLUE(init, body, exit, interrupted, done)	\
 static int interrupted = 0;				\
 static int done = 0;					\
@@ -104,7 +108,10 @@ static void __exit urt_app_exit_(void)			\
 module_init(urt_app_init_);				\
 module_exit(urt_app_exit_);
 
-#else
+#else /* !__KERNEL__ */
+
+#define URT_MODULE_LICENSE(...)
+#define URT_MODULE_AUTHOR(...)
 
 # define URT_GLUE(init, body, exit, interrupted, done)	\
 static volatile sig_atomic_t interrupted = 0;		\
@@ -148,7 +155,7 @@ int main(int argc, char **argv)				\
 	exit();						\
 	return 0;					\
 }
-#endif
+#endif /* __KERNEL__ */
 
 URT_DECL_END
 

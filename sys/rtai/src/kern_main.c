@@ -26,8 +26,8 @@
 #include <urt_internal.h>
 #include <urt_sys_internal.h>
 
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Shahbaz Youssefi");
+URT_MODULE_LICENSE("GPL");
+URT_MODULE_AUTHOR("Shahbaz Youssefi");
 
 /* setup sysfs for user-space global sem wait/post */
 static struct kobject *_kobj = NULL;

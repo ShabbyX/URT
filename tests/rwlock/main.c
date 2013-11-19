@@ -19,6 +19,9 @@
 
 #include <urt.h>
 
+URT_MODULE_LICENSE("GPL");
+URT_MODULE_AUTHOR("Shahbaz Youssefi");
+
 static int test_start(void);
 static void test_body(void);
 static void test_end(void);
