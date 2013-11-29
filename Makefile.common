@@ -70,7 +70,7 @@ ifndef IGNORE_BUILD_OPTIONS
   URT_MAKE_KERNEL = n
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
     URT_STATIC_CFLAGS +=
-    URT_STATIC_LDFLAGS += -lrt
+    URT_STATIC_LDFLAGS += -lrt -lpthread
     URT_CAN_VALGRIND := y
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
