@@ -64,7 +64,8 @@ typedef struct urt_internal
 	unsigned int objects_max_index;		/* maximum index of `objects` that is used */
 	char next_free_name[URT_NAME_LEN];	/* see implementation of urt_get_free_name */
 	bool names_exhausted;			/* whether free names are exhausted */
-	bool initialized;			/* whether registry is already initialized */
+	bool initialization_started;		/* whether registry is being initialized or already initialized */
+	bool initialization_done;		/* whether registry is already initialized */
 } urt_internal;
 
 extern urt_internal *urt_global_mem;

@@ -48,21 +48,19 @@ static void _name_cpy(char *to, const char *from)
 
 void urt_registry_init(void)
 {
-/*	unsigned int i; */
-
-	if (urt_global_mem->initialized)
+	if (urt_global_mem->initialization_started)
+	{
+		/* wait until the thread initializing the memory to finish */
+		while (!urt_global_mem->initialization_done);
 		return;
-	*urt_global_mem = (urt_internal){
-		.initialized = true
-	};
+	}
 
-/*	for (i = 0; i < URT_MAX_OBJECTS; ++i)
-		urt_global_mem->objects[i] = (urt_registered_object){
-			.name[0] = '\0',
-			.reserved = false,
-			.count = 0,
-			.address = NULL
-		};*/
+	/* make sure others don't initialize the memory again */
+	urt_global_mem->initialization_started = true;
+	/* reset every other variable to zero */
+	*urt_global_mem = (urt_internal){
+		.initialization_started = true
+	};
 
 	urt_global_mem->next_free_name[0] = '_';
 	urt_global_mem->next_free_name[1] = '_';
@@ -70,6 +68,8 @@ void urt_registry_init(void)
 	urt_global_mem->next_free_name[3] = '_';
 	urt_global_mem->next_free_name[4] = '_';
 	urt_global_mem->next_free_name[5] = '$';
+
+	urt_global_mem->initialization_done = true;
 }
 
 static urt_registered_object *_find_by_name(const char *name)
