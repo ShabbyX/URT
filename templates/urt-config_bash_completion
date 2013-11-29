@@ -1,0 +1,20 @@
+_urt_config()
+{
+	local cur opts has_user has_kernel
+	COMPREPLY=()
+	has_kernel="@URT_HAS_KERNEL@"
+	has_user="@URT_HAS_USER@"
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	opts="--help --version --cc --ld --prefix --bin-dir --include-dir"
+	[ "$has_user" == y ] && opts="$opts --lib-dir --user-cflags --user-ldflags-static --user-ldflags-shared"
+	[ "$has_kernel" == y ] && opts="$opts --module-dir --kernel-cflags --kernel-symbols"
+	if [ ! $cur ] ; then
+		COMPREPLY=($(compgen -W "$opts" -- --))
+	elif [[ ${cur} == -* ]] ; then
+		COMPREPLY=($(compgen -W "$opts" -- $cur))
+	fi
+	return 0
+}
+urt_suffix="@URT_SUFFIX@"
+complete -F _urt_config urt-config > /dev/null 2>&1
+[ "$urt_suffix" != "" ] && complete -F _urt_config urt${urt_suffix}-config > /dev/null 2>&1

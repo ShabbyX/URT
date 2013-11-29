@@ -34,15 +34,15 @@ ifeq ($(URT_MAKE_KERNEL), y)
 endif
 	-$(call cmd,clean)
 modules:
-	@$(PRINTF) "$(STATUS_COLOR)Building URT API...$(DEFAULT_COLOR)\n"
+	-@$(PRINTF) "$(STATUS_COLOR)Building URT API...$(DEFAULT_COLOR)\n"
 ifeq ($(URT_MAKE_USER), y)
-	@$(PRINTF) "$(SUB_STATUS_COLOR)As static library...$(DEFAULT_COLOR)\n"
+	-@$(PRINTF) "$(SUB_STATUS_COLOR)As static library...$(DEFAULT_COLOR)\n"
 	@$(MAKE) -C static $(HIGHLIGHT)
-	@$(PRINTF) "$(SUB_STATUS_COLOR)As shared library...$(DEFAULT_COLOR)\n"
+	-@$(PRINTF) "$(SUB_STATUS_COLOR)As shared library...$(DEFAULT_COLOR)\n"
 	@$(MAKE) -C shared $(HIGHLIGHT)
 endif
 ifeq ($(URT_MAKE_KERNEL), y)
-	@$(PRINTF) "$(SUB_STATUS_COLOR)As kernel module...$(DEFAULT_COLOR)\n"
+	-@$(PRINTF) "$(SUB_STATUS_COLOR)As kernel module...$(DEFAULT_COLOR)\n"
 	@$(MAKE) update_kernel_sources
 	@$(MAKE) -C kernel $(HIGHLIGHT)
 endif

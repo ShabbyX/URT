@@ -22,12 +22,14 @@ all clean:
 else
 .PHONY: all files
 all:
-	@$(PRINTF) "$(STATUS_COLOR)Building documentation...$(DEFAULT_COLOR)\n"
+	-@$(PRINTF) "$(STATUS_COLOR)Building documentation...$(DEFAULT_COLOR)\n"
 	@$(MAKE) files
 	$(DOC_THIS) +css
 	-$(MKDIR) $(HTML_DIR)/files
 	-$(MKDIR) $(TEX_DIR)/files
+ifeq ($(URT_CONFIG_BUILD_DOC_PDF), y)
 	@$(MAKE) -C generated/tex
+endif
 files: $(TEX_MAKE_FILES) $(HTML_FILES) $(HTML_DIR)/globals.html $(TEX_FILES) $(TEX_DIR)/globals.tex
 	@$(SHELL_NOOP)
 $(HTML_DIR)/%.html $(TEX_DIR)/%.tex: src/% src/notices
