@@ -3,6 +3,11 @@ include ../Makefile.common
 
 TESTS := setup sem mem rwlock task mutex
 
+ifneq ($(URT_CONFIG_BUILD_TESTS), y)
+.PHONY: all dep user valgrind kernel clean
+all dep user valgrind kernel clean:
+	@$(SHELL_NOOP)
+else
 .PHONY: all
 all:
 	@$(PRINTF) "$(STATUS_COLOR)Building tests...$(DEFAULT_COLOR)\n"
@@ -52,3 +57,4 @@ clean:
 	@for i in $(TESTS); do \
 		$(MAKE) -C $$i clean; \
 	done
+endif
