@@ -1,0 +1,17 @@
+#! /bin/bash
+
+# This script emulates mkdir -p for systems that don't have it
+
+if [ $# -lt 1 ]; then
+	echo "mkdir: missing operand"
+	exit 1
+fi
+
+last_built=
+
+while [ ! -e "$1" ]; do
+	rest="${1#$last_built}"
+	next="$last_built""${rest%%/*}"/
+	[ -d "$next" ] || mkdir "$next"
+	last_built="$next"
+done
