@@ -8,10 +8,10 @@ URT_CONFIG_CC=gcc
 #
 #     linux:            Non-real-time library for Linux  (beta version)
 #     rtai:             Real-time library and kernel module for Linux  (alpha version)
-#     xenomai:		Real-time library for Linux (Not yet implemented)
+#     xenomai:          Real-time library for Linux (Not yet implemented)
 #     qnx:              Real-time library for QNX  (Not yet implemented)
 #     vxworks:          Real-time library for VxWorks  (Not yet implemented)
-#     rtlinux:		Real-time patches (RT-Linux) for the Linux kernel (Not yet implemented)
+#     rtlinux:          Real-time patches (RT-Linux) for the Linux kernel (Not yet implemented)
 #
 # In the future, other systems may also be considered, such as mac or even windows.
 # Suffix can be used to distinguish between multiple builds of URT on the same machine.
@@ -21,39 +21,52 @@ URT_CONFIG_SUFFIX=
 # Platform dependent configurations:
 #
 # Linux: None
+#
 # RTAI:
+#
 #     rtai tool: path to rtai-config script
 URT_CONFIG_RTAI_TOOL=/usr/realtime/bin/rtai-config
+
 # Xenomai: None
+#
 # QNX: None
+#
 # VxWorks: None
+#
 # RT-Linux: None
+#
 
 # Parameters
 #
-#     max shared objects: Maximum possible number of shared objects (memory, locks etc)
-#     lock stop max delay: Lock operations have a parameter that enables them to stop and return even if lock is not acquired.
-#                          For example, to recover from a dead-lock or on application exit.  This parameter defines what is the
-#                          maximum delay possible until the function responds to the cancellation.  Higher values decrease
-#                          responsiveness in such cases, while decreasing processor usage.  Too low values would result in busy waiting.
+#     max shared objects       Maximum possible number of shared objects (memory, locks etc)
+#     lock stop max delay      Lock operations have a parameter that enables them to stop and return even if lock is
+#                              not acquired.  For example, to recover from a dead-lock or on application exit.
+#                              This parameter defines what is the maximum delay possible until the function responds
+#                              to the cancellation.  Higher values decrease responsiveness in such cases, while
+#                              while decreasing processor usage.  Too low values would result in busy waiting.
 URT_CONFIG_MAX_SHARED_OBJECTS=4096
 URT_CONFIG_LOCK_STOP_MAX_DEALY=10000000
 URT_CONFIG_DEFAULT_STACK_SIZE=4096
 
-# Whether it should build the tests
-URT_CONFIG_BUILD_TESTS=n
-
-# Whether it should build in Debug mode
-URT_CONFIG_DEBUG=n
-
-# Whether it should use color in build
-URT_CONFIG_COLOR_BUILD=y
-
-# Whether it should keep build output more verbose
-URT_CONFIG_VERBOSE_BUILD=n
-
-# Whether this is a developer build
-URT_CONFIG_DEVELOPER_MODE=n
-
-# Whether documentation must be build
+# Documentation
+#
+#     build doc                Whether documentation must be build
 URT_CONFIG_BUILD_DOC=n
+
+# Installation
+#
+#     install path             Where to install URT
+URT_CONFIG_INSTALL_PATH=/opt/urt
+
+# Miscellaneous
+#
+#     build tests              Whether tests should be built
+#     debug                    Enable debug
+#     color build              Whether color should be used in the build output
+#     verbose build            Verbose build commands
+#     developer mode           Whether this is a developer build
+URT_CONFIG_BUILD_TESTS=n
+URT_CONFIG_DEBUG=n
+URT_CONFIG_COLOR_BUILD=y
+URT_CONFIG_VERBOSE_BUILD=n
+URT_CONFIG_DEVELOPER_MODE=n
