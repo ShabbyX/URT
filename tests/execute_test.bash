@@ -71,10 +71,10 @@ fi
 # in kernel tests, unload the modules and ask the user to check dmesg
 if [ $# -gt 2 ]; then
 	for (( i=0; i<$3; ++i )); do
-		if ! ${ret2[$i]}; then
-			if $kernel_module; then
-				sudo rmmod "${2%.ko}_$i"
-			else
+		if $kernel_module; then
+			sudo rmmod "${2%.ko}_$i"
+		else
+			if ! ${ret2[$i]}; then
 				$ret=1
 			fi
 		fi
