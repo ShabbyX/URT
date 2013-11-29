@@ -5,16 +5,16 @@ include Makefile.common
 all: config_headers version_header
 
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
-  URT_SYS_DEF := \#define URT_SYS_LINUX\n
+  URT_SYS_DEF := \#define URT_SYS_LINUX
 else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
-  URT_SYS_DEF := \#ifdef __KERNEL__\n\# define URT_SYS_RTAI_KERNEL\n\#else\n\# define URT_SYS_RTAI_USER\n\#endif\n
+  URT_SYS_DEF := \#ifdef __KERNEL__\n\# define URT_SYS_RTAI_KERNEL\n\#else\n\# define URT_SYS_RTAI_USER\n\#endif
 else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
-  URT_SYS_DEF := \#define URT_SYS_QNX\n
+  URT_SYS_DEF := \#define URT_SYS_QNX
 else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
-  URT_SYS_DEF := \#define URT_SYS_VXWORKS\n
+  URT_SYS_DEF := \#define URT_SYS_VXWORKS
 endif
 endif
 endif
@@ -24,46 +24,20 @@ clean:
 	-$(RM) include/urt_config.h src/urt_internal_config.h
 	-$(RM) include/urt_version.h
 
-CONFIG_HEADER := $(subst \n ,\n,"\#ifndef URT_CONFIG_H\n\
-				\#define URT_CONFIG_H\n\
-				\n\
-				$(URT_SYS_DEF)\
-				\n\
-				\#endif\n")
-
-INTERNAL_CONFIG_HEADER := $(subst \n ,\n,"\#ifndef URT_INTERNAL_CONFIG_H\n\
-					\#define URT_INTERNAL_CONFIG_H\n\
-					\n\
-					\#define URT_MAX_OBJECTS $(URT_CONFIG_MAX_SHARED_OBJECTS)\n\
-					\#define URT_LOCK_STOP_MAX_DELAY $(URT_CONFIG_LOCK_STOP_MAX_DEALY)\n\
-					\#define URT_DEFAULT_STACK_SIZE $(URT_CONFIG_DEFAULT_STACK_SIZE)\n\
-					\n\
-					\#endif\n")
-
-
 .PHONY: config_headers
 config_headers:
-	@$(PRINTF) $(CONFIG_HEADER) > include/urt_config.h
-	@$(PRINTF) $(INTERNAL_CONFIG_HEADER) > src/urt_internal_config.h
+	@sed -e 's/@URT_SYS_DEF@/$(URT_SYS_DEF)/g' < templates/urt_config.h > include/urt_config.h
+	@sed -e 's/@URT_MAX_OBJECTS@/$(URT_CONFIG_MAX_SHARED_OBJECTS)/g' \
+	     -e 's/@URT_LOCK_STOP_MAX_DELAY@/$(URT_CONFIG_LOCK_STOP_MAX_DEALY)/g' \
+	     -e 's/@URT_DEFAULT_STACK_SIZE@/$(URT_CONFIG_DEFAULT_STACK_SIZE)/g' \
+		< templates/urt_internal_config.h > src/urt_internal_config.h
 
 URT_VERSION_BUILD := $(shell wc -l build/build.txt 2>&1 | cut -d " " -f 1)
 
-VERSION_HEADER := $(subst \n ,\n,"\#ifndef URT_VERSION_H\n\
-				\#define URT_VERSION_H\n\
-				\n\
-				\#define URT_STRINGIFY_(x)\t\#x\n\
-				\#define URT_STRINGIFY(x)\tURT_STRINGIFY_(x)\n\
-				\#define URT_VERSION_MAJOR\t$(URT_VERSION_MAJOR)\n\
-				\#define URT_VERSION_MINOR\t$(URT_VERSION_MINOR)\n\
-				\#define URT_VERSION_REVISION\t$(URT_VERSION_REVISION)\n\
-				\#define URT_VERSION_BUILD\t$(URT_VERSION_BUILD)\n\
-				\#define URT_VERSION\t\tURT_STRINGIFY(URT_VERSION_MAJOR)\\\".\\\"\\\\\n\
-				\t\t\t\tURT_STRINGIFY(URT_VERSION_MINOR)\\\".\\\"\\\\\n\
-				\t\t\t\tURT_STRINGIFY(URT_VERSION_REVISION)\\\".\\\"\\\\\n\
-				\t\t\t\tURT_STRINGIFY(URT_VERSION_BUILD)\n\
-				\n\
-				\#endif\n")
-
 .PHONY: version_header
 version_header:
-	@$(PRINTF) $(VERSION_HEADER) > include/urt_version.h
+	@sed -e 's/@URT_VERSION_MAJOR@/$(URT_VERSION_MAJOR)/g' \
+	     -e 's/@URT_VERSION_MINOR@/$(URT_VERSION_MINOR)/g' \
+	     -e 's/@URT_VERSION_REVISION@/$(URT_VERSION_REVISION)/g' \
+	     -e 's/@URT_VERSION_BUILD@/$(URT_VERSION_BUILD)/g' \
+		< templates/urt_version.h > include/urt_version.h
