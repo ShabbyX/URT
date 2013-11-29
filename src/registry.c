@@ -170,7 +170,9 @@ static void _dec_count_common(urt_registered_object *ro)
 		--ro->count;
 	ro->reserved = false;
 
-	/* TODO: wait, shouldn't here be if (ro->count > 0) return; ?!! */
+	/* if others still attached to this object, don't continue with cleanup */
+	if (ro->count > 0)
+		return;
 
 	/* take care of object cleanup */
 	if (ro->release)
