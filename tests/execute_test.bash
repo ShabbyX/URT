@@ -34,7 +34,7 @@ urt=
 if $needs_ko; then
 	urt_ko="$(find "$(dirname "$0")"/../build/kernel -name "urt*.ko" | head -1)"
 	if [ -z "$urt_ko" ]; then
-		printf -- " Error: URT not built for kernel\n"
+		echo " Error: URT not built for kernel"
 		exit 1
 	fi
 	urt="$(basename "${urt_ko%.ko}")"
@@ -82,7 +82,7 @@ if [ $# -gt 2 ]; then
 fi
 if $kernel_module; then
 	sudo rmmod "${1%.ko}"
-	printf -- " *** Please check dmesg for results\n"
+	echo " *** Please check dmesg for results"
 fi
 if $needs_ko; then
 	sudo rmmod "$urt"
