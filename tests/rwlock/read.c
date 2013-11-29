@@ -91,6 +91,7 @@ static int test_start(void)
 		goto exit_no_rwl;
 	}
 	urt_out("read: rwl attached\n");
+	return 0;
 exit_no_rwl:
 	_cleanup();
 exit_no_init:
