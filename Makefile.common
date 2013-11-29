@@ -65,44 +65,51 @@ ifndef IGNORE_BUILD_OPTIONS
     LD_o := -o
   endif
 
-  # Set platform variables
+  # Set non-URT platform variables
   URT_MAKE_USER = y
   URT_MAKE_KERNEL = n
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
-    URT_STATIC_CFLAGS +=
-    URT_STATIC_LDFLAGS += -lrt -lpthread
+    URT_STATIC_EXTRA_CFLAGS +=
+    URT_STATIC_EXTRA_LDFLAGS += -lrt -lpthread
     URT_CAN_VALGRIND := y
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
     URT_MAKE_KERNEL = y
     RTAI_HOME := $(shell $(URT_CONFIG_RTAI_TOOL) --prefix)
-    URT_STATIC_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-cflags)
-    URT_STATIC_LDFLAGS +=  $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-ldflags)
-    URT_KERNEL_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --module-cflags)
-    URT_KERNEL_SYMBOLS += $(RTAI_HOME)/modules/Module.symvers
+    URT_STATIC_EXTRA_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-cflags)
+    URT_STATIC_EXTRA_LDFLAGS +=  $(shell $(URT_CONFIG_RTAI_TOOL) --lxrt-ldflags)
+    URT_KERNEL_EXTRA_CFLAGS += $(shell $(URT_CONFIG_RTAI_TOOL) --module-cflags)
+    URT_KERNEL_EXTRA_SYMBOLS += $(RTAI_HOME)/modules/Module.symvers
     URT_NEEDS_KO := y
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), xenomai)
-    URT_STATIC_CFLAGS +=
+    URT_STATIC_EXTRA_CFLAGS +=
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
-    URT_STATIC_CFLAGS +=
+    URT_STATIC_EXTRA_CFLAGS +=
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
-    URT_STATIC_CFLAGS +=
+    URT_STATIC_EXTRA_CFLAGS +=
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtlinux)
     URT_MAKE_USER = n
     URT_MAKE_KERNEL = y
-    URT_STATIC_CFLAGS +=
+    URT_STATIC_EXTRA_CFLAGS +=
   endif
   endif
   endif
   endif
   endif
   endif
+  URT_STATIC_EXTRA_CFLAGS += $(CC_Wall)
+  URT_KERNEL_EXTRA_CFLAGS += $(CC_Wall)
 
   # Generic variables
+  URT_STATIC_CFLAGS := $(URT_STATIC_EXTRA_CFLAGS)
+  URT_STATIC_LDFLAGS := $(URT_STATIC_EXTRA_LDFLAGS)
+  URT_KERNEL_CFLAGS := $(URT_KERNEL_EXTRA_CFLAGS)
+  URT_KERNEL_SYMBOLS := $(URT_KERNEL_EXTRA_SYMBOLS)
+
   ifeq ($(URT_CONFIG_DEBUG), y)
     URT_STATIC_CFLAGS += $(CC_O0) $(CC_g)
     URT_KERNEL_CFLAGS += $(CC_O0) $(CC_g)
@@ -110,9 +117,6 @@ ifndef IGNORE_BUILD_OPTIONS
     URT_STATIC_CFLAGS += $(CC_O) $(CC_D) NDEBUG
     URT_KERNEL_CFLAGS += $(CC_O) $(CC_D) NDEBUG
   endif
-
-  URT_STATIC_CFLAGS += $(CC_Wall)
-  URT_KERNEL_CFLAGS += $(CC_Wall)
 
   URT_SHARED_CFLAGS := $(URT_STATIC_CFLAGS) $(CC_PIC)
   URT_SHARED_LDFLAGS := $(URT_STATIC_LDFLAGS) $(LD_PIC)

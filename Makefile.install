@@ -84,10 +84,10 @@ endif
 	     -e 's;@URT_PREFIX@;$(INSTALL_PREFIX);g' \
 	     -e 's;@URT_CC@;$(CC);g' \
 	     -e 's;@URT_LD@;$(LD);g' \
-	     -e 's;@URT_KERNEL_CFLAGS@;$(URT_KERNEL_CFLAGS);g' \
-	     -e 's;@URT_KERNEL_SYMBOLS@;$(URT_KERNEL_SYMBOLS);g' \
-	     -e 's;@URT_USER_CFLAGS@;$(URT_STATIC_CFLAGS);g' \
-	     -e 's;@URT_USER_LDFLAGS@;$(URT_STATIC_LDFLAGS);g' \
+	     -e 's;@URT_KERNEL_CFLAGS@;$(URT_KERNEL_EXTRA_CFLAGS);g' \
+	     -e 's;@URT_KERNEL_SYMBOLS@;$(URT_KERNEL_EXTRA_SYMBOLS);g' \
+	     -e 's;@URT_USER_CFLAGS@;$(URT_STATIC_EXTRA_CFLAGS);g' \
+	     -e 's;@URT_USER_LDFLAGS@;$(URT_STATIC_EXTRA_LDFLAGS);g' \
 	     -e 's;@URT_SUFFIX@;$(URT_CONFIG_SUFFIX);g' \
 	     -e 's;@URT_HAS_KERNEL@;$(URT_MAKE_KERNEL);g' \
 	     -e 's;@URT_HAS_USER@;$(URT_MAKE_USER);g' \

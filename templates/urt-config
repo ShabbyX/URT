@@ -1,18 +1,18 @@
-#! /bin/sh
+#! /bin/bash
 
 urt_version="@URT_VERSION@"
 urt_prefix="@URT_PREFIX@"
-urt_include_dir="$URT_PREFIX/include"
-urt_lib_dir="$URT_PREFIX/lib"
-urt_modules_dir="$URT_PREFIX/modules"
-urt_bin_dir="$URT_PREFIX/bin"
+urt_include_dir="$urt_prefix/include"
+urt_lib_dir="$urt_prefix/lib"
+urt_modules_dir="$urt_prefix/modules"
+urt_bin_dir="$urt_prefix/bin"
 urt_cc="@URT_CC@"
 urt_ld="@URT_LD@"
-urt_kernel_cflags="@URT_KERNEL_CFLAGS@ -I\"$URT_INCLUDE_DIR\" -I\"$URT_INCLUDE_DIR/sys\""
-urt_kernel_symbols="@URT_KERNEL_SYMBOLS@ \"$URT_MODULES_DIR\"/Module.symvers"
-urt_user_cflags="@URT_USER_CFLAGS@ -I\"$URT_INCLUDE_DIR\" -I\"$URT_INCLUDE_DIR/sys\""
-urt_user_static_ldflags="-L\"$URT_LIB_DIR\" -l\"urt@URT_SUFFIX@\" @URT_USER_LDFLAGS@"
-urt_user_shared_ldflags="-L\"$URT_LIB_DIR\" -l\"urt@URT_SUFFIX@-$URT_VERSION\" @URT_USER_LDFLAGS@"
+urt_kernel_cflags="@URT_KERNEL_CFLAGS@ -I\"$urt_include_dir\" -I\"$urt_include_dir/sys\""
+urt_kernel_symbols="@URT_KERNEL_SYMBOLS@ \"$urt_modules_dir\"/Module.symvers"
+urt_user_cflags="@URT_USER_CFLAGS@ -I\"$urt_include_dir\" -I\"$urt_include_dir/sys\""
+urt_user_static_ldflags="-L\"$urt_lib_dir\" -l\"urt@URT_SUFFIX@\" @URT_USER_LDFLAGS@"
+urt_user_shared_ldflags="-L\"$urt_lib_dir\" -l\"urt@URT_SUFFIX@-$urt_version\" @URT_USER_LDFLAGS@"
 
 urt_has_kernel="@URT_HAS_KERNEL@"
 urt_has_user="@URT_HAS_USER@"
@@ -55,6 +55,8 @@ unavailable() {
 if test $# -eq 0; then
     usage 1 1>&2
 fi
+
+shopt -s extglob
 
 while [ $# -gt 0 ]; do
     case "$1" in
