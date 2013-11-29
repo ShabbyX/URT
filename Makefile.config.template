@@ -6,8 +6,8 @@ URT_CONFIG_CC=gcc
 
 # Platform.  One of the following:
 #
-#     linux:            Non-real-time library for Linux  (alpha version)
-#     rtai:             Real-time library and kernel module for Linux  (In implementation)
+#     linux:            Non-real-time library for Linux  (beta version)
+#     rtai:             Real-time library and kernel module for Linux  (alpha version)
 #     xenomai:		Real-time library for Linux (Not yet implemented)
 #     qnx:              Real-time library for QNX  (Not yet implemented)
 #     vxworks:          Real-time library for VxWorks  (Not yet implemented)
