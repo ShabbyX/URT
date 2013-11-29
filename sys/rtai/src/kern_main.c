@@ -25,6 +25,7 @@
 #include <urt.h>
 #include <urt_internal.h>
 #include <urt_sys_internal.h>
+#include <urt_reserved.h>
 
 URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
@@ -100,6 +101,11 @@ static void __exit _urt_rtai_exit(void)
 		kobject_put(_kobj);
 	_kobj = NULL;
 	urt_exit();
+
+	/* cleanup global memory and semaphore since they are not cleaned on urt_exit */
+	if (urt_global_mem)
+		urt_global_mem_free(URT_GLOBAL_MEM_NAME);
+
 	urt_out("Unloaded\n");
 }
 

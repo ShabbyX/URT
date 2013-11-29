@@ -19,7 +19,7 @@
 
 #include <urt_setup.h>
 #include <urt_mem.h>
-#include "reserved.h"
+#include "urt_reserved.h"
 #include "urt_internal.h"
 #include <urt_sys_setup.h>
 
@@ -65,8 +65,14 @@ void urt_exit(void)
 	if (urt_global_mem == NULL)
 		return;
 
+#ifndef __KERNEL__
+	/*
+	 * in kernel space, urt_global_* variables are not per process, but reside in main kernel module
+	 * and are cleaned up on kernel module unload.
+	 */
 	urt_global_mem_free(URT_GLOBAL_MEM_NAME);
 	urt_global_sem_free(URT_GLOBAL_LOCK_NAME);
+#endif
 
 	urt_sys_exit();
 }
