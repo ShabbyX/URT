@@ -62,9 +62,9 @@ exit_no_sem:
 static void test_body(void)
 {
 	urt_out("Sleeping for 5 seconds...\n");
-	urt_out("Time before sleep: %llu\n", urt_get_time());
+	urt_out("Time before sleep: %lld\n", urt_get_time());
 	urt_sleep(5000000000ll);
-	urt_out("Time after sleep: %llu\n", urt_get_time());
+	urt_out("Time after sleep: %lld\n", urt_get_time());
 	done = 1;
 }
 
