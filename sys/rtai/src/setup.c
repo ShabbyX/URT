@@ -20,10 +20,10 @@
 #include <rtai_lxrt.h>
 #include <rtai_shm.h>
 #include <rtai_registry.h>
+#include <urt_sys_internal.h>
 #include <urt_sys_lock.h>
 #include <urt_mem.h>
 #include <urt_log.h>
-#include <urt_sys_internal.h>
 #include <urt_sys_setup.h>
 
 int urt_sys_init(void)

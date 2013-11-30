@@ -31,6 +31,8 @@
 extern struct semaphore urt_global_sem;
 #endif
 
+void urt_sys_force_clear_name(urt_registered_object *ro);
+
 static inline void *urt_sys_add_mem_book_keeping(void *mem, unsigned int id)
 {
 	*(unsigned int *)mem = id;
