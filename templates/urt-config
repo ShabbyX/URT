@@ -43,6 +43,9 @@ Options :
     --kernel-cflags         C flags for kernel modules$msg_help_has_kernel
     --kernel-symbols        symbol information for kernel modules
                                (for KBUILD_EXTRA_SYMBOLS)$msg_help_has_kernel
+    --tool-clear            tool to clear objects from registry
+    --tool-names            tool to list objects in the registry
+    --tool-recover          tool to recover registry from crash
 EOF
     exit $1
 }
@@ -101,6 +104,15 @@ while [ $# -gt 0 ]; do
             ;;
         --k*-sym*|--m*-sym*)
             [ "$urt_has_kernel" == y ] && echo $urt_kernel_symbols || unavailable "kernel modules"
+            ;;
+        --tool-clear)
+            echo $urt_bin_dir/urt_clear
+            ;;
+        --tool-names)
+            echo $urt_bin_dir/urt_names
+            ;;
+        --tool-recover)
+            echo $urt_bin_dir/urt_recover
             ;;
         *)
             usage 1 1>&2
