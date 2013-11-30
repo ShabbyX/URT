@@ -27,7 +27,7 @@
 
 URT_DECL_BEGIN
 
-typedef int64_t urt_time;
+typedef long long urt_time;
 
 static inline urt_time urt_get_time(void)
 {
