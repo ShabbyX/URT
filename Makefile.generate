@@ -26,7 +26,7 @@ clean:
 
 .PHONY: config_headers
 config_headers:
-	@sed -e 's;@URT_SYS_DEF@;$(URT_SYS_DEF);g' < templates;urt_config.h > include;urt_config.h
+	@sed -e 's;@URT_SYS_DEF@;$(URT_SYS_DEF);g' < templates/urt_config.h > include/urt_config.h
 	@sed -e 's;@URT_MAX_OBJECTS@;$(URT_CONFIG_MAX_SHARED_OBJECTS);g' \
 	     -e 's;@URT_LOCK_STOP_MAX_DELAY@;$(URT_CONFIG_LOCK_STOP_MAX_DEALY);g' \
 	     -e 's;@URT_DEFAULT_STACK_SIZE@;$(URT_CONFIG_DEFAULT_STACK_SIZE);g' \
