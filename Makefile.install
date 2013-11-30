@@ -31,6 +31,9 @@ HEADERS_SYS := $(LIB_HDR)
 DOCS_HELPER=$(wildcard $(URT_BASE)/doc/src/*)
 DOCS := $(filter-out Makefile, $(DOCS_HELPER:$(URT_BASE)/doc/src/%=%))
 
+TOOLS_HELPER := $(wildcard $(URT_BASE)/tools/urt_*)
+TOOLS := $(TOOLS_HELPER:$(URT_BASE)/tools/%=%)
+
 .PHONY: install uninstall
 install:
 	-@$(PRINTF) "$(STATUS_COLOR)Installing URT...$(DEFAULT_COLOR)\n"
@@ -79,6 +82,9 @@ ifeq ($(URT_CONFIG_BUILD_DOC), y)
 	@$(CP) $(URT_BASE)/doc/generated/tex/documentation.pdf $(INSTALL_DOC)/tex
   endif
 endif
+	@for tool in $(TOOLS); do \
+		$(CP) $(URT_BASE)/tools/$$tool/$$tool $(INSTALL_BIN); \
+	done														# Tools
 	-@$(PRINTF) "$(SUB_STATUS_COLOR)- Generating scripts$(DEFAULT_COLOR)\n"
 	@sed -e 's;@URT_VERSION@;$(URT_VERSION);g' \
 	     -e 's;@URT_PREFIX@;$(INSTALL_PREFIX);g' \
@@ -124,10 +130,13 @@ uninstall:
 	-@$(RM) $(addprefix $(INSTALL_LIB)/, liburt$(URT_CONFIG_SUFFIX).a \
 		liburt$(URT_CONFIG_SUFFIX)-$(URT_VERSION).so \
 		liburt$(URT_CONFIG_SUFFIX)-$(URT_VERSION_MAJOR).so \
-		liburt$(URT_CONFIG_SUFFIX).so)
-	-@$(RM) $(addprefix $(INSTALL_MODULES)/, urt$(URT_CONFIG_SUFFIX).ko Module.symvers)
-	-@$(RM) /usr/bin/urt-config /usr/bin/urt$(URT_CONFIG_SUFFIX)-config
+		liburt$(URT_CONFIG_SUFFIX).so)										# User space library
+	-@$(RM) $(addprefix $(INSTALL_MODULES)/, urt$(URT_CONFIG_SUFFIX).ko Module.symvers)				# Kernel module
+	-@$(RM) /usr/bin/urt-config /usr/bin/urt$(URT_CONFIG_SUFFIX)-config						# Config script
 	-@$(RM) $(INSTALL_BIN)/urt-config $(INSTALL_BIN)/urt$(URT_CONFIG_SUFFIX)-config
+	@for tool in $(TOOLS); do \
+		$(RM) $(INSTALL_BIN)/$$tool; \
+	done														# Tools
 	-@$(RM) /etc/bash_completion.d/urt-config
 	-@$(RM) $(addprefix $(INSTALL_DOC)/markdown/, $(DOCS))
 	-@$(RM) $(addprefix $(INSTALL_DOC)/html/, $(DOCS) style.css)
