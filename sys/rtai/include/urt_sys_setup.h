@@ -28,13 +28,11 @@
 # include <signal.h>
 # include <unistd.h>
 #endif
-#include <urt_internal.h>
 
 URT_DECL_BEGIN
 
 int urt_sys_init(void);
 static inline void urt_sys_exit(void) {}
-void urt_sys_force_clear_name(urt_registered_object *ro);
 
 #ifdef __KERNEL__
 

@@ -19,8 +19,8 @@
 
 #include <urt_string.h>
 #include <urt_log.h>
-#include <urt_sys_setup.h>
 #include "urt_internal.h"
+#include <urt_sys_internal.h>
 
 static bool _name_eq(const char *n1, const char *n2)
 {

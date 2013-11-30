@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <urt_log.h>
+#include <urt_sys_internal.h>
 #include <urt_sys_setup.h>
 #include "names.h"
 

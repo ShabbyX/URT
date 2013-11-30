@@ -21,7 +21,6 @@
 #include <urt_mem.h>
 #include "urt_reserved.h"
 #include "urt_internal.h"
-#include <urt_sys_setup.h>
 
 urt_internal *urt_global_mem = NULL;
 

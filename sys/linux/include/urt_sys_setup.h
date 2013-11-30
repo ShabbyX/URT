@@ -22,13 +22,11 @@
 
 #include <signal.h>
 #include <unistd.h>
-#include <urt_internal.h>
 
 URT_DECL_BEGIN
 
 static inline int urt_sys_init(void) { return URT_SUCCESS; }
 static inline void urt_sys_exit(void) {}
-void urt_sys_force_clear_name(urt_registered_object *ro);
 
 #define URT_MODULE_LICENSE(...)
 #define URT_MODULE_AUTHOR(...)

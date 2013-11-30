@@ -20,6 +20,8 @@
 #ifndef URT_SYS_INTERNAL_H
 #define URT_SYS_INTERNAL_H
 
+#include <urt_internal.h>
+
 #define URT_GLOBAL_SEM_WAIT '0'
 #define URT_GLOBAL_SEM_TRY_WAIT '1'
 #define URT_GLOBAL_SEM_POST '2'
