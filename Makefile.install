@@ -22,7 +22,7 @@ INSTALL_DOC	:= $(INSTALL_PREFIX)/doc
 
 LIB_HDR :=
 include $(URT_BASE)/include/Makefile.src
-HEADERS_COMMON := $(LIB_HDR)
+HEADERS_COMMON := $(LIB_HDR) urt_version.h urt_config.h
 
 LIB_HDR :=
 include $(URT_SYS)/include/Makefile.src
