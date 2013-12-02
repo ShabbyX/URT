@@ -46,7 +46,7 @@ int urt_init(void)
 	urt_global_sem_wait();
 
 	/* get global memory */
-	urt_global_mem = urt_global_mem_get(URT_GLOBAL_MEM_NAME, sizeof(*urt_global_mem), &error);
+	urt_global_mem = urt_global_mem_get(URT_GLOBAL_MEM_NAME, sizeof *urt_global_mem, &error);
 	if (urt_global_mem == NULL)
 		goto exit_no_mem;
 
@@ -91,7 +91,7 @@ void urt_recover(void)
 	urt_global_sem_try_wait();
 
 	/* while the global semaphore is locked, fix any global memory problems too */
-	urt_global_mem = urt_global_mem_get(URT_GLOBAL_MEM_NAME, sizeof(*urt_global_mem), NULL);
+	urt_global_mem = urt_global_mem_get(URT_GLOBAL_MEM_NAME, sizeof *urt_global_mem, NULL);
 	if (urt_global_mem == NULL)
 		goto no_mem;
 

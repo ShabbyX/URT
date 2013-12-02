@@ -84,7 +84,7 @@ URT_EXPORT_SYMBOL(urt_shmem_attach);
 
 urt_sem *(urt_shsem_new)(const char *name, unsigned int init_value, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_sem *, sizeof(urt_sem), urt_sys_shsem_new(name, init_value, error), SEM, urt_sys_add_sem_book_keeping);
+	SHOBJ_NEW(name, error, urt_sem *, sizeof urt_sem, urt_sys_shsem_new(name, init_value, error), SEM, urt_sys_add_sem_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shsem_new);
 
@@ -96,7 +96,7 @@ URT_EXPORT_SYMBOL(urt_shsem_attach);
 
 urt_mutex *(urt_shmutex_new)(const char *name, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_mutex *, sizeof(urt_mutex), urt_sys_shmutex_new(name, error), MUTEX, urt_sys_add_mutex_book_keeping);
+	SHOBJ_NEW(name, error, urt_mutex *, sizeof urt_mutex, urt_sys_shmutex_new(name, error), MUTEX, urt_sys_add_mutex_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shmutex_new);
 
@@ -108,7 +108,7 @@ URT_EXPORT_SYMBOL(urt_shmutex_attach);
 
 urt_rwlock *(urt_shrwlock_new)(const char *name, int *error, ...)
 {
-	SHOBJ_NEW(name, error, urt_rwlock *, sizeof(urt_rwlock), urt_sys_shrwlock_new(name, error), RWLOCK, urt_sys_add_rwlock_book_keeping);
+	SHOBJ_NEW(name, error, urt_rwlock *, sizeof urt_rwlock, urt_sys_shrwlock_new(name, error), RWLOCK, urt_sys_add_rwlock_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shrwlock_new);
 

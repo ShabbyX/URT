@@ -43,7 +43,7 @@ static int urt_global_sem = -1;
 
 urt_sem *_sem_new_common(unsigned int init_value, int type, int *error)
 {
-	urt_sem *sem = urt_mem_new(sizeof(*sem), error);
+	urt_sem *sem = urt_mem_new(sizeof *sem, error);
 	if (sem == NULL)
 	{
 		if (error)
@@ -81,7 +81,7 @@ URT_EXPORT_SYMBOL(urt_sem_delete);
 
 static urt_sem *_shsem_common(const char *name, unsigned int init_value, int type, int *error)
 {
-	urt_sem *sem = urt_mem_new(sizeof(*sem), error);
+	urt_sem *sem = urt_mem_new(sizeof *sem, error);
 	if (sem == NULL)
 		goto exit_no_mem;
 	sem->sem_ptr = rt_typed_named_sem_init(name, init_value, type);
@@ -114,7 +114,7 @@ urt_sem *urt_sys_shsem_new(const char *name, unsigned int init_value, int *error
 
 urt_sem *urt_sys_shsem_attach(const char *name, int *error)
 {
-	urt_sem *sem = urt_mem_new(sizeof(*sem), error);
+	urt_sem *sem = urt_mem_new(sizeof *sem, error);
 	if (sem == NULL)
 		goto exit_no_mem;
 	sem->sem_ptr = rt_get_adr(nam2num(name));
@@ -240,7 +240,7 @@ urt_mutex *urt_sys_shmutex_attach(const char *name, int *error)
 
 urt_rwlock *(urt_rwlock_new)(int *error, ...)
 {
-	urt_rwlock *rwl = urt_mem_new(sizeof(*rwl), error);
+	urt_rwlock *rwl = urt_mem_new(sizeof *rwl, error);
 	if (rwl == NULL)
 	{
 		if (error)
@@ -273,7 +273,7 @@ URT_EXPORT_SYMBOL(urt_rwlock_detach);
 
 urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error)
 {
-	urt_rwlock *rwl = urt_mem_new(sizeof(*rwl), error);
+	urt_rwlock *rwl = urt_mem_new(sizeof *rwl, error);
 	if (rwl == NULL)
 		goto exit_no_mem;
 	rwl->rwl_ptr = rt_named_rwl_init(name);
@@ -289,7 +289,7 @@ exit_no_mem:
 
 urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error)
 {
-	urt_rwlock *rwl = urt_mem_new(sizeof(*rwl), error);
+	urt_rwlock *rwl = urt_mem_new(sizeof *rwl, error);
 	if (rwl == NULL)
 		goto exit_no_mem;
 	rwl->rwl_ptr = rt_get_adr(nam2num(name));

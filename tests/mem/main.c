@@ -72,7 +72,7 @@ static int test_start(int *unused)
 		goto exit_no_sem;
 	}
 	urt_out("main: sem allocated\n");
-	mem = urt_shmem_new("TSTMEM", 4 * sizeof(*mem));
+	mem = urt_shmem_new("TSTMEM", 4 * sizeof *mem);
 	if (mem == NULL)
 	{
 		urt_out("main: no shared mem\n");

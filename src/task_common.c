@@ -25,7 +25,7 @@ urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data, urt_task_
 {
 	urt_task *task;
 
-	task = urt_mem_new(sizeof(*task), error);
+	task = urt_mem_new(sizeof *task, error);
 	if (task == NULL)
 		goto exit_fail;
 

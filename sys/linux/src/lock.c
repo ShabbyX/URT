@@ -33,7 +33,7 @@ static urt_sem *urt_global_sem;
 
 urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...)
 {
-	urt_sem *sem = urt_mem_new(sizeof(*sem), error);
+	urt_sem *sem = urt_mem_new(sizeof *sem, error);
 	if (sem == NULL)
 		goto exit_fail;
 
@@ -66,7 +66,7 @@ void urt_sem_delete(urt_sem *sem)
 static urt_sem *_shsem_common(const char *name, unsigned int init_value, int *error, int flags)
 {
 	char n[URT_SYS_NAME_LEN];
-	urt_sem *sem = urt_mem_new(sizeof(*sem), error);
+	urt_sem *sem = urt_mem_new(sizeof *sem, error);
 	if (sem == NULL)
 		goto exit_fail;
 
@@ -267,7 +267,7 @@ exit_bad_init:
 
 urt_rwlock *(urt_rwlock_new)(int *error, ...)
 {
-	urt_rwlock *rwl = urt_mem_new(sizeof(*rwl), error);
+	urt_rwlock *rwl = urt_mem_new(sizeof *rwl, error);
 	if (rwl == NULL)
 		goto exit_fail;
 
@@ -301,7 +301,7 @@ urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error)
 	 * Note: take care of the book keeping space since I'm doing shared memory
 	 * bypassing the size known in new_common.c
 	 */
-	urt_rwlock *rwl = urt_sys_shmem_new(name, sizeof(*rwl) + 16, error);
+	urt_rwlock *rwl = urt_sys_shmem_new(name, sizeof *rwl + 16, error);
 	if (rwl == NULL)
 		goto exit_fail;
 	rwl = (void *)((char *)rwl + 16);
@@ -342,7 +342,7 @@ void urt_shrwlock_detach(urt_rwlock *rwl)
 	ro = urt_get_object_by_id(*(unsigned int *)((char *)rwl - 16));
 	if (ro == NULL)
 		return;
-	ro->size = sizeof(*rwl) + 16;
+	ro->size = sizeof *rwl + 16;
 	urt_shmem_detach_with_callback(rwl, _shrwlock_detach);
 }
 
