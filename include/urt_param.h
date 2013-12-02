@@ -76,23 +76,19 @@ struct urt_module_params
 #define URT_MODULE_PARAM_START()				\
 	static struct urt_module_params urt_app_params_[] = {	\
 		{0},	/* one fake in case no params */
-#define URT_MODULE_PARAM(name, type, desc)			\
-		{						\
-			.name = #name,				\
-			.type = #type,				\
-			.desc = desc,				\
-			.var = &name,				\
-			.is_array = false			\
-		},
-#define URT_MODULE_PARAM_ARRAY(name, type, nump, desc)		\
+#define URT_MODULE_PARAM_COMMON(name, type, nump, desc, ia)	\
 		{						\
 			.name = #name,				\
 			.type = #type,				\
 			.desc = desc,				\
 			.var = name,				\
-			.is_array = true,			\
+			.is_array = ia,				\
 			.nump = nump				\
 		},
+#define URT_MODULE_PARAM(name, type, desc)			\
+	URT_MODULE_PARAM_COMMON(name, type, NULL, desc, false)
+#define URT_MODULE_PARAM_ARRAY(name, type, nump, desc)		\
+	URT_MODULE_PARAM_COMMON(name, type, nump, desc, true)
 #define URT_MODULE_PARAM_END()					\
 	};
 
