@@ -13,7 +13,4 @@ include ../../Makefile.test.k
 all: main.c read.c modules
 	@$(SHELL_NOOP)
 
-%.c: ../%.c
-	@$(CP) '$<' '$@'
-
 endif

@@ -18,6 +18,9 @@ modules clean:
 	@$(MAKE) -C /lib/modules/$(shell uname -r)/build M=$(CURDIR)\
 		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" KBUILD_EXTRA_SYMBOLS="$(KBUILD_EXTRA_SYMBOLS)" $@
 
+%.c: ../%.c
+	@$(CP) '$<' '$@'
+
 TEST_PARAMS := "$(TARGET)"
 ifdef TARGET2
   ifndef COUNT
