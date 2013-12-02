@@ -44,7 +44,9 @@ FUNCTION urt_recover: (): void
 
 	Note: `urt_init` should **not** need to be called before this function.
 
-MACRO URT_GLUE: (init, body, exit, interrupted, done)
+	This function is a helper function for the `urt_recover` tool and most likely unnecessary to your application.
+
+MACRO URT_GLUE: (init, body, exit, data_type, interrupted, done)
 	Glue code to connect parts of the application
 
 	This macro connects parts of the application, namely initialization, body, finalization and interrupt handling
@@ -55,20 +57,25 @@ MACRO URT_GLUE: (init, body, exit, interrupted, done)
 	```
 	#include \<urt.h\>
 
-	static int prog_start(void);
-	static void prog_body(void);
-	static void prog_end(void);
+	`struct prog_variables`
+	{
+		/* program variables */
+	};
 
-	URT_GLUE(prog_start, prog_body, prog_end, _interrupted, _done)
+	`static int prog_start(struct prog_variables *vars);`
+	`static void prog_body(struct prog_variables *vars);`
+	`static void prog_end(struct prog_variables *vars);`
 
-	static int prog_start(void)
+	``URT_GLUE(prog_start, prog_body, prog_end, struct prog_variables, _interrupted, _done)``
+
+	static int prog_start(struct prog_variables *vars)
 	{
 		/* other initialization */
-		urt_init();
+		`urt_init();`
 		return 0;
 	}
 
-	static void prog_body(void)
+	static void prog_body(struct prog_variables *vars)
 	{
 		/* allocate some resources */
 		if (_interrupted)
@@ -79,7 +86,7 @@ MACRO URT_GLUE: (init, body, exit, interrupted, done)
 		/* wait for something to happen */
 		while (!_interrupted \&\& get_command() != SOME_COMMAND)
 			urt_sleep(SOME_TIME);
-		if (_interrupted)
+		`if (_interrupted)`
 			goto exit_interrupted;
 
 		/* other similar situations */
@@ -88,13 +95,13 @@ MACRO URT_GLUE: (init, body, exit, interrupted, done)
 	exit_interrupted:
 		urt_log("body interrupted\\n");
 	exit_done:
-		_done = 1;
+		``_done = 1;``
 	}
 
-	static void prog_end(void)
+	static void prog_end(struct prog_variables *vars)
 	{
 		/* cleanup */
-		urt_exit();
+		`urt_exit();`
 	}
 	```
 
@@ -102,7 +109,7 @@ MACRO URT_GLUE: (init, body, exit, interrupted, done)
 		A small function to be called on program start.  In kernel space, this is
 		the `__init` function.
 
-		The of this function is `int (*)(void)`.
+		The type of this function is `int (*)(data_type *)`.
 	INPUT body
 		A non-real-time thread (which is the main thread in user space) that handles
 		allocation of resources and various other operations.  The purpose of this function
@@ -111,12 +118,16 @@ MACRO URT_GLUE: (init, body, exit, interrupted, done)
 		After the execution of **`body`**, the program waits for interrupt (user space) or
 		`rmmod` (kernel space) before calling the **`exit`** function.
 
-		The of this function is `void (*)(void)`.
+		The type of this function is `void (*)(data_type *)`.
 	INPUT exit
 		A function to be called on program exit.  In kernel space, this is
 		the `__exit` funcion.
 
-		The of this function is `void (*)(void)`.
+		The type of this function is `void (*)(data_type *)`.
+	INPUT data_type
+		Type of a variable instantiated whose address is passed to the **`init`**, **`body`** and **`exit`**
+		functions.  This variable is uninitialized and must be initialized on **`init`** if intended to be
+		used.  It cannot be `void`.
 	INPUT interrupted
 		The name of a variable (defined by this macro) that would become non-zero
 		when the program is interrupted (user space) or `rmmod`ed (kernel space).
@@ -124,7 +135,7 @@ MACRO URT_GLUE: (init, body, exit, interrupted, done)
 		The name of a variable (defined by this macro) that should be set by the user
 		(in **`body`** for example) which indicates that it is safe to call the **`exit`** function.
 
-MACRO URT_GLUE_NO_INTERRUPT: (init, body, exit)
+MACRO URT_GLUE_NO_INTERRUPT: (init, body, exit, data_type)
 	Similar to `URT_GLUE` without interrupt handling
 
 	This macro is similar to `[#URT_GLUE]` except that it does not install an interrupt handler.  It would thus be
@@ -135,4 +146,6 @@ MACRO URT_GLUE_NO_INTERRUPT: (init, body, exit)
 	INPUT body
 		See `[#URT_GLUE]`.
 	INPUT exit
+		See `[#URT_GLUE]`.
+	INPUT data_type
 		See `[#URT_GLUE]`.

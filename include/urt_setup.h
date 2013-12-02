@@ -70,56 +70,58 @@ void urt_force_clear_name(const char *name);
 #define URT_MODULE_LICENSE(...) MODULE_LICENSE(__VA_ARGS__)
 #define URT_MODULE_AUTHOR(...) MODULE_AUTHOR(__VA_ARGS__)
 
-#define urt_app_body_helper_(body)			\
-static int urt_app_body_(void *arg)			\
-{							\
-	body();						\
-	do_exit(0);					\
-	return 0;					\
+#define urt_app_body_helper_(body, data)				\
+static int urt_app_body_(void *arg)					\
+{									\
+	body(data);							\
+	do_exit(0);							\
+	return 0;							\
 }
 
-#define urt_app_init_helper_(init, body)		\
-static int __init urt_app_init_(void)			\
-{							\
-	int err;					\
-	struct task_struct *thread;			\
-	err = init();					\
-	if (err)					\
-		return err;				\
-	if ((thread = kthread_run(urt_app_body_, NULL,	\
-			#body)) == ERR_PTR(-ENOMEM))	\
-	{						\
-		urt_err("error: could not create"	\
-			"thread for body.  "		\
-			"Calling it from __init\n");	\
-		body();					\
-	}						\
-	return 0;					\
+#define urt_app_init_helper_(init, body, data)				\
+static int __init urt_app_init_(void)					\
+{									\
+	int err;							\
+	struct task_struct *thread;					\
+	err = init(data);						\
+	if (err)							\
+		return err;						\
+	if ((thread = kthread_run(urt_app_body_, NULL,			\
+			#body)) == ERR_PTR(-ENOMEM))			\
+	{								\
+		urt_err("error: could not create"			\
+			"thread for body.  "				\
+			"Calling it from __init\n");			\
+		body(data);						\
+	}								\
+	return 0;							\
 }
 
-# define URT_GLUE(init, body, exit, interrupted, done)	\
-static int interrupted = 0;				\
-static int done = 0;					\
-urt_app_body_helper_(body)				\
-urt_app_init_helper_(init, body)			\
-static void __exit urt_app_exit_(void)			\
-{							\
-	interrupted = 1;				\
-	while (!done)					\
-		urt_sleep(10000000);			\
-	exit();						\
-}							\
-module_init(urt_app_init_);				\
+# define URT_GLUE(init, body, exit, data_type, interrupted, done)	\
+static int interrupted = 0;						\
+static int done = 0;							\
+static data_type urt_app_data_;						\
+urt_app_body_helper_(body, &urt_app_data_)				\
+urt_app_init_helper_(init, body, &urt_app_data_)			\
+static void __exit urt_app_exit_(void)					\
+{									\
+	interrupted = 1;						\
+	while (!done)							\
+		urt_sleep(10000000);					\
+	exit(&urt_app_data_);						\
+}									\
+module_init(urt_app_init_);						\
 module_exit(urt_app_exit_);
 
-# define URT_GLUE_NO_INTERRUPT(init, body, exit)	\
-urt_app_body_helper_(body)				\
-urt_app_init_helper_(init, body)			\
-static void __exit urt_app_exit_(void)			\
-{							\
-	exit();						\
-}							\
-module_init(urt_app_init_);				\
+# define URT_GLUE_NO_INTERRUPT(init, body, exit, data_type)		\
+static data_type urt_app_data_;						\
+urt_app_body_helper_(body, &urt_app_data_)				\
+urt_app_init_helper_(init, body, &urt_app_data_)			\
+static void __exit urt_app_exit_(void)					\
+{									\
+	exit(&urt_app_data_);						\
+}									\
+module_init(urt_app_init_);						\
 module_exit(urt_app_exit_);
 
 #else /* !__KERNEL__ */
@@ -127,47 +129,49 @@ module_exit(urt_app_exit_);
 #define URT_MODULE_LICENSE(...)
 #define URT_MODULE_AUTHOR(...)
 
-# define URT_GLUE(init, body, exit, interrupted, done)	\
-static volatile sig_atomic_t interrupted = 0;		\
-static int done = 0;					\
-static void urt_sig_handler_(int signum)		\
-{							\
-	interrupted = 1;				\
-}							\
-int main(int argc, char **argv)				\
-{							\
-	int err;					\
-	/* set signal handler */			\
-	struct sigaction sa;				\
-	sa = (struct sigaction){.sa_handler = NULL};	\
-	sa.sa_handler = urt_sig_handler_;		\
-	sigemptyset(&sa.sa_mask);			\
-	sigaction(SIGINT, &sa, NULL);			\
-	sigaction(SIGHUP, &sa, NULL);			\
-	sigaction(SIGTERM, &sa, NULL);			\
-	sigaction(SIGQUIT, &sa, NULL);			\
-	sigaction(SIGUSR1, &sa, NULL);			\
-	sigaction(SIGUSR2, &sa, NULL);			\
-	err = init();					\
-	if (err)					\
-		return err;				\
-	body();						\
-	/* wait for done */				\
-	while (!done)					\
-		usleep(10000);				\
-	exit();						\
-	return 0;					\
+# define URT_GLUE(init, body, exit, data_type, interrupted, done)	\
+static volatile sig_atomic_t interrupted = 0;				\
+static int done = 0;							\
+static void urt_sig_handler_(int signum)				\
+{									\
+	interrupted = 1;						\
+}									\
+int main(int argc, char **argv)						\
+{									\
+	data_type data;							\
+	int err;							\
+	/* set signal handler */					\
+	struct sigaction sa;						\
+	sa = (struct sigaction){.sa_handler = NULL};			\
+	sa.sa_handler = urt_sig_handler_;				\
+	sigemptyset(&sa.sa_mask);					\
+	sigaction(SIGINT, &sa, NULL);					\
+	sigaction(SIGHUP, &sa, NULL);					\
+	sigaction(SIGTERM, &sa, NULL);					\
+	sigaction(SIGQUIT, &sa, NULL);					\
+	sigaction(SIGUSR1, &sa, NULL);					\
+	sigaction(SIGUSR2, &sa, NULL);					\
+	err = init(&data);						\
+	if (err)							\
+		return err;						\
+	body(&data);							\
+	/* wait for done */						\
+	while (!done)							\
+		usleep(10000);						\
+	exit(&data);							\
+	return 0;							\
 }
 
-# define URT_GLUE_NO_INTERRUPT(init, body, exit)	\
-int main(int argc, char **argv)				\
-{							\
-	int err = init();				\
-	if (err)					\
-		return err;				\
-	body();						\
-	exit();						\
-	return 0;					\
+# define URT_GLUE_NO_INTERRUPT(init, body, exit, data_type)		\
+int main(int argc, char **argv)						\
+{									\
+	data_type data;							\
+	int err = init(&data);						\
+	if (err)							\
+		return err;						\
+	body(&data);							\
+	exit(&data);							\
+	return 0;							\
 }
 #endif /* __KERNEL__ */
 

@@ -1,5 +1,4 @@
 TODO
-- Add optional parameter to URT_GLUE to pass a parameter to init, body and exit functions.  This is to avoid globals.
 - Find a way to be able to define and obtain command line parameters both as kernel module and user application.
 - See if rtai's non-shared mutex should better be of type RES_SEM instead of BIN_SEM
 

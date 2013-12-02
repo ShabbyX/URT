@@ -22,11 +22,11 @@
 URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
 
-static int test_start(void);
-static void test_body(void);
-static void test_end(void);
+static int test_start(int *unused);
+static void test_body(int *unused);
+static void test_end(int *unused);
 
-URT_GLUE(test_start, test_body, test_end, interrupted, done)
+URT_GLUE(test_start, test_body, test_end, int, interrupted, done)
 
 static urt_rwlock *rwl = NULL;
 static urt_task *check_task = NULL;
@@ -53,7 +53,7 @@ static void _cleanup(void)
 	urt_exit();
 }
 
-static int test_start(void)
+static int test_start(int *unused)
 {
 	int ret;
 	urt_out("main: starting test...\n");
@@ -77,7 +77,7 @@ exit_no_init:
 	return EXIT_FAILURE;
 }
 
-static void test_body(void)
+static void test_body(int *unused)
 {
 	check_task = urt_task_new(_check);
 	if (check_task == NULL)
@@ -91,7 +91,7 @@ exit_no_task:
 	done = 1;
 }
 
-static void test_end(void)
+static void test_end(int *unused)
 {
 	_cleanup();
 	urt_out("main: test done\n");

@@ -22,16 +22,16 @@
 URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
 
-static int test_start(void);
-static void test_body(void);
-static void test_end(void);
+static int test_start(int *unused);
+static void test_body(int *unused);
+static void test_end(int *unused);
 
-URT_GLUE_NO_INTERRUPT(test_start, test_body, test_end)
+URT_GLUE_NO_INTERRUPT(test_start, test_body, test_end, int)
 
 static urt_sem *sem = NULL;
 static int done = 0;
 
-static int test_start(void)
+static int test_start(int *unused)
 {
 	int ret;
 	int exit_status = 0;
@@ -59,7 +59,7 @@ exit_no_sem:
 	goto exit_no_init;
 }
 
-static void test_body(void)
+static void test_body(int *unused)
 {
 	urt_out("Sleeping for 5 seconds...\n");
 	urt_out("Time before sleep: %lld\n", urt_get_time());
@@ -68,7 +68,7 @@ static void test_body(void)
 	done = 1;
 }
 
-static void test_end(void)
+static void test_end(int *unused)
 {
 	while (!done)
 		urt_sleep(10000000);
