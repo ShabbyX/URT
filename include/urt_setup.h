@@ -79,6 +79,7 @@ void urt_force_clear_name(const char *name);
 
 #define URT_MODULE_LICENSE(...) MODULE_LICENSE(__VA_ARGS__)
 #define URT_MODULE_AUTHOR(...) MODULE_AUTHOR(__VA_ARGS__)
+#define URT_MODULE_DESCRIPTION(...) MODULE_DESCRIPTION(__VA_ARGS__)
 
 #define urt_app_body_helper_(body, data)				\
 static int urt_app_body_(void *arg)					\
@@ -138,6 +139,7 @@ module_exit(urt_app_exit_);
 
 #define URT_MODULE_LICENSE(...)
 #define URT_MODULE_AUTHOR(...)
+#define URT_MODULE_DESCRIPTION(...)
 
 # define URT_GLUE(init, body, exit, data_type, interrupted, done)	\
 static volatile sig_atomic_t interrupted = 0;				\
