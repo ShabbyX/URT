@@ -21,6 +21,10 @@
 
 URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
+URT_MODULE_DESCRIPTION("task test: main");
+
+URT_MODULE_PARAM_START()
+URT_MODULE_PARAM_END()
 
 static int test_start(int *unused);
 static void test_body(int *unused);

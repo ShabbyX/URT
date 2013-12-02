@@ -31,7 +31,7 @@
 
 #include "urt_compiler.h"
 #include "urt_consts.h"
-//#include "urt_param.h"
+#include "urt_param.h"
 #include <urt_sys_setup.h>
 
 URT_DECL_BEGIN
@@ -141,6 +141,16 @@ module_exit(urt_app_exit_);
 #define URT_MODULE_AUTHOR(...)
 #define URT_MODULE_DESCRIPTION(...)
 
+#define urt_app_main_helper_(init, body)				\
+	if (urt_parse_args(urt_app_params_,				\
+		sizeof urt_app_params_ / sizeof *urt_app_params_,	\
+		argc, argv, &err))					\
+		return err;						\
+	err = init(&data);						\
+	if (err)							\
+		return err;						\
+	body(&data)
+
 # define URT_GLUE(init, body, exit, data_type, interrupted, done)	\
 static volatile sig_atomic_t interrupted = 0;				\
 static int done = 0;							\
@@ -163,10 +173,7 @@ int main(int argc, char **argv)						\
 	sigaction(SIGQUIT, &sa, NULL);					\
 	sigaction(SIGUSR1, &sa, NULL);					\
 	sigaction(SIGUSR2, &sa, NULL);					\
-	err = init(&data);						\
-	if (err)							\
-		return err;						\
-	body(&data);							\
+	urt_app_main_helper_(init, body);				\
 	/* wait for done */						\
 	while (!done)							\
 		usleep(10000);						\
@@ -178,10 +185,8 @@ int main(int argc, char **argv)						\
 int main(int argc, char **argv)						\
 {									\
 	data_type data;							\
-	int err = init(&data);						\
-	if (err)							\
-		return err;						\
-	body(&data);							\
+	int err;							\
+	urt_app_main_helper_(init, body);				\
 	exit(&data);							\
 	return 0;							\
 }

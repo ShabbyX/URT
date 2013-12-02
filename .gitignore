@@ -38,12 +38,3 @@ src/urt_internal_config.h
 include/urt_version.h
 Makefile.dep
 doc/generated
-
-
-
-
-#	.tmp_versions/
-#	.urt.ko.cmd
-#	Module.symvers
-#	modules.order
-#	urt.ko

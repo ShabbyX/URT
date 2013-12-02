@@ -1,4 +1,7 @@
 Changes with - are not reflected in the documentation while the ones with * are.
 The ones with + are internal and are not reflected in the documentation.
-Version 0.2.1:
+Version 0.3.0:
+  - Feature: Added URT_MODULE_DESCRIPTION
+  - Feature: Added support for command line arguments
+Version 0.2.1.202:
   * Start of ChangeLog: See documentation of this version for features.
