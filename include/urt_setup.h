@@ -142,7 +142,7 @@ module_exit(urt_app_exit_);
 # define URT_GLUE(init, body, exit, data_type, interrupted, done)	\
 static volatile sig_atomic_t interrupted = 0;				\
 static int done = 0;							\
-static void urt_sig_handler_(int signum)				\
+static void urt_app_sig_handler_(int signum)				\
 {									\
 	interrupted = 1;						\
 }									\
@@ -153,7 +153,7 @@ int main(int argc, char **argv)						\
 	/* set signal handler */					\
 	struct sigaction sa;						\
 	sa = (struct sigaction){.sa_handler = NULL};			\
-	sa.sa_handler = urt_sig_handler_;				\
+	sa.sa_handler = urt_app_sig_handler_;				\
 	sigemptyset(&sa.sa_mask);					\
 	sigaction(SIGINT, &sa, NULL);					\
 	sigaction(SIGHUP, &sa, NULL);					\
