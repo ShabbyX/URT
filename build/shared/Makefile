@@ -20,7 +20,7 @@ CFLAGS := $(URT_SHARED_CFLAGS)
 LDFLAGS := $(URT_SHARED_LDFLAGS)
 
 quiet_cmd_shld = SHLD    $(CURDIR)/$@
-      cmd_shld = $(LD) $(LDFLAGS) $(LD_o) $@ $^
+      cmd_shld = $(LD) $(LD_o) $@ $^ $(LDFLAGS)
 quiet_cmd_shcc = SHCC    $(CURDIR)/$@
       cmd_shcc = $(CC) $(CFLAGS) $(CC_o) $@ $<
 
