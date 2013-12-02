@@ -20,15 +20,6 @@
 #ifndef URT_SYS_SETUP_H
 #define URT_SYS_SETUP_H
 
-#ifdef __KERNEL__
-# include <linux/module.h>
-# include <linux/init.h>
-# include <linux/kthread.h>
-#else
-# include <signal.h>
-# include <unistd.h>
-#endif
-
 URT_DECL_BEGIN
 
 int urt_sys_init(void);

@@ -20,8 +20,18 @@
 #ifndef URT_SETUP_H
 #define URT_SETUP_H
 
+#ifdef __KERNEL__
+# include <linux/module.h>
+# include <linux/init.h>
+# include <linux/kthread.h>
+#else
+# include <signal.h>
+# include <unistd.h>
+#endif
+
 #include "urt_compiler.h"
 #include "urt_consts.h"
+//#include "urt_param.h"
 #include <urt_sys_setup.h>
 
 URT_DECL_BEGIN
@@ -174,12 +184,6 @@ int main(int argc, char **argv)						\
 	return 0;							\
 }
 #endif /* __KERNEL__ */
-
-/*
- * TODO: add URT_DEFINE_ARG(type, name) so in kernel it would define a parameter and in user space it
- * would parse --name value from argv.  Not all types need to be supported, the ones supported by
- * kernel are enough
- */
 
 URT_DECL_END
 
