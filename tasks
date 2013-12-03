@@ -1,5 +1,4 @@
 TODO
-- Find a way to be able to define and obtain command line parameters both as kernel module and user application.
 - See if rtai's non-shared mutex should better be of type RES_SEM instead of BIN_SEM
 - Document URT_MODULE_*
 - See if there's a way to store URT_MODULE_* in user-space so that when printing help, they would be mentioned.
