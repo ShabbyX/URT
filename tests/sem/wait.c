@@ -23,7 +23,12 @@ URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
 URT_MODULE_DESCRIPTION("sem test: wait");
 
+char *test_arg = NULL;			/* must be set to "x y" */
+unsigned char test_arg2[4] = {0};	/* must be set to {1, 2, 3} */
+unsigned int test_arg2_count = 0;	/* must be set to 3 */
 URT_MODULE_PARAM_START()
+URT_MODULE_PARAM(test_arg, charp, "test argument")
+URT_MODULE_PARAM_ARRAY(test_arg2, byte, &test_arg2_count, "another argument")
 URT_MODULE_PARAM_END()
 
 static int test_start(int *unused);
@@ -53,6 +58,12 @@ static int test_start(int *unused)
 	int ret;
 	urt_time start;
 	urt_out("wait: spawned\n");
+	if (test_arg == NULL || strcmp(test_arg, "x y") != 0 || test_arg2_count != 3 || test_arg2[0] != 1 || test_arg2[1] != 2 || test_arg2[2] != 3)
+	{
+		urt_out("bad arguments %s and {%u, %u, %u, %u}@%u\n", test_arg?test_arg:"",
+				test_arg2[0], test_arg2[1], test_arg2[2], test_arg2[3], test_arg2_count);
+		return EXIT_FAILURE;
+	}
 	ret = urt_init();	/* tests race condition for urt_init */
 	if (ret)
 	{

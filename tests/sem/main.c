@@ -23,7 +23,14 @@ URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
 URT_MODULE_DESCRIPTION("sem test: main");
 
+int test_arg = 0;			/* must be set to 123456 */
+bool test_arg2 = 2;			/* must be set to 1 */
+char *test_arg3[3] = {NULL};		/* must be set to "abc def", "ghi" */
+unsigned int test_arg3_count = 0;	/* must be set to 2 */
 URT_MODULE_PARAM_START()
+URT_MODULE_PARAM(test_arg, int, "test argument")
+URT_MODULE_PARAM(test_arg2, bool, "another argument")
+URT_MODULE_PARAM_ARRAY(test_arg3, charp, &test_arg3_count, "last argument")
 URT_MODULE_PARAM_END()
 
 static int test_start(int *unused);
@@ -56,6 +63,13 @@ static int test_start(int *unused)
 {
 	int ret;
 	urt_out("main: starting test...\n");
+	if (test_arg != 123456 || test_arg2 != 1 || test_arg3_count != 2 || test_arg3[0] == NULL || test_arg3[1] == NULL
+			|| strcmp(test_arg3[0], "abc def") != 0 || strcmp(test_arg3[1], "ghi") != 0)
+	{
+		urt_out("main: bad arguments %d, %d and {%s, %s, %s}@%u\n", test_arg, test_arg2,
+				test_arg3[0]?test_arg3[0]:"", test_arg3[1]?test_arg3[1]:"", test_arg3[2]?test_arg3[2]:"", test_arg3_count);
+		return EXIT_FAILURE;
+	}
 	ret = urt_init();
 	if (ret)
 	{

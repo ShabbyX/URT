@@ -192,8 +192,12 @@ static int parse_arg(struct urt_module_param *param, const char *arg)
 		value = get_next_value(value, ',');
 	} while (!err && param->is_array && *value != '\0');
 
-	if (!err && param->nump)
-		*param->nump = index;
+	if (!err)
+	{
+		param->num = index;
+		if (param->nump)
+			*param->nump = param->num;
+	}
 
 	return err;
 }
@@ -231,6 +235,19 @@ int urt_parse_args(struct urt_module_param *params, size_t params_count, int arg
 		}
 	}
 	return *err;
+}
+
+void urt_free_args(struct urt_module_param *params, size_t params_count)
+{
+	size_t i;
+	unsigned int j;
+	for (i = 0; i < params_count; ++i)
+	{
+		struct urt_module_param *param = &params[i];
+		if (strcmp(param->type, "charp") == 0)
+			for (j = 0; j < param->num; ++j)
+				free(((char **)param->var)[j]);
+	}
 }
 
 #endif /* __KERNEL__ */

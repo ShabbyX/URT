@@ -178,6 +178,8 @@ int main(int argc, char **argv)						\
 	while (!done)							\
 		usleep(10000);						\
 	exit(&data);							\
+	urt_free_args(urt_app_params_,					\
+		sizeof urt_app_params_ / sizeof *urt_app_params_);	\
 	return 0;							\
 }
 
@@ -188,6 +190,8 @@ int main(int argc, char **argv)						\
 	int err;							\
 	urt_app_main_helper_(init, body);				\
 	exit(&data);							\
+	urt_free_args(urt_app_params_,					\
+		sizeof urt_app_params_ / sizeof *urt_app_params_);	\
 	return 0;							\
 }
 #endif /* __KERNEL__ */

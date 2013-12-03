@@ -69,31 +69,33 @@ struct urt_module_param
 	const char *desc;		/* description of the parameter */
 	size_t max;			/* maximum number of elements, if array or string */
 	void *var;			/* variable to put the data */
-	char is_array;			/* whether it's an array */
+	unsigned int num;		/* size of array if array */
 	unsigned int *nump;		/* where to store size of array if array (optional) */
+	char is_array;			/* whether it's an array */
 };
 
 #define URT_MODULE_PARAM_START()				\
 	static struct urt_module_param urt_app_params_[] = {	\
 		{0},	/* one fake in case no params */
-#define URT_MODULE_PARAM_COMMON(name, type, nump, desc, ia, d)	\
+#define URT_MODULE_PARAM_COMMON(nam, v, typ, num, dsc, ia, d)	\
 		{						\
-			.name = #name,				\
-			.type = #type,				\
-			.desc = desc,				\
-			.var = name,				\
+			.name = #nam,				\
+			.type = #typ,				\
+			.desc = dsc,				\
+			.var = v,				\
 			.is_array = ia,				\
-			.nump = nump,				\
-			.max = sizeof name / d			\
+			.nump = num,				\
+			.max = sizeof nam / d			\
 		},
 #define URT_MODULE_PARAM(name, type, desc)			\
-	URT_MODULE_PARAM_COMMON(name, type, NULL, desc, false, 1)
+	URT_MODULE_PARAM_COMMON(name, &name, type, NULL, desc, false, 1)
 #define URT_MODULE_PARAM_ARRAY(name, type, nump, desc)		\
-	URT_MODULE_PARAM_COMMON(name, type, nump, desc, true, sizeof *name)
+	URT_MODULE_PARAM_COMMON(name, name, type, nump, desc, true, sizeof *name)
 #define URT_MODULE_PARAM_END()					\
 	};
 
 int urt_parse_args(struct urt_module_param *params, size_t params_count, int argc, char **argv, int *err);
+void urt_free_args(struct urt_module_param *params, size_t params_count);
 
 #endif /* __KERNEL__ */
 

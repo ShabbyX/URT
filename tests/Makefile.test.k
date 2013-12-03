@@ -21,12 +21,12 @@ modules clean:
 %.c: ../%.c
 	@$(CP) '$<' '$@'
 
-TEST_PARAMS := "$(TARGET)"
+TEST_PARAMS := "$(TARGET)" $(TARGET_ARGS)
 ifdef TARGET2
   ifndef COUNT
     COUNT := 1
   endif
-  TEST_PARAMS += "$(TARGET2)" "$(COUNT)"
+  TEST_PARAMS += "::" "$(TARGET2)" "$(COUNT)" $(TARGET2_ARGS)
 endif
 LOAD_KO=
 ifeq ($(URT_NEEDS_KO), y)
