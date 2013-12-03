@@ -15,5 +15,6 @@ available.  There are multiple benefits to such an interface.
 State
 -----
 
-Currently, the core features of URT have been outlined and implemented under Linux, with no real-time constraints.
-The development under RTAI is in progress. Other operating systems such as QNX and VxWorks are also envisioned.
+Currently, the core features of URT have been outlined and implemented under Linux, with no real-time constraints,
+as well as under RTAI both in user and kernel spaces. Other operating systems such as RT-Linux, QNX and VxWorks are
+also envisioned.
