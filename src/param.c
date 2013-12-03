@@ -81,14 +81,25 @@ TO_X(ulong, unsigned long, unsigned long, strtoul)
 
 static int to_charp(struct urt_module_param *param, const char *value, size_t index)
 {
-	if (strlen(value) >= param->max)
-		return E2BIG;
+	size_t len;
+	const char *next_comma = strchr(value, ',');
+	char *copy;
 
-	strcpy(*(char **)param->var, value);
+	if (next_comma == NULL)
+		len = strlen(value);
+	else
+		len = next_comma - value;
+
+	copy = malloc(len + 1);
+	if (copy == NULL)
+		return ENOMEM;
+	strncpy(copy, value, len);
+
+	((char **)param->var)[index] = copy;
 	return 0;
 }
 
-static int extract_bool(const char *str, char *var)
+static int extract_bool(const char *str, bool *var)
 {
 	if (*str == '\0')
 		str = "1";
@@ -100,15 +111,15 @@ static int extract_bool(const char *str, char *var)
 
 static int to_bool(struct urt_module_param *param, const char *value, size_t index)
 {
-	return extract_bool(value, &((char *)param->var)[index]);
+	return extract_bool(value, &((bool *)param->var)[index]);
 }
 
 static int to_invbool(struct urt_module_param *param, const char *value, size_t index)
 {
-	char var;
+	bool var;
 	int ret = extract_bool(value, &var);
 	if (!ret)
-		((char *)param->var)[index] = !var;
+		((bool *)param->var)[index] = !var;
 	return ret;
 }
 
@@ -141,10 +152,11 @@ static int parse_arg(struct urt_module_param *param, const char *arg)
 	else if (strcmp(param->type, "ulong") == 0)	convert = to_ulong;
 	else if (strcmp(param->type, "charp") == 0)	convert = to_charp;
 	else if (strcmp(param->type, "bool") == 0)	convert = to_bool;
+	else if (strcmp(param->type, "_Bool") == 0)	convert = to_bool;	/* bool maybe defined as _Bool instead of typedefed */
 	else if (strcmp(param->type, "invbool") == 0)	convert = to_invbool;
 	else
 	{
-		urt_err("invalid module argument type \"%s\" for parameter: \"%s\"\n", param->type, param->name);
+		urt_err("invalid module argument type '%s' for parameter: '%s'\n", param->type, param->name);
 		return EINVAL;
 	}
 
@@ -155,7 +167,7 @@ static int parse_arg(struct urt_module_param *param, const char *arg)
 		if (index >= param->max)
 		{
 			err = E2BIG;
-			urt_err("too many values for array parameter \"%s\"\n", param->name);
+			urt_err("too many values for array parameter '%s'\n", param->name);
 			break;
 		}
 		err = convert(param, value, index++);
@@ -165,16 +177,16 @@ static int parse_arg(struct urt_module_param *param, const char *arg)
 		case 0:
 			break;
 		case EINVAL:
-			urt_err("invalid value \"%s\" for parameter \"%s\"\n", value, param->name);
+			urt_err("invalid value '%s' for parameter '%s'\n", value, param->name);
 			break;
 		case ERANGE:
-			urt_err("out of range value \"%s\" for parameter \"%s\"\n", value, param->name);
+			urt_err("out of range value '%s' for parameter '%s'\n", value, param->name);
 			break;
 		case E2BIG:
-			urt_err("value \"%s\" too big for parameter \"%s\"\n", value, param->name);
+			urt_err("value '%s' too big for parameter '%s'\n", value, param->name);
 			break;
 		default:
-			urt_err("error parsing value \"%s\" for parameter \"%s\": %s\n", value, param->name, strerror(errno));
+			urt_err("error parsing value '%s' for parameter '%s': %s\n", value, param->name, strerror(errno));
 		}
 
 		value = get_next_value(value, ',');
