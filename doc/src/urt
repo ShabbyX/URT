@@ -149,3 +149,27 @@ MACRO URT_GLUE_NO_INTERRUPT: (init, body, exit, data_type)
 		See `[#URT_GLUE]`.
 	INPUT data_type
 		See `[#URT_GLUE]`.
+
+MACRO URT_MODULE_AUTHOR: (author)
+	Declare author of the application
+
+	This macro declares the author of the application.  This macro is similar to `MODULE_AUTHOR` in the Linux kernel.
+
+	INPUT author
+		The author of the application as a C string.
+
+MACRO URT_MODULE_LICENSE: (license)
+	Declare license of the application
+
+	This macro declares the license of the application.  This macro is similar to `MODULE_LICENSE` in the Linux kernel.
+
+	INPUT license
+		The license of the application as a C string.
+
+MACRO URT_MODULE_DESCRIPTION: (description)
+	Declare description of the application
+
+	This macro describes the application itself.  This macro is similar to `MODULE_DESCRIPTION` in the Linux kernel.
+
+	INPUT description
+		The description of the application as a C string.
