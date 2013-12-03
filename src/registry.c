@@ -170,14 +170,14 @@ static void _dec_count_common(urt_registered_object *ro)
 		--ro->count;
 	ro->reserved = false;
 
-	/* if others still attached to this object, don't continue with cleanup */
-	if (ro->count > 0)
-		return;
-
 	/* take care of object cleanup */
 	if (ro->release)
 		ro->release(ro);
 	ro->release = NULL;	/* make NULL since it should be called only once */
+
+	/* if others still attached to this object, don't continue with cleanup */
+	if (ro->count > 0)
+		return;
 
 	/* if removing max_index used, lower max_index used */
 	if (URT_UNLIKELY(index == urt_global_mem->objects_max_index))
