@@ -219,6 +219,13 @@ int urt_parse_args(struct urt_module_param *params, size_t params_count, int arg
 	int i;
 	size_t j;
 	*err = 0;
+	/* first, reset `nump` of all arrays to zero, so they would be set even if argument not specified */
+	for (j = 1; j < params_count; ++j)
+	{
+		struct urt_module_param *param = &params[j];
+		if (param->is_array && param->nump)
+			*param->nump = 0;
+	}
 	for (i = 1; i < argc; ++i)
 	{
 		bool matches_any = false;
