@@ -47,7 +47,7 @@ static void show_help(struct urt_module_param *params, size_t params_count, cons
 
 static bool param_matches(const char *param_name, const char *value)
 {
-	while (*param_name == *value && *param_name != '\0' && *value != '\0' && *value != '=')
+	while (*param_name == (*value == '-'?'_':*value) && *param_name != '\0' && *value != '\0' && *value != '=')
 	{
 		++param_name;
 		++value;

@@ -221,11 +221,13 @@ MACRO URT_MODULE_PARAM: (name, type, description)
 	arguments is:
 
 	```
-	$run_app_cmd arg_byte=34 arg_int=-324 arg_bool=y arg_str=no_quotes arg_long_arr=1,2,3,4 arg_short_arr=3,4 arg_str_arr="with quotes,multiple,strings"
+	$ $run_app_cmd arg_byte=34 arg_int=-324 arg_bool=y arg_str=no_quotes arg_long_arr=1,2,3,4 arg_short_arr=3,4 arg_str_arr="with quotes,multiple,strings"
 	```
 
 	For kernel modules, these arguments can be viewed with `modinfo`.  With a similar output, for user-space applications if `--help` or `-h`
 	is given, these arguments are shown.
+
+	All `'-'` in the command line argument names are converted to `'\_'` for convenience.
 
 	INPUT name
 		The name of the variable that would contain the argument.  The name of the argument would be the same as the name of the variable.
