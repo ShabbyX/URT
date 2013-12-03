@@ -36,11 +36,11 @@
 static void show_help(struct urt_module_param *params, size_t params_count, const char *prog)
 {
 	size_t i;
-	urt_out("usage:          %s [OPTION[=VALUE]]\n", prog);
+	urt_out_cont("usage:          %s [OPTION[=VALUE]]\n", prog);
 	for (i = 1; i < params_count; ++i)
 	{
 		struct urt_module_param *param = &params[i];
-		urt_out("parm:           %s:%s (%s%s)\n", param->name, param->desc,
+		urt_out_cont("parm:           %s:%s (%s%s)\n", param->name, param->desc,
 				param->is_array?"array of ":"", param->type);
 	}
 }
