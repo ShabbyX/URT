@@ -129,7 +129,7 @@ static const char *get_next_value(const char *value, char delim)
 	if (value)
 		++value;
 	else
-		value = NULL;
+		value = "";
 	return value;
 }
 
@@ -205,7 +205,8 @@ int urt_parse_args(struct urt_module_param *params, size_t params_count, int arg
 	*err = 0;
 	for (i = 1; i < argc; ++i)
 	{
-		struct urt_module_param *param = &params[i];
+		bool matches_any = false;
+
 		if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
 		{
 			show_help(params, params_count, argv[0]);
@@ -213,12 +214,21 @@ int urt_parse_args(struct urt_module_param *params, size_t params_count, int arg
 			return -1;
 		}
 		for (j = 1; j < params_count; ++j)
+		{
+			struct urt_module_param *param = &params[j];
 			if (param_matches(param->name, argv[i]))
 			{
 				int e = parse_arg(param, argv[i]);
 				if (e)
 					*err = e;
+				matches_any = true;
 			}
+		}
+		if (!matches_any)
+		{
+			urt_out("invalid argument '%s'\n", argv[i]);
+			*err = EINVAL;
+		}
 	}
 	return *err;
 }
