@@ -173,3 +173,87 @@ MACRO URT_MODULE_DESCRIPTION: (description)
 
 	INPUT description
 		The description of the application as a C string.
+
+MACRO URT_MODULE_PARAM_START: ()
+	Start declaration of application parameters
+
+	This macro starts declaration of application parameters.  Refer to `[#URT_MODULE_PARAM]` for details.
+
+MACRO URT_MODULE_PARAM_END: ()
+	End declaration of application parameters
+
+	This macro ends declaration of application parameters.  Refer to `[#URT_MODULE_PARAM]` for details.
+
+MACRO URT_MODULE_PARAM: (name, type, description)
+	Declare an application parameter
+
+	This macro declares an application parameter.  It should be in an enclosing `[#URT_MODULE_PARAM_START]`/`[#URT_MODULE_PARAM_END]`
+	pair, which themselves can only be written once in the application and before `[#URT_GLUE]`.
+
+	This macro is similar to a combination of `module_param` and `MODULE_PARM_DESC` in the Linux kernel.
+
+	The variables used as parameter must be declared beforehand, similar to a Linux kernel module.  An example, including also
+	`[#URT_MODULE_PARAM_ARRAY]`, is given below. Note the lack of semicolon.
+
+	```
+	unsigned char arg_byte = 0;
+	int arg_int = 0;
+	bool arg_bool = false;
+	char *arg_str = NULL;
+	unsigned long arg_long_arr\[10] = {0};
+	unsigned int arg_long_arr_count = 0;
+	short arg_short_arr\[5] = {0};
+	char *arg_str_arr\[4] = {NULL};
+	unsigned int arg_str_arr_count = 0;
+
+	URT_MODULE_PARAM_START()
+	URT_MODULE_PARAM(arg_byte, byte, "A byte argument")
+	URT_MODULE_PARAM(arg_int, int, "An int argument")
+	URT_MODULE_PARAM(arg_bool, bool, "A bool argument")
+	URT_MODULE_PARAM(arg_str, charp, "A string argument")
+	URT_MODULE_PARAM_ARRAY(arg_long_arr, ulong, &arg_long_arr_count, "A long array argument")
+	URT_MODULE_PARAM_ARRAY(arg_short_arr, short, NULL, "A short array argument")
+	URT_MODULE_PARAM_ARRAY(arg_str_arr, charp, &arg_str_arr_count, "A string array argument")
+	URT_MODULE_PARAM_END()
+	```
+
+	The arguments in the command line are given the same way they could be given to a Linux kernel module.  An examples with the above
+	arguments is:
+
+	```
+	$run_app_cmd arg_byte=34 arg_int=-324 arg_bool=y arg_str=no_quotes arg_long_arr=1,2,3,4 arg_short_arr=3,4 arg_str_arr="with quotes,multiple,strings"
+	```
+
+	For kernel modules, these arguments can be viewed with `modinfo`.  With a similar output, for user-space applications if `--help` or `-h`
+	is given, these arguments are shown.
+
+	INPUT name
+		The name of the variable that would contain the argument.  The name of the argument would be the same as the name of the variable.
+	INPUT type
+		The type of the variable.  They are the same as those supported by the Linux kernel, namely:
+
+		- `byte`: of type `unsigned char`,
+		- `short`, `ushort`: of type `short` and `unsigned short`,
+		- `int`, `uint`: of type `int` and `unsigned int`,
+		- `long`, `ulong`: of type `long` and `unsigned long`,
+		- `bool`, `invbool`: of type `bool`.  These arguments can be mentioned without `=value`, in which case they would default to
+		  `true` and `false` respectively.  They can take `0`, `1`, `n`, `y`, `N` or `Y` on command line,
+		- `charp`: of type `char *`, pre-allocated.
+	INPUT description
+		A string describing the argument.
+
+MACRO URT_MODULE_PARAM_ARRAY: (name, type, nump, description)
+	Declare an application array parameter
+
+	This macro is similar to `[#URT_MODULE_PARAM]`, but declares **`name`** to be an _array_ of **`type`**.  The optional argument **`nump`**
+	is a pointer to a variable to store the actual number of arguments passed by command line.
+
+	INPUT name
+		See `[#URT_MODULE_PARAM]`.
+	INPUT type
+		See `[#URT_MODULE_PARAM]`.
+	INPUT nump
+		A pointer of typed `unsigned int *`, where if provided (i.e., not `NULL`), will contain the number of values stored in the array
+		given by **`name`** from command line.
+	INPUT description
+		See `[#URT_MODULE_PARAM]`.
