@@ -141,15 +141,22 @@ module_exit(urt_app_exit_);
 #define URT_MODULE_AUTHOR(...)
 #define URT_MODULE_DESCRIPTION(...)
 
-#define urt_app_main_helper_(init, body)				\
+#define urt_app_main_top_(init, body)					\
 	if (urt_parse_args(urt_app_params_,				\
 		sizeof urt_app_params_ / sizeof *urt_app_params_,	\
 		argc, argv, &err))					\
-		return err;						\
+		goto exit_cleanup;					\
 	err = init(&data);						\
 	if (err)							\
-		return err;						\
+		goto exit_cleanup;					\
 	body(&data)
+
+#define urt_app_main_bottom_(exit)					\
+	exit(&data);							\
+exit_cleanup:								\
+	urt_free_args(urt_app_params_,					\
+		sizeof urt_app_params_ / sizeof *urt_app_params_);	\
+	return err
 
 # define URT_GLUE(init, body, exit, data_type, interrupted, done)	\
 static volatile sig_atomic_t interrupted = 0;				\
@@ -161,7 +168,7 @@ static void urt_app_sig_handler_(int signum)				\
 int main(int argc, char **argv)						\
 {									\
 	data_type data;							\
-	int err;							\
+	int err = 0;							\
 	/* set signal handler */					\
 	struct sigaction sa;						\
 	sa = (struct sigaction){.sa_handler = NULL};			\
@@ -173,26 +180,20 @@ int main(int argc, char **argv)						\
 	sigaction(SIGQUIT, &sa, NULL);					\
 	sigaction(SIGUSR1, &sa, NULL);					\
 	sigaction(SIGUSR2, &sa, NULL);					\
-	urt_app_main_helper_(init, body);				\
+	urt_app_main_top_(init, body);					\
 	/* wait for done */						\
 	while (!done)							\
 		usleep(10000);						\
-	exit(&data);							\
-	urt_free_args(urt_app_params_,					\
-		sizeof urt_app_params_ / sizeof *urt_app_params_);	\
-	return 0;							\
+	urt_app_main_bottom_(exit);					\
 }
 
 # define URT_GLUE_NO_INTERRUPT(init, body, exit, data_type)		\
 int main(int argc, char **argv)						\
 {									\
 	data_type data;							\
-	int err;							\
-	urt_app_main_helper_(init, body);				\
-	exit(&data);							\
-	urt_free_args(urt_app_params_,					\
-		sizeof urt_app_params_ / sizeof *urt_app_params_);	\
-	return 0;							\
+	int err = 0;							\
+	urt_app_main_top_(init, body);					\
+	urt_app_main_bottom_(exit);					\
 }
 #endif /* __KERNEL__ */
 

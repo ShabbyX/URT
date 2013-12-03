@@ -22,10 +22,10 @@ fi
 
 # check if doing valgrind check
 pre_command=
-grep_pattern="internal error\\|bad\\|error:\\|wrong\\|fail"
+grep_pattern="internal error\\|bad\\|error:\\|wrong\\|fail\\|invalid"
 if [ "$1" == valgrind ]; then
 	pre_command=valgrind
-	grep_pattern="in use at exit:\\|== Invalid\\|""$grep_pattern"
+	grep_pattern="in use at exit:\\|== Invalid\\|== Conditional\\|""$grep_pattern"
 	shift;
 fi
 
@@ -42,10 +42,8 @@ if [[ "$1" == *.ko ]]; then
 fi
 
 test_main="$1"
-main_options=
 test_side=
 side_count=
-side_options=
 
 shift
 i=0

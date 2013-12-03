@@ -94,6 +94,7 @@ static int to_charp(struct urt_module_param *param, const char *value, size_t in
 	if (copy == NULL)
 		return ENOMEM;
 	strncpy(copy, value, len);
+	copy[len] = '\0';
 
 	((char **)param->var)[index] = copy;
 	return 0;
@@ -241,7 +242,7 @@ void urt_free_args(struct urt_module_param *params, size_t params_count)
 {
 	size_t i;
 	unsigned int j;
-	for (i = 0; i < params_count; ++i)
+	for (i = 1; i < params_count; ++i)
 	{
 		struct urt_module_param *param = &params[i];
 		if (strcmp(param->type, "charp") == 0)
