@@ -134,7 +134,7 @@ static const char *get_next_value(const char *value, char delim)
 	return value;
 }
 
-static int parse_arg(struct urt_module_param *param, const char *arg)
+static int parse_arg(struct urt_module_param *param, char *arg)
 {
 	const char *value;
 	int err;
@@ -143,6 +143,17 @@ static int parse_arg(struct urt_module_param *param, const char *arg)
 
 	/* get a pointer to the value of the argument specified after = */
 	value = get_next_value(arg, '=');
+
+	/* if quoted, remove the quote */
+	if (*value == '"')
+	{
+		size_t len = strlen(arg);
+		if (len > 0 && arg[len - 1] == '"')
+		{
+			arg[len - 1] = '\0';
+			++value;
+		}
+	}
 
 	if (strcmp(param->type, "byte") == 0)		convert = to_byte;
 	else if (strcmp(param->type, "short") == 0)	convert = to_short;
