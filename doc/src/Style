@@ -1,6 +1,6 @@
 other Style
 # URT - Unified Real-Time Interface
-version version 0.1.0
+version version 0.3.0
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware
@@ -24,12 +24,12 @@ NUL-terminated. If NUL or an invalid character is reached before the `URT_NAME_L
 ## Shared Resource Allocation
 Each resource, such as memory or semaphore can either be allocated unshared or shared. If shared, the allocation function takes a
 `name` parameter as the first argument. Assuming the name of the resource is `x` (such as `mem` for memory), then the following six
-function exist:
+functions exist:
 
 - `urt_x_new`: allocates `x`.
-- `urt_x_delete`: deletes `x` allocated by `urt_x_new`.
+- `urt_x_delete`: deallocates `x` allocated by `urt_x_new`.
 - `urt_shx_new`: allocates shared `x`. If the given name is already in use, even if it's an `x`, the function would fail.
-- `urt_shx_delete`: deletes `x` allocated by `urt_shx_new`.
+- `urt_shx_delete`: deallocates `x` allocated by `urt_shx_new`.
 - `urt_shx_attach`: attaches to `x` shared by given name. If no such `x` exist, the function would fail.
 - `urt_shx_detach`: detaches from `x` attached to by `urt_shx_attach`.
 

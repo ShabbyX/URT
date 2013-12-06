@@ -1,6 +1,6 @@
 globals
 # URT - Unified Real-Time Interface
-version version 0.1.0
+version version 0.3.0
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware
@@ -14,4 +14,5 @@ urt_mem
 urt_task
 urt_lock
 urt_log
+urt_utils
 urt_task_attr

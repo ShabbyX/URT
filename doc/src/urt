@@ -1,6 +1,6 @@
 functions urt
 # URT - Unified Real-Time Interface
-version version 0.1.0
+version version 0.3.0
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware
@@ -34,7 +34,7 @@ FUNCTION urt_exit: (): void
 FUNCTION urt_recover: (): void
 	Recover from bad state due to crash
 
-	If a program crashes, it may leave some internal shared entities, such as locks in a bad state. This function
+	If a program crashes, it may leave some internal shared entities of URT, such as locks, in a bad state. This function
 	will try to recover from such cases. The function may not be able to completely recover the system if the
 	damage is too severe, though.
 
@@ -107,7 +107,7 @@ MACRO URT_GLUE: (init, body, exit, data_type, interrupted, done)
 
 	INPUT init
 		A small function to be called on program start.  In kernel space, this is
-		the `__init` function.
+		the `\_\_init` function.
 
 		The type of this function is `int (*)(data_type *)`.
 	INPUT body
@@ -121,7 +121,7 @@ MACRO URT_GLUE: (init, body, exit, data_type, interrupted, done)
 		The type of this function is `void (*)(data_type *)`.
 	INPUT exit
 		A function to be called on program exit.  In kernel space, this is
-		the `__exit` funcion.
+		the `\_\_exit` funcion.
 
 		The type of this function is `void (*)(data_type *)`.
 	INPUT data_type
@@ -131,9 +131,11 @@ MACRO URT_GLUE: (init, body, exit, data_type, interrupted, done)
 	INPUT interrupted
 		The name of a variable (defined by this macro) that would become non-zero
 		when the program is interrupted (user space) or `rmmod`ed (kernel space).
+		Therefore, this variable is **set by URT**.
 	INPUT done
 		The name of a variable (defined by this macro) that should be set by the user
 		(in **`body`** for example) which indicates that it is safe to call the **`exit`** function.
+		Therefore, this variable is **set by the user**.
 
 MACRO URT_GLUE_NO_INTERRUPT: (init, body, exit, data_type)
 	Similar to `URT_GLUE` without interrupt handling
@@ -221,7 +223,13 @@ MACRO URT_MODULE_PARAM: (name, type, description)
 	arguments is:
 
 	```
-	$ $run_app_cmd arg_byte=34 arg_int=-324 arg_bool=y arg_str=no_quotes arg_long_arr=1,2,3,4 arg_short_arr=3,4 arg_str_arr="with quotes,multiple,strings"
+	$ $run_app_cmd  arg_byte=34 \\
+			arg_int=-324 \\
+			arg_bool=y \\
+			arg_str=no_quotes \\
+			arg_long_arr=1,2,3,4 \\
+			'arg_short_arr=3,4' \\
+			'arg_str_arr="with quotes,multiple,strings"'
 	```
 
 	For kernel modules, these arguments can be viewed with `modinfo`.  With a similar output, for user-space applications if `--help` or `-h`
@@ -240,7 +248,7 @@ MACRO URT_MODULE_PARAM: (name, type, description)
 		- `long`, `ulong`: of type `long` and `unsigned long`,
 		- `bool`, `invbool`: of type `bool`.  These arguments can be mentioned without `=value`, in which case they would default to
 		  `true` and `false` respectively.  They can take `0`, `1`, `n`, `y`, `N` or `Y` on command line,
-		- `charp`: of type `char *`, pre-allocated.
+		- `charp`: of type `char *`, allocated automatically.
 	INPUT description
 		A string describing the argument.
 

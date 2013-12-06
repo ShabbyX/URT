@@ -1,6 +1,6 @@
 functions urt_log
 # URT - Unified Real-Time Interface
-version version 0.1.0
+version version 0.3.0
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware
@@ -18,7 +18,8 @@ FUNCTION urt_log: (file: FILE *, fmt: const char *, ...: varargs): void
 
 	This function logs a message, `printf` style.  In debug mode, it would prepend the log with the file name (at most the last 25 characters)
 	and the line number of the log. In release mode, it will simply log the message. All messages, whether in debug or release mode are prefixed
-	with `"URT: "`.
+	with `URT_LOG_PREFIX`, which expands to `"URT: "` if not defined.  Therefore, a user can define `URT_LOG_PREFIX` before including `urt.h` to
+	obtain the desired prefix.
 
 	If in kernel space, **`file`** is not used.
 

@@ -1,6 +1,6 @@
 functions urt_mem
 # URT - Unified Real-Time Interface
-version version 0.1.0
+version version 0.3.0
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware
@@ -11,7 +11,7 @@ shortcut constants
 previous functions urt_task
 next functions urt_lock
 
-Functions of this module handle private and shared memory allocation, free and access.
+Functions of this module handle private and shared memory allocation, deallocation and access.
 
 FUNCTION urt_mem_new: (size: size_t, error: int * = NULL): void *
 	Allocate memory of given size

@@ -1,6 +1,6 @@
 index
 # URT - Unified Real-Time Interface
-version version 0.1.0
+version version 0.3.0
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware
@@ -17,7 +17,7 @@ tools such as valgrind that may not be compatible with certain real-time feature
 
 ## Modules
 
-Currently, URT is in a very early development stage. Therefore, the functions in these modules may radically change.
+Currently, URT is in development stage. Therefore, the functions in these modules may change.
 Please refer to the documentation on each module for their respective functions.
 
 - [Setup module](urt)
@@ -25,6 +25,7 @@ Please refer to the documentation on each module for their respective functions.
 - [Memory module](urt_mem)
 - [Task module](urt_task)
 - [Lock module](urt_lock)
+- [Log module](urt_log)
 - [Utilities](urt_utils)
 
 See [style](Style) for general description of common usage styles among URT functions.

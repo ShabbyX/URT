@@ -1,6 +1,6 @@
 constants
 # URT - Unified Real-Time Interface
-version version 0.1.0
+version version 0.3.0
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware
@@ -157,7 +157,7 @@ CONST_GROUP Meta
 
 		The major number in the version. This number changes only in case of fundamental changes in the API.
 
-	CONSTANT URT_VERSION_MINOR: 1
+	CONSTANT URT_VERSION_MINOR: 3
 		The minor number of the version of the API
 
 		The minor number in the version. This number increases with added functionality or partial changes in the library.
@@ -169,12 +169,12 @@ CONST_GROUP Meta
 		overall functionality is the same. This includes bug-fixing, renaming functions and variables, added error-checking
 		and such.
 
-	CONSTANT URT_VERSION_BUILD: 0
+	CONSTANT URT_VERSION_BUILD: 256
 		The build number of the version of the API
 
 		This number shows how many times the API files have been all successfully compiled.
 
-	CONSTANT URT_VERSION: "0.1.0.0"
+	CONSTANT URT_VERSION: "0.3.0.256"
 		The complete version of the API as a string
 
 		This number is merely a string concatenation of the previous four values in the following format:

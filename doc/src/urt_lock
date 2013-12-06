@@ -1,6 +1,6 @@
 functions urt_lock
 # URT - Unified Real-Time Interface
-version version 0.1.0
+version version 0.3.0
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware
@@ -11,7 +11,7 @@ shortcut constants
 previous functions urt_mem
 next functions urt_error
 
-Functions of this module handle private and shared sync lock allocation, free and access. The actual types depend on the real-time
+Functions of this module handle private and shared sync lock allocation, deallocation and access. The actual types depend on the real-time
 back-end.
 
 TYPE urt_sem: opaque
@@ -76,7 +76,7 @@ FUNCTION urt_shsem_new: (name: const char *, init_value: unsigned int, error: in
 		A new semaphore, or `NULL` if not possible.
 
 FUNCTION urt_shsem_delete: (sem: urt_sem *): void
-	Free a detach from shared semaphore
+	Free or detach from shared semaphore
 
 	This function detaches from shared semaphore, attached to by `[#urt_shsem_attach]`, or created by `[#urt_shsem_new]`.
 	If **`sem`** is `NULL`, the function silently returns. If the number of processes attached to the shared semaphore become

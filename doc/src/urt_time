@@ -1,6 +1,6 @@
 functions urt_time
 # URT - Unified Real-Time Interface
-version version 0.1.0
+version version 0.3.0
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware
@@ -13,7 +13,7 @@ next functions urt_task
 
 Functions of this module handle timing information.
 
-TYPE urt_time: int64_t
+TYPE urt_time: long long
 	Value of time in nanoseconds
 
 	This type represents time from an unknown origin in nanoseconds resolution. Alternatively, it may denote a duration
