@@ -32,7 +32,7 @@
 
 URT_DECL_BEGIN
 
-typedef int64_t urt_time;
+typedef long long urt_time;
 
 #define urt_get_time rt_get_time_ns
 
