@@ -1,0 +1,70 @@
+Build and Installation of URT
+=============================
+
+  0. Overview
+  -----------
+
+Table of contents:
+
+1) Prerequisites
+2) Configuration
+3) Build
+4) Installation
+5) Usage
+
+  1. Prerequisites
+  ----------------
+
+The prerequisites of URT depend on the underlying subsystem that URT will be
+built again.  The subsystem used is referred to as `sys` by URT.  For POSIX
+subsystems, there is no prerequisites.  For RTAI-based Linux systems, RTAI
+needs to be installed.  Other systems to be supported in the future.
+
+Besides the actual subsystem, some common tools are required.  The Makefiles
+have been tested with GNU `make` and their correctness with non-GNU `make` is
+unknown.  Furthermore, there are certain `bash` scripts which of course
+require `bash`.  In short, URT has currently only been tested with Linux and
+other POSIX systems are not yet officially supported.
+
+Currently, URT has only been tested with `gcc`.  Other compilers could be
+supported in the future.  To build the documentation, you would need
+[`shCompiler`](https://github.com/ShabbyX/shCompiler) built and
+[`DocThis!`](https://github.com/ShabbyX/DocThis) built and installed.
+
+  2. Configuration
+  ----------------
+
+Configuration is done by copying the `Makefile.config.template` to
+`Makefile.config` and modifying it.  Each configuration is documented within
+that file itself.
+
+  3. Build
+  --------
+
+Simply invoke `make` from the root of URT to build it.  Depending on the
+subsystem, libraries or kernel modules may be built.  If so configured, a set
+of automated tests will also be performed.  Running `make check` performs
+these tests and reports the outcome.  If `valgrind` is installed and
+applicable, it will also be used during these tests.
+
+  4. Installation
+  ---------------
+
+Invoke `make install` from the root of URT to install it to the configured
+location.  Uninstalltion is similarly done with `make uninstall`.
+Uninstalling only removes files that would be installed with the current
+configuration (i.e., extra files added by user will be left untouched).
+
+  5. Usage
+  --------
+
+There is a helper script that you could use: `urt-config`.  If you have
+configured URT to build with a suffix, `urt$suffix-config` would also be
+available.  The suffix can be used to have multiple installations of URT
+with different subsystems on the same operating systems, for example one
+against RTAI and one against Linux.
+
+Use `urt-config --help` for a list of options.  This script provides
+information on URT itself such as what subsystem it is built against, where
+it is installed etc, as well as information on building against URT such as
+what compiler to use or what compile and link flags to provide.
