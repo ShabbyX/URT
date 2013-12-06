@@ -8,7 +8,7 @@ keyword interface
 shortcut index
 shortcut globals
 
-Constants in the skin are divided in 3 groups:
+Constants in URT are divided in 3 groups:
 - Limits
 - Return Values
 - Meta
