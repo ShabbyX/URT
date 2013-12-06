@@ -22,11 +22,11 @@
 
 #include "urt_config.h"
 
-#if defined(URT_SYS_LINUX) || defined(URT_SYS_QNX) || defined(URT_SYS_VXWORKS) || defined(URT_SYS_RTAI_USER)
+#ifdef __KERNEL__
+# include <linux/kernel.h>
+#else
 # include <stdbool.h>
 # include <stdint.h>
-#elif defined(URT_SYS_RTAI_KERNEL)
-# include <linux/kernel.h>
 #endif
 
 #endif
