@@ -30,6 +30,7 @@ typedef struct urt_task
 	void (*func)(struct urt_task *, void *);
 	void *data;
 	pthread_t tid;
+	bool next_period_calculated;
 } urt_task;
 
 #define URT_MAX_PRIORITY 0

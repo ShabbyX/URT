@@ -64,27 +64,34 @@ exit_bad_create:
 	return errno == EAGAIN?URT_AGAIN:URT_FAIL;
 }
 
-static void _update_start_time(urt_task_attr *attr)
+static void _update_start_time(urt_task *task)
 {
 	urt_time cur;
+	urt_task_attr *attr = &task->attr;
 
 	/* make sure task is periodic */
 	if (URT_UNLIKELY(attr->period <= 0))
 		return;
 
+	/* if already calculated next period, ignore it until urt_task_wait_period is called */
+	if (task->next_period_calculated)
+		return;
+
 	cur = urt_get_time();
 	if (cur > attr->start_time)
 		attr->start_time += attr->period;
+	task->next_period_calculated = true;
 }
 
 void urt_task_wait_period(urt_task *task)
 {
-	_update_start_time(&task->attr);
+	_update_start_time(task);
 	urt_sleep(task->attr.start_time - urt_get_time());
+	task->next_period_calculated = false;
 }
 
 urt_time urt_task_next_period(urt_task *task)
 {
-	_update_start_time(&task->attr);
+	_update_start_time(task);
 	return task->attr.start_time;
 }
