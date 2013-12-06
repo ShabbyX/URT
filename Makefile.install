@@ -88,6 +88,7 @@ endif
 	-@$(PRINTF) "$(SUB_STATUS_COLOR)- Generating scripts$(DEFAULT_COLOR)\n"
 	@sed -e 's;@URT_VERSION@;$(URT_VERSION);g' \
 	     -e 's;@URT_PREFIX@;$(INSTALL_PREFIX);g' \
+	     -e 's;@URT_SYS@;$(URT_CONFIG_RT_SUBSYSTEM);g' \
 	     -e 's;@URT_CC@;$(CC);g' \
 	     -e 's;@URT_LD@;$(LD);g' \
 	     -e 's;@URT_KERNEL_CFLAGS@;$(URT_KERNEL_EXTRA_CFLAGS);g' \

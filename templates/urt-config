@@ -2,6 +2,7 @@
 
 urt_version="@URT_VERSION@"
 urt_prefix="@URT_PREFIX@"
+urt_sys="@URT_SYS@"
 urt_include_dir="$urt_prefix/include"
 urt_lib_dir="$urt_prefix/lib"
 urt_modules_dir="$urt_prefix/modules"
@@ -28,6 +29,7 @@ Usage urt-config OPTIONS
 Options :
     --help                  print this help message
     --version               print URT version
+    --sys                   Subsystem being used by URT
     --cc                    C compiler URT was built with
     --ld                    linker capable of linking against URT
     --prefix                installation path of URT
@@ -68,6 +70,9 @@ while [ $# -gt 0 ]; do
             ;;
         --version)
             echo $urt_version
+            ;;
+        --sys)
+            echo $urt_sys
             ;;
         --cc)
             echo $urt_cc
