@@ -52,7 +52,7 @@ URT_ATTR_WARN_UNUSED urt_mutex *(urt_mutex_new)(int *error, ...);
 
 #define urt_mutex_lock(...) urt_sem_wait(__VA_ARGS__)
 #define urt_mutex_timed_lock(m, t) urt_sem_timed_wait(m, t)
-#define urt_mutex_try_lock(m) urt_sem_try_lock(m)
+#define urt_mutex_try_lock(m) urt_sem_try_wait(m)
 #define urt_mutex_unlock(m) urt_sem_post(m)
 
 URT_DECL_END
