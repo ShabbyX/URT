@@ -8,7 +8,7 @@ keyword interface
 shortcut index
 shortcut globals
 shortcut constants
-previous functions urt_error
+previous functions urt_lock
 next index
 
 Functions of this module handle logging.

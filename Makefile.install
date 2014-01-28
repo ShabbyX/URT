@@ -101,10 +101,10 @@ endif
 		< "$(URT_BASE)/templates/urt-config" > "$(INSTALL_BIN)/urt-config"
 	@chmod +x "$(INSTALL_BIN)"/urt-config
 	-@$(RM) /usr/bin/urt$(URT_CONFIG_SUFFIX)-config									# /usr/bin symbolic links to urt-config
-	@$(LN) "$(INSTALL_BIN)/urt-config" "/usr/bin/urt$(URT_CONFIG_SUFFIX)-config"
+	-@$(LN) "$(INSTALL_BIN)/urt-config" "/usr/bin/urt$(URT_CONFIG_SUFFIX)-config"
 ifneq ($(URT_CONFIG_SUFFIX), )
 	-@$(RM) /usr/bin/urt-config
-	@$(LN) "/usr/bin/urt$(URT_CONFIG_SUFFIX)-config" /usr/bin/urt-config
+	-@$(LN) "/usr/bin/urt$(URT_CONFIG_SUFFIX)-config" /usr/bin/urt-config
 endif
 	@sed -e 's;@URT_HAS_KERNEL@;$(URT_MAKE_KERNEL);g' \
 	     -e 's;@URT_HAS_USER@;$(URT_MAKE_USER);g' \
