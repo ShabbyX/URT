@@ -31,7 +31,7 @@ void *(urt_mem_new)(size_t size, int *error, ...)
 #endif
 	if (URT_UNLIKELY(mem == NULL))
 		if (error)
-			*error = URT_NO_MEM;
+			*error = ENOMEM;
 	return mem;
 }
 URT_EXPORT_SYMBOL(urt_mem_new);
@@ -40,7 +40,7 @@ void *urt_global_mem_get(const char *name, size_t size, int *error)
 {
 	void *mem = rt_shm_alloc(nam2num(name), size, USE_VMALLOC);
 	if (mem == NULL && error)
-		*error = URT_NO_MEM;
+		*error = ENOMEM;
 	return mem;
 }
 
@@ -54,11 +54,11 @@ void *urt_sys_shmem_new(const char *name, size_t size, int *error)
 
 	mem = rt_shm_alloc(num, size, USE_VMALLOC);
 	if (mem == NULL && error)
-		*error = URT_NO_MEM;
+		*error = ENOMEM;
 	return mem;
 exit_exists:
 	if (error)
-		*error = URT_EXISTS;
+		*error = EEXIST;
 	return NULL;
 }
 
@@ -66,7 +66,7 @@ void *urt_sys_shmem_attach(const char *name, int *error)
 {
 	void *mem = rt_shm_alloc(nam2num(name), 0, USE_VMALLOC);
 	if (mem == NULL && error)
-		*error = URT_NO_OBJ;
+		*error = ENOENT;
 	return mem;
 }
 

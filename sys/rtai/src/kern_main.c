@@ -68,7 +68,7 @@ static int __init _urt_rtai_init(void)
 
 	ret = urt_init();
 
-	if (ret != URT_SUCCESS && ret != URT_ALREADY)
+	if (ret != 0 && ret != EALREADY)
 	{
 		urt_err("Could not initialize URT\n");
 		urt_exit();

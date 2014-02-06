@@ -38,7 +38,7 @@ FUNCTION urt_task_new: (func: (urt_task *, void *): void, data: void * = NULL, a
 	INPUT error
 		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
 
-		- `[#URT_NO_MEM](constants)` if out of memory.
+		- `ENOMEM` if out of memory.
 	OUTPUT
 		Returns a new task, or `NULL` if failed.
 
@@ -63,10 +63,10 @@ FUNCTION urt_task_start: (task: urt_task *): int
 	OUTPUT
 		Returns one of the following:
 
-		- `[#URT_SUCCESS](constants)` on success,
-		- `[#URT_NO_MEM](constants)` if out of memory,
-		- `[#URT_AGAIN](constants)` if operation failed but there is a chance of success on retry,
-		- `[#URT_FAIL](constants)` if there was any other error.
+		- `0` on success,
+		- `ENOMEM` if out of memory,
+		- `EAGAIN` if operation failed but there is a chance of success on retry,
+		- Possibly others based on subsystem.
 
 FUNCTION urt_task_wait_period: (task: urt_task *): void
 NOTICE RT

@@ -53,4 +53,4 @@ even if waiting for a lock.
 
 These functions therefore take an optional `bool *` as their last argument which can be used (by another thread) to cancel the operation.
 The locking function will in such a situation return after a maximum of a configurable time (`URT_CONFIG_LOCK_STOP_MAX_DELAY`) and have
-the return value of `[#URT_NOT_LOCKED](constants)`.
+the return value of `ECANCELED`.

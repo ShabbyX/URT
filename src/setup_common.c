@@ -27,15 +27,15 @@ urt_internal *urt_global_mem = NULL;
 int urt_init(void)
 {
 	int error = urt_sys_init();
-	if (error != URT_SUCCESS)
+	if (error)
 		return error;
 
 	if (urt_global_mem != NULL)
 #ifdef __KERNEL__
 		/* in kernel space, urt_global_* variables are not per process, but reside in main kernel module */
-		return URT_SUCCESS;
+		return 0;
 #else
-		return URT_ALREADY;
+		return EALREADY;
 #endif
 
 	/* get global lock */
@@ -81,7 +81,7 @@ void urt_recover(void)
 {
 	unsigned int i;
 
-	if (urt_sys_init() != URT_SUCCESS)
+	if (urt_sys_init())
 		return;
 
 	if (urt_global_sem_get(URT_GLOBAL_LOCK_NAME))

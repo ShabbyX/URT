@@ -39,7 +39,7 @@ int urt_sys_init(void)
 #ifndef __KERNEL__
 	mlockall(MCL_CURRENT | MCL_FUTURE);
 #endif
-	return URT_SUCCESS;
+	return 0;
 }
 
 void urt_sys_force_clear_name(urt_registered_object *ro)

@@ -26,25 +26,27 @@ int urt_make_rt_context(int *prev)
 {
 #ifndef __KERNEL__
 	char name[URT_NAME_LEN + 1] = {0};
+	int ret;
 #endif
 	if (prev == NULL)
-		return URT_FAIL;
+		return EINVAL;
 	*prev = 0;
 
 	if (urt_is_rt_context())
-		return URT_SUCCESS;
+		return 0;
 #ifdef __KERNEL__
 	/* I don't think you can temporarily make current thread real-time in RTAI in kernel space */
 	/* Note: or maybe you can. Take a look at rt_kthread_init */
-	return URT_NO_SUPPORT;
+	return ENOTSUP;
 #else
-	if (urt_get_free_name(name) != URT_SUCCESS)
-		return URT_FAIL;
+	ret = urt_get_free_name(name);
+	if (ret)
+		return ret;
 	if (rt_task_init_schmod(nam2num(name), RT_SCHED_LINUX_PRIORITY, URT_DEFAULT_STACK_SIZE, 0, SCHED_FIFO, 0xff) == NULL)
-		return URT_FAIL;
+		return ENOSPC;
 	*prev |= MADE_RT_CONTEXT;
 	/* Note: no need to call rt_make_hard_real_time, because only real-time **context** is needed */
-	return URT_SUCCESS;
+	return 0;
 #endif
 }
 URT_EXPORT_SYMBOL(urt_make_rt_context);

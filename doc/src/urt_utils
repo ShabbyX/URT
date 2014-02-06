@@ -27,8 +27,8 @@ FUNCTION urt_get_free_name: (name: char[URT_NAME_LEN]): int
 	OUTPUT
 		Returns one of the following:
 
-		- `[#URT_SUCCESS](constants)` on success,
-		- `[#URT_FAIL](constants)` based on whether a name was available or not.
+		- `0` on success,
+		- `ENOSPC` based on whether a name was available or not.
 
 FUNCTION urt_is_rt_context: (): bool
 	Whether calling thread is in real-time context
@@ -49,9 +49,9 @@ FUNCTION urt_make_rt_context: (prev: int *): int
 	OUTPUT
 		Returns one of the following:
 
-		- `[#URT_SUCCESS](constants)` on success,
-		- `[#URT_NO_SUPPORT](constants)` if operation is not possible given the underlying host system,
-		- `[#URT_FAIL](constants)` otherwise.
+		- `0` on success,
+		- `ENOSUP` if operation is not possible given the underlying host system,
+		- Possibly others based on subsystem.
 
 FUNCTION urt_unmake_rt_context: (prev: int): void
 	Restore previous context after a call to `urt_make_rt_context`.

@@ -17,7 +17,6 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <errno.h>
 #include <urt_internal.h>
 #include <urt_task.h>
 #include <urt_mem.h>
@@ -47,21 +46,22 @@ static void *_task_wrapper(void *t)
 int urt_task_start(urt_task *task)
 {
 	pthread_attr_t attr;
+	int ret;
 
-	if (pthread_attr_init(&attr))
-		return URT_NO_MEM;
+	if ((ret = pthread_attr_init(&attr)))
+		return ret;
 
 	pthread_attr_setstacksize(&attr, task->attr.stack_size);
 
-	if (pthread_create(&task->tid, &attr, _task_wrapper, task))
+	if ((ret = pthread_create(&task->tid, &attr, _task_wrapper, task)))
 		goto exit_bad_create;
 
 	pthread_attr_destroy(&attr);
 
-	return URT_SUCCESS;
+	return 0;
 exit_bad_create:
 	pthread_attr_destroy(&attr);
-	return errno == EAGAIN?URT_AGAIN:URT_FAIL;
+	return ret;
 }
 
 static void _update_start_time(urt_task *task)

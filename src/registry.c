@@ -121,11 +121,11 @@ urt_registered_object *urt_reserve_name(const char *name, int *error)
 	return obj;
 exit_exists:
 	if (error)
-		*error = URT_EXISTS;
+		*error = EEXIST;
 	goto exit_fail;
 exit_max_reached:
 	if (error)
-		*error = URT_MAX_REACHED;
+		*error = ENOSPC;
 exit_fail:
 	urt_global_sem_post();
 	return NULL;
@@ -334,10 +334,10 @@ int urt_get_free_name(char *name)
 	}
 
 	urt_global_sem_post();
-	return URT_SUCCESS;
+	return 0;
 exit_fail:
 	urt_global_sem_post();
-	return URT_FAIL;
+	return ENOSPC;
 }
 URT_EXPORT_SYMBOL(urt_get_free_name);
 

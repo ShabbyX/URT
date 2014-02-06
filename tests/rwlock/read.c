@@ -41,23 +41,23 @@ static void _test(urt_task *task, void *data)
 	urt_sleep(500000000);
 	ret = urt_rwlock_try_read_lock(rwl);
 	urt_out("read: try read lock returned: %d\n", ret);
-	if (ret == URT_SUCCESS)
+	if (ret == 0)
 		urt_rwlock_read_unlock(rwl);
 	ret = urt_rwlock_try_write_lock(rwl);
 	urt_out("read: try write lock returned: %d\n", ret);
-	if (ret == URT_SUCCESS)
+	if (ret == 0)
 		urt_rwlock_write_unlock(rwl);
 	urt_out("read: timed read lock for 1 second\n");
 	ret = urt_rwlock_timed_read_lock(rwl, 1000000000);
 	urt_out("read: timed read lock returned: %d\n", ret);
-	if (ret == URT_SUCCESS)
+	if (ret == 0)
 		urt_rwlock_read_unlock(rwl);
 	urt_out("read: timed read lock for 4 second\n");
 	ret = urt_rwlock_timed_read_lock(rwl, 4000000000ll);
 	urt_out("read: timed read lock returned: %d\n", ret);
 	urt_out("read: waiting for 3s\n");
 	urt_sleep(3000000000ll);
-	if (ret == URT_SUCCESS)
+	if (ret == 0)
 	{
 		urt_out("read: read unlock\n");
 		urt_rwlock_read_unlock(rwl);

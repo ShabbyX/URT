@@ -38,7 +38,7 @@ int urt_convert_name(char to[URT_SYS_NAME_LEN], const char from[URT_NAME_LEN])
 		goto exit_bad_name;
 	to[i + 1] = '\0';
 
-	return URT_SUCCESS;
+	return 0;
 exit_bad_name:
-	return URT_BAD_NAME;
+	return EINVAL;
 }

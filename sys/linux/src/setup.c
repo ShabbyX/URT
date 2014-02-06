@@ -22,7 +22,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <urt_log.h>
 #include <urt_sys_internal.h>
 #include <urt_sys_setup.h>
@@ -32,7 +31,7 @@ void urt_sys_force_clear_name(urt_registered_object *ro)
 {
 	char n[URT_SYS_NAME_LEN];
 
-	if (urt_convert_name(n, ro->name) != URT_SUCCESS)
+	if (urt_convert_name(n, ro->name))
 		goto exit_bad_name;
 
 	switch (ro->type)

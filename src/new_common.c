@@ -58,7 +58,7 @@ do {								\
 	return obj;						\
 exit_no_obj:							\
 	if (error)						\
-		*error = URT_NO_OBJ;				\
+		*error = ENOENT;				\
 exit_fail:							\
 	if (ro)							\
 		urt_deregister(ro, ro->address, ro->size,	\

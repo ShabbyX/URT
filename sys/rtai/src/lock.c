@@ -45,11 +45,7 @@ urt_sem *_sem_new_common(unsigned int init_value, int type, int *error)
 {
 	urt_sem *sem = urt_mem_new(sizeof *sem, error);
 	if (sem == NULL)
-	{
-		if (error)
-			*error = URT_NO_MEM;
 		return NULL;
-	}
 #ifdef __KERNEL__
 	rt_typed_sem_init(&sem->sem, init_value, type);
 	sem->sem_ptr = &sem->sem;
@@ -59,7 +55,7 @@ urt_sem *_sem_new_common(unsigned int init_value, int type, int *error)
 	if (sem->sem_ptr)
 		return sem;
 	if (error)
-		*error = URT_NO_MEM;
+		*error = ENOMEM;
 	urt_mem_delete(sem);
 	return NULL;
 #endif
@@ -90,7 +86,7 @@ static urt_sem *_shsem_common(const char *name, unsigned int init_value, int typ
 	return sem;
 exit_no_mem:
 	if (error)
-		*error = URT_NO_MEM;
+		*error = ENOMEM;
 	urt_mem_delete(sem);
 	return NULL;
 }
@@ -98,12 +94,12 @@ exit_no_mem:
 int urt_global_sem_get(const char *name)
 {
 #ifdef __KERNEL__
-	return URT_SUCCESS;
+	return 0;
 #else
 	if (urt_global_sem >= 0)
 		close(urt_global_sem);
 	urt_global_sem = open("/sys/urt/global_sem", O_WRONLY);
-	return urt_global_sem >= 0?URT_SUCCESS:URT_FAIL;
+	return urt_global_sem >= 0?0:errno;
 #endif
 }
 
@@ -123,11 +119,11 @@ urt_sem *urt_sys_shsem_attach(const char *name, int *error)
 	return sem;
 exit_no_mem:
 	if (error)
-		*error = URT_NO_MEM;
+		*error = ENOMEM;
 	goto exit_fail;
 exit_no_obj:
 	if (error)
-		*error = URT_NO_OBJ;
+		*error = ENOENT;
 	goto exit_fail;
 exit_fail:
 	urt_mem_delete(sem);
@@ -193,26 +189,26 @@ int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
 	{
 		while ((res = rt_sem_wait_timed(sem->sem_ptr, nano2count(URT_LOCK_STOP_MAX_DELAY))) == RTE_TIMOUT)
 			if (*stop)
-				return URT_NOT_LOCKED;
+				return ECANCELED;
 	}
 	else
 		res = rt_sem_wait(sem->sem_ptr);
 
-	return res > RTE_BASE?URT_FAIL:URT_SUCCESS;
+	return res >= RTE_BASE?EINVAL:0;
 }
 URT_EXPORT_SYMBOL(urt_sem_wait);
 
 int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 {
 	int res = rt_sem_wait_timed(sem->sem_ptr, nano2count(max_wait));
-	return res == RTE_TIMOUT?URT_NOT_LOCKED:res > RTE_BASE?URT_FAIL:URT_SUCCESS;
+	return res == RTE_TIMOUT?ETIMEDOUT:res >= RTE_BASE?EINVAL:0;
 }
 URT_EXPORT_SYMBOL(urt_sem_timed_wait);
 
 int urt_sem_try_wait(urt_sem *sem)
 {
 	int res = rt_sem_wait_if(sem->sem_ptr);
-	return res == 0?URT_NOT_LOCKED:res > RTE_BASE?URT_FAIL:URT_SUCCESS;
+	return res <= 0?EBUSY:res >= RTE_BASE?EINVAL:0;
 }
 URT_EXPORT_SYMBOL(urt_sem_try_wait);
 
@@ -244,7 +240,7 @@ urt_rwlock *(urt_rwlock_new)(int *error, ...)
 	if (rwl == NULL)
 	{
 		if (error)
-			*error = URT_NO_MEM;
+			*error = ENOMEM;
 		return NULL;
 	}
 #ifdef __KERNEL__
@@ -256,7 +252,7 @@ urt_rwlock *(urt_rwlock_new)(int *error, ...)
 	if (rwl->rwl_ptr)
 		return rwl;
 	if (error)
-		*error = URT_NO_MEM;
+		*error = ENOMEM;
 	urt_mem_delete(rwl);
 	return NULL;
 #endif
@@ -282,7 +278,7 @@ urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error)
 	return rwl;
 exit_no_mem:
 	if (error)
-		*error = URT_NO_MEM;
+		*error = ENOMEM;
 	urt_mem_delete(rwl);
 	return NULL;
 }
@@ -298,11 +294,11 @@ urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error)
 	return rwl;
 exit_no_mem:
 	if (error)
-		*error = URT_NO_MEM;
+		*error = ENOMEM;
 	goto exit_fail;
 exit_no_obj:
 	if (error)
-		*error = URT_NO_OBJ;
+		*error = ENOENT;
 	goto exit_fail;
 exit_fail:
 	urt_mem_delete(rwl);
@@ -327,12 +323,12 @@ int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 	{
 		while ((res = rt_rwl_rdlock_timed(rwl->rwl_ptr, nano2count(URT_LOCK_STOP_MAX_DELAY))) == RTE_TIMOUT)
 			if (*stop)
-				return URT_NOT_LOCKED;
+				return ECANCELED;
 	}
 	else
 		res = rt_rwl_rdlock(rwl->rwl_ptr);
 
-	return res == 0?URT_SUCCESS:URT_FAIL;
+	return res == 0?0:EDEADLK;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_read_lock);
 
@@ -343,49 +339,49 @@ int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 	{
 		while ((res = rt_rwl_wrlock_timed(rwl->rwl_ptr, nano2count(URT_LOCK_STOP_MAX_DELAY))) == RTE_TIMOUT)
 			if (*stop)
-				return URT_NOT_LOCKED;
+				return ECANCELED;
 	}
 	else
 		res = rt_rwl_wrlock(rwl->rwl_ptr);
 
-	return res == 0?URT_SUCCESS:URT_FAIL;
+	return res == 0?0:EDEADLK;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_write_lock);
 
 int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)
 {
 	int res = rt_rwl_rdlock_timed(rwl->rwl_ptr, nano2count(max_wait));
-	return res == RTE_TIMOUT?URT_NOT_LOCKED:res == 0?URT_SUCCESS:URT_FAIL;
+	return res == RTE_TIMOUT?ETIMEDOUT:res == 0?0:EINVAL;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_timed_read_lock);
 
 int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 {
 	int res = rt_rwl_wrlock_timed(rwl->rwl_ptr, nano2count(max_wait));
-	return res == RTE_TIMOUT?URT_NOT_LOCKED:res == 0?URT_SUCCESS:URT_FAIL;
+	return res == RTE_TIMOUT?ETIMEDOUT:res == 0?0:EINVAL;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_timed_write_lock);
 
 int urt_rwlock_try_read_lock(urt_rwlock *rwl)
 {
-	return rt_rwl_rdlock_if(rwl->rwl_ptr) == 0?URT_SUCCESS:URT_NOT_LOCKED;
+	return rt_rwl_rdlock_if(rwl->rwl_ptr) == 0?0:EBUSY;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_try_read_lock);
 
 int urt_rwlock_try_write_lock(urt_rwlock *rwl)
 {
-	return rt_rwl_wrlock_if(rwl->rwl_ptr) == 0?URT_SUCCESS:URT_NOT_LOCKED;
+	return rt_rwl_wrlock_if(rwl->rwl_ptr) == 0?0:EBUSY;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_try_write_lock);
 
 int urt_rwlock_read_unlock(urt_rwlock *rwl)
 {
-	return rt_rwl_unlock(rwl->rwl_ptr) == 0?URT_SUCCESS:URT_FAIL;
+	return rt_rwl_unlock(rwl->rwl_ptr) == 0?0:EINVAL;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_read_unlock);
 
 int urt_rwlock_write_unlock(urt_rwlock *rwl)
 {
-	return rt_rwl_unlock(rwl->rwl_ptr) == 0?URT_SUCCESS:URT_FAIL;
+	return rt_rwl_unlock(rwl->rwl_ptr) == 0?0:EINVAL;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_write_unlock);

@@ -59,7 +59,7 @@ static void *_task_wrapper(void *t)
 
 	/* pass the function to real-time context */
 	char name[URT_NAME_LEN + 1];
-	if (urt_get_free_name(name) != URT_SUCCESS)
+	if (urt_get_free_name(name))
 		return NULL;
 	if ((task->rt_task = rt_task_init_schmod(nam2num(name), task->attr.priority,
 					task->attr.stack_size, 0, SCHED_FIFO, 0xff)) == NULL)
@@ -90,6 +90,8 @@ exit_no_periodic:
 }
 #endif
 
+#define ABS(x) ((x) < 0?-(x):(x))
+
 int urt_task_start(urt_task *task)
 {
 #ifdef __KERNEL__
@@ -102,14 +104,14 @@ int urt_task_start(urt_task *task)
 	else
 		ret = rt_task_resume(&task->rt_task);
 
-	return ret?URT_FAIL:URT_SUCCESS;
+	return ABS(ret);
 exit_bad_init:
 	if (ret == -EINVAL)
 		urt_err("internal error: urt_task_new should have made sure parameters to urt_task_start are correct\n");
-	return ret == -ENOMEM?URT_NO_MEM:URT_FAIL;
+	return ABS(ret);
 #else
 	task->tid = rt_thread_create((void *)_task_wrapper, task, task->attr.stack_size);
-	return task->tid?URT_SUCCESS:errno == EAGAIN?URT_AGAIN:URT_FAIL;
+	return task->tid?0:errno;
 #endif
 }
 URT_EXPORT_SYMBOL(urt_task_start);

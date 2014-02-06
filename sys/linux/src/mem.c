@@ -22,7 +22,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <urt_internal.h>
 #include <urt_mem.h>
 #include "names.h"
@@ -33,7 +32,7 @@ void *(urt_mem_new)(size_t size, int *error, ...)
 	void *mem = malloc(size);
 	if (URT_UNLIKELY(mem == NULL))
 		if (error)
-			*error = URT_NO_MEM;
+			*error = errno;
 	return mem;
 }
 
@@ -43,7 +42,7 @@ static void *_shmem_common(const char *name, size_t size, int *error, int flags)
 	int fd = -1;
 	void *mem = NULL;
 
-	if (urt_convert_name(n, name) != URT_SUCCESS)
+	if (urt_convert_name(n, name))
 		goto exit_bad_name;
 
 	fd = shm_open(n, O_RDWR | flags, S_IRWXU | S_IRWXG | S_IRWXO);
@@ -75,26 +74,11 @@ exit_bad_truncate:
 exit_bad_stat:
 exit_bad_map:
 	if (error)
-	{
-		switch (errno)
-		{
-		case EEXIST:
-			*error = URT_EXISTS;
-			break;
-		case EINVAL:
-			*error = URT_BAD_VALUE;
-			break;
-		case ENOMEM:
-			*error = URT_NO_MEM;
-			break;
-		default:
-			*error = URT_FAIL;
-		}
-	}
+		*error = errno;
 	goto exit_fail;
 exit_bad_name:
 	if (error)
-		*error = URT_BAD_NAME;
+		*error = EINVAL;
 	goto exit_fail;
 exit_fail:
 	if (fd != -1)
@@ -139,7 +123,7 @@ static void _shmem_detach(struct urt_registered_object *ro)
 	/* FIXME: return value of munmap for debug */
 	if (munmap(ro->address, ro->size))
 		urt_err("munmap failed with error: %d\n", errno);
-	if (ro->count == 0 && urt_convert_name(n, ro->name) == URT_SUCCESS)
+	if (ro->count == 0 && urt_convert_name(n, ro->name) == 0)
 		shm_unlink(n);
 }
 

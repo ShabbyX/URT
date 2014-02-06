@@ -25,7 +25,7 @@
 
 URT_DECL_BEGIN
 
-static inline int urt_sys_init(void) { return URT_SUCCESS; }
+static inline int urt_sys_init(void) { return 0; }
 static inline void urt_sys_exit(void) {}
 
 URT_DECL_END
