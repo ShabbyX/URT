@@ -5,10 +5,10 @@ URT_BASE := $(abspath $(CURDIR)/..)
 INC_BUILD := ./increase_build
 BUILD_FILE := build.txt
 
-ifeq ($(URT_MAKE_USER), y)
-  INC_BUILD_TARGET := static/liburt$(URT_CONFIG_SUFFIX).a
-else
+ifeq ($(URT_MAKE_KERNEL), y)
   INC_BUILD_TARGET := kernel/urt$(URT_CONFIG_SUFFIX).ko
+else
+  INC_BUILD_TARGET := static/liburt$(URT_CONFIG_SUFFIX).a
 endif
 
 ifeq ($(URT_CONFIG_DEVELOPER_MODE), y)
