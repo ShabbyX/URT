@@ -27,11 +27,12 @@
 
 typedef struct urt_task_attr
 {
-	urt_time period;
-	urt_time start_time;
-	size_t stack_size;
-	int priority;
-	char uses_fpu;
+	urt_time period;	/* period of task (zero for non-periodic) */
+	urt_time start_time;	/* start time of task */
+	size_t stack_size;	/* size of task stack (zero for default) */
+	int priority;		/* priority of task (zero for minimum priority) */
+	bool uses_fpu;		/* whether task would need to use FPU */
+	bool soft;		/* whether task is soft real-time */
 } urt_task_attr;
 
 #include <urt_sys_task.h>

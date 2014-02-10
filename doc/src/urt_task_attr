@@ -39,11 +39,18 @@ VAR priority: int
 	If [valid](#urt_priority_is_valid), this field determines the priority of the task. If invalid, `[#URT_MIN_PRIORITY](constants)` is used as
 	task priority. See `[#URT_MIN_PRIORITY](constants)`, `[#URT_MAX_PRIORITY](constants)` and `[#URT_MORE_PRIORITY](constants)` for more information.
 
-VAR uses_fpu: char
+VAR uses_fpu: bool
 	Whether the task uses FPU
 
 	This field lets URT know whether the task plans on using the Floating Point Unit (FPU). On some systems, e.g. within the Linux kernel context,
 	this information is needed to initialize the FPU.
+
+VAR soft: bool
+	Whether the task is soft-real-time
+
+	This field chooses between soft-real-time and hard-real-time.  In both cases the task would be in real-time context and functions marked as
+	`RT` are available.  However, soft-real-time tasks don't have any deadline guarantees and are best-effort.  If a subsystem doesn't support
+	soft-real-time tasks, they will be created as hard-real-time.
 
 FUNCTION urt_priority_is_valid: (priority: int): bool
 	Check whether priority number is valid

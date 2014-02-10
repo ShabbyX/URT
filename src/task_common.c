@@ -48,8 +48,8 @@ urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data, urt_task_
 			task->attr.stack_size = attr->stack_size;
 		if (urt_priority_is_valid(attr->priority))
 			task->attr.priority = attr->priority;
-		if (attr->uses_fpu)
-			task->attr.uses_fpu = 1;
+		task->attr.uses_fpu = attr->uses_fpu;
+		task->attr.soft = attr->soft;
 	}
 
 	return task;

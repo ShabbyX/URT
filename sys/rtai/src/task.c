@@ -64,7 +64,8 @@ static void *_task_wrapper(void *t)
 	if ((task->rt_task = rt_task_init_schmod(nam2num(name), task->attr.priority,
 					task->attr.stack_size, 0, SCHED_FIFO, 0xff)) == NULL)
 		return NULL;
-	rt_make_hard_real_time();
+	if (!task->attr.soft)
+		rt_make_hard_real_time();
 
 	/* if periodic, make it periodic */
 	if (task->attr.period > 0)
