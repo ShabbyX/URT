@@ -12,8 +12,6 @@ ifneq ($(URT_CONFIG_VERBOSE_BUILD), y)
   MAKEFLAGS := $(MAKEFLAGS) --no-print-directory
 endif
 
-VPATH := include:src
-
 .PHONY: all config library tools tests doc
 all: config library tools tests doc
 
