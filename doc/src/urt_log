@@ -21,7 +21,7 @@ FUNCTION urt_log: (file: FILE *, fmt: const char *, ...: varargs): void
 	with `URT_LOG_PREFIX`, which expands to `"URT: "` if not defined.  Therefore, a user can define `URT_LOG_PREFIX` before including `urt.h` to
 	obtain the desired prefix.
 
-	If in kernel space, **`file`** is not used.
+	If in kernel space, **`file`** is not used.  In user-space, if **`file`** is NULL, the log operation is not done.
 
 	INPUT file
 		The file where the log would be written.

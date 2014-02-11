@@ -22,6 +22,6 @@
 
 #include <stdio.h>
 
-#define urt_log_cont(f, ...) fprintf(f, __VA_ARGS__)
+#define urt_log_cont(f, ...) do { if (f) fprintf(f, __VA_ARGS__); } while (0)
 
 #endif
