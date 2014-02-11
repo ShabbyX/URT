@@ -34,6 +34,17 @@
 # endif
 #endif
 
+#if URT_BI_SPACE
+# define URT_GLOBAL_SEM_WAIT '0'
+# define URT_GLOBAL_SEM_TRY_WAIT '1'
+# define URT_GLOBAL_SEM_POST '2'
+
+# ifdef __KERNEL__
+#  include <linux/semaphore.h>
+extern struct semaphore urt_global_sem;
+# endif
+#endif
+
 #define URT_TYPE_MEM 1
 #define URT_TYPE_SEM 2
 #define URT_TYPE_MUTEX 3

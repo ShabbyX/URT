@@ -33,8 +33,12 @@
 URT_DECL_BEGIN
 
 typedef long long urt_time;
+extern urt_time urt_time_offset;
 
-#define urt_get_time rt_get_time_ns
+static inline urt_time urt_get_time(void)
+{
+	return rt_get_time_ns() + urt_time_offset;
+}
 
 static inline void urt_sleep(urt_time t)
 {

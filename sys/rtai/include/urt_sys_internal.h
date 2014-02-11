@@ -22,15 +22,6 @@
 
 #include <urt_internal.h>
 
-#define URT_GLOBAL_SEM_WAIT '0'
-#define URT_GLOBAL_SEM_TRY_WAIT '1'
-#define URT_GLOBAL_SEM_POST '2'
-
-#ifdef __KERNEL__
-# include <linux/semaphore.h>
-extern struct semaphore urt_global_sem;
-#endif
-
 void urt_sys_force_clear_name(urt_registered_object *ro);
 
 static inline void *urt_sys_add_mem_book_keeping(void *mem, unsigned int id)

@@ -6,15 +6,19 @@ all: config_headers version_header
 
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
   URT_SYS_DEF := \#define URT_SYS_LINUX
+  URT_BI_SPACE := 0
 else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
   URT_SYS_DEF := \#ifdef __KERNEL__\n\# define URT_SYS_RTAI_KERNEL\n\#else\n\# define URT_SYS_RTAI_USER\n\#endif
+  URT_BI_SPACE := 1
 else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
   URT_SYS_DEF := \#define URT_SYS_QNX
+  URT_BI_SPACE := 0
 else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
   URT_SYS_DEF := \#define URT_SYS_VXWORKS
+  URT_BI_SPACE := 0
 endif
 endif
 endif
@@ -30,6 +34,8 @@ config_headers:
 	@sed -e 's;@URT_MAX_OBJECTS@;$(URT_CONFIG_MAX_SHARED_OBJECTS);g' \
 	     -e 's;@URT_LOCK_STOP_MAX_DELAY@;$(URT_CONFIG_LOCK_STOP_MAX_DEALY);g' \
 	     -e 's;@URT_DEFAULT_STACK_SIZE@;$(URT_CONFIG_DEFAULT_STACK_SIZE);g' \
+	     -e 's;@URT_SUFFIX@;$(URT_CONFIG_SUFFIX);g' \
+	     -e 's;@URT_BI_SPACE@;$(URT_BI_SPACE);g' \
 		< templates/urt_internal_config.h > src/urt_internal_config.h
 
 URT_VERSION_BUILD := $(shell wc -l build/build.txt 2>&1 | cut -d " " -f 1)

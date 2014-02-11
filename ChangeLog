@@ -3,6 +3,8 @@ The ones with + are internal and are not reflected in the documentation.
 Version 0.3.0:
   * Feature: Added URT_MODULE_DESCRIPTION
   * Feature: Added support for command line arguments
+  * Feature: Added soft real-time threads
+  * Feature: Added urt_calibrate for bi-space time calibration
   * Update: Changed return values to POSIX ones
 Version 0.2.1.202:
   * Start of ChangeLog: See documentation of this version for features.

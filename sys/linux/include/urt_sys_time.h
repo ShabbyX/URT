@@ -28,6 +28,7 @@
 URT_DECL_BEGIN
 
 typedef long long urt_time;
+extern urt_time urt_time_offset;
 
 static inline urt_time urt_get_time(void)
 {
@@ -37,7 +38,7 @@ static inline urt_time urt_get_time(void)
 #else
 	clock_gettime(CLOCK_MONOTONIC, &t);
 #endif
-	return t.tv_sec * 1000000000ll + t.tv_nsec;
+	return t.tv_sec * 1000000000ll + t.tv_nsec + urt_time_offset;
 }
 
 static inline void urt_sleep(urt_time t)

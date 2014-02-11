@@ -37,6 +37,7 @@
 URT_DECL_BEGIN
 
 int URT_ATTR_WARN_UNUSED urt_init(void);
+void urt_calibrate(void);
 void urt_exit(void);
 void urt_recover(void);
 
@@ -94,6 +95,7 @@ static int __init urt_app_init_(void)					\
 {									\
 	int err;							\
 	struct task_struct *thread;					\
+	urt_calibrate();						\
 	err = init(data);						\
 	if (err)							\
 		return err;						\
@@ -146,6 +148,7 @@ module_exit(urt_app_exit_);
 		sizeof urt_app_params_ / sizeof *urt_app_params_,	\
 		argc, argv, &err))					\
 		goto exit_cleanup;					\
+	urt_calibrate();						\
 	err = init(&data);						\
 	if (err)							\
 		goto exit_cleanup;					\

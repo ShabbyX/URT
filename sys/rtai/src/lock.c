@@ -17,13 +17,6 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef __KERNEL__
-# include <linux/semaphore.h>
-#else
-# include <sys/types.h>
-# include <sys/stat.h>
-# include <fcntl.h>
-#endif
 #include <urt_internal.h>
 #include <urt_sys_internal.h>
 #include <urt_lock.h>
@@ -34,11 +27,6 @@
 #ifdef __KERNEL__
 # define rt_typed_named_sem_init(name, value, type) _rt_typed_named_sem_init(nam2num(name), value, type, NULL)
 # define rt_named_rwl_init(name) _rt_named_rwl_init(nam2num(name))
-#endif
-
-/* global semaphore is a native semaphore in kernel space (already exported).  It is accessed through a sysfs file from user-space */
-#ifndef __KERNEL__
-static int urt_global_sem = -1;
 #endif
 
 urt_sem *_sem_new_common(unsigned int init_value, int type, int *error)
@@ -91,18 +79,6 @@ exit_no_mem:
 	return NULL;
 }
 
-int urt_global_sem_get(const char *name)
-{
-#ifdef __KERNEL__
-	return 0;
-#else
-	if (urt_global_sem >= 0)
-		close(urt_global_sem);
-	urt_global_sem = open("/sys/urt/global_sem", O_WRONLY);
-	return urt_global_sem >= 0?0:errno;
-#endif
-}
-
 urt_sem *urt_sys_shsem_new(const char *name, unsigned int init_value, int *error)
 {
 	return _shsem_common(name, init_value, CNT_SEM, error);
@@ -128,47 +104,6 @@ exit_no_obj:
 exit_fail:
 	urt_mem_delete(sem);
 	return NULL;
-}
-
-void urt_global_sem_free(const char *name)
-{
-#ifdef __KERNEL__
-#else
-	if (urt_global_sem >= 0)
-		close(urt_global_sem);
-	urt_global_sem = -1;
-#endif
-}
-
-void urt_global_sem_wait(void)
-{
-#ifdef __KERNEL__
-	if (down_interruptible(&urt_global_sem))
-		urt_err("error: global sem wait interrupted\n");
-#else
-	char command = URT_GLOBAL_SEM_WAIT;
-	write(urt_global_sem, &command, 1);
-#endif
-}
-
-void urt_global_sem_try_wait(void)
-{
-#ifdef __KERNEL__
-	down_trylock(&urt_global_sem);
-#else
-	char command = URT_GLOBAL_SEM_TRY_WAIT;
-	write(urt_global_sem, &command, 1);
-#endif
-}
-
-void urt_global_sem_post(void)
-{
-#ifdef __KERNEL__
-	up(&urt_global_sem);
-#else
-	char command = URT_GLOBAL_SEM_POST;
-	write(urt_global_sem, &command, 1);
-#endif
 }
 
 void urt_shsem_detach(urt_sem *sem)

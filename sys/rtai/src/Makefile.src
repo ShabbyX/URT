@@ -1,1 +1,1 @@
-LIB_SRC += setup.c lock.c mem.c task.c utils.c kern_main.c
+LIB_SRC += setup.c lock.c mem.c task.c utils.c

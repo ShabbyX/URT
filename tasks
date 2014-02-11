@@ -2,14 +2,7 @@ TODO
 - See if rtai's non-shared mutex should better be of type RES_SEM instead of BIN_SEM
 - See if there's a way to store URT_MODULE_* in user-space so that when printing help, they would be mentioned.
 - See if RTAI's exectime is correct
-- Make soft real-time threads too
 - Make DocThis! build and clean messages also short
-- In double-space environments, like RTAI, have a function that can give the time difference between the calling
-  space and a reference space, which in case of RTAI would be kernel space.  In other words, this function in kernel
-  space would return zero, but in user-space communicates through a /sys file that reports back the time, similar to
-  how Skinware used to do it.  Maybe make a calibration function called in initialization (URT_GLUE would do this)
-  so that urt_get_time would automatically adjust the clock and there would be no reason for the user to know about
-  it.  Yes, yes this is better.
 
 Known issues
 - with linux
