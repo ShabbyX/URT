@@ -22,7 +22,7 @@ also envisioned.
 License
 -------
 
-Copyright (C) 2013  Shahbaz Youssefi <ShabbyX@gmail.com>
+Copyright (C) 2013-2014  Shahbaz Youssefi <ShabbyX@gmail.com>
 
 URT is published under the GNU General Public License
 version 2.0 or later (GPL v2.0+).

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013  Shahbaz Youssefi <ShabbyX@gmail.com>
+ * Copyright (C) 2013-2014  Shahbaz Youssefi <ShabbyX@gmail.com>
  *
  * This file is part of URT, Unified Real-Time Interface.
  *
