@@ -117,13 +117,13 @@ void urt_shsem_detach(urt_sem *sem)
 }
 URT_EXPORT_SYMBOL(urt_shsem_detach);
 
-int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
+int (urt_sem_waitf)(urt_sem *sem, bool (*stop)(void *), void *data, ...)
 {
 	int res;
 	if (stop)
 	{
 		while ((res = rt_sem_wait_timed(sem->sem_ptr, nano2count(URT_LOCK_STOP_MAX_DELAY))) == RTE_TIMOUT)
-			if (*stop)
+			if (stop(data))
 				return ECANCELED;
 	}
 	else
@@ -131,7 +131,7 @@ int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
 
 	return res >= RTE_BASE?EINVAL:0;
 }
-URT_EXPORT_SYMBOL(urt_sem_wait);
+URT_EXPORT_SYMBOL(urt_sem_waitf);
 
 int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 {
@@ -251,13 +251,13 @@ void urt_shrwlock_detach(urt_rwlock *rwl)
 }
 URT_EXPORT_SYMBOL(urt_shrwlock_detach);
 
-int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
+int (urt_rwlock_read_lockf)(urt_rwlock *rwl, bool (*stop)(void *), void *data, ...)
 {
 	int res;
 	if (stop)
 	{
 		while ((res = rt_rwl_rdlock_timed(rwl->rwl_ptr, nano2count(URT_LOCK_STOP_MAX_DELAY))) == RTE_TIMOUT)
-			if (*stop)
+			if (stop(data))
 				return ECANCELED;
 	}
 	else
@@ -265,15 +265,15 @@ int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 
 	return res == 0?0:EDEADLK;
 }
-URT_EXPORT_SYMBOL(urt_rwlock_read_lock);
+URT_EXPORT_SYMBOL(urt_rwlock_read_lockf);
 
-int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
+int (urt_rwlock_write_lockf)(urt_rwlock *rwl, bool (*stop)(void *), void *data, ...)
 {
 	int res;
 	if (stop)
 	{
 		while ((res = rt_rwl_wrlock_timed(rwl->rwl_ptr, nano2count(URT_LOCK_STOP_MAX_DELAY))) == RTE_TIMOUT)
-			if (*stop)
+			if (stop(data))
 				return ECANCELED;
 	}
 	else
@@ -281,7 +281,7 @@ int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 
 	return res == 0?0:EDEADLK;
 }
-URT_EXPORT_SYMBOL(urt_rwlock_write_lock);
+URT_EXPORT_SYMBOL(urt_rwlock_write_lockf);
 
 int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)
 {

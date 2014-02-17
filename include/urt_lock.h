@@ -40,6 +40,7 @@ static inline void urt_shsem_delete(urt_sem *sem) { urt_shsem_detach(sem); }
 
 /* common semaphore operations */
 int (urt_sem_wait)(urt_sem *sem, bool *stop, ...);
+int (urt_sem_waitf)(urt_sem *sem, bool (*stop)(void *), void *data, ...);
 int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait);
 int urt_sem_try_wait(urt_sem *sem);
 void urt_sem_post(urt_sem *sem);
@@ -55,7 +56,8 @@ URT_ATTR_WARN_UNUSED urt_mutex *(urt_shmutex_attach)(const char *name, int *erro
 static inline void urt_shmutex_delete(urt_mutex *mutex) { urt_shmutex_detach(mutex); }
 
 /* common mutex operations */
-/* int (urt_mutex_lock); */
+int (urt_mutex_lock)(urt_mutex *mutex, bool *stop, ...);
+/* int (urt_mutex_lockf)(urt_mutex *mutex, bool (*stop)(void *), void *data, ...); */
 /* int urt_mutex_timed_lock(urt_mutex *mutex, urt_time max_lock); */
 /* int urt_mutex_try_lock(urt_mutex *mutex); */
 /* void urt_mutex_unlock(urt_mutex *mutex); */
@@ -72,7 +74,9 @@ static inline void urt_shrwlock_delete(urt_rwlock *rwl) { urt_shrwlock_detach(rw
 
 /* common rwlock operations */
 int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...);
+int (urt_rwlock_read_lockf)(urt_rwlock *rwl, bool (*stop)(void *), void *data, ...);
 int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...);
+int (urt_rwlock_write_lockf)(urt_rwlock *rwl, bool (*stop)(void *), void *data, ...);
 int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait);
 int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait);
 int urt_rwlock_try_read_lock(urt_rwlock *rwl);

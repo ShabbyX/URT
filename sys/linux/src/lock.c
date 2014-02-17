@@ -149,7 +149,7 @@ void urt_shsem_detach(urt_sem *sem)
 	urt_deregister(ro, sem, ro->size, _shsem_detach, NULL);
 }
 
-int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
+int (urt_sem_waitf)(urt_sem *sem, bool (*stop)(void *), void *data, ...)
 {
 	int res;
 	if (stop)
@@ -159,7 +159,7 @@ int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
 
 		do
 		{
-			if (*stop)
+			if (stop(data))
 				return ECANCELED;
 
 			t += URT_LOCK_STOP_MAX_DELAY;
@@ -311,7 +311,7 @@ void urt_shrwlock_detach(urt_rwlock *rwl)
 	urt_shmem_detach_with_callback(rwl, _shrwlock_detach);
 }
 
-int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
+int (urt_rwlock_read_lockf)(urt_rwlock *rwl, bool (*stop)(void *), void *data, ...)
 {
 	int res;
 	if (stop)
@@ -321,7 +321,7 @@ int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 
 		do
 		{
-			if (*stop)
+			if (stop(data))
 				return ECANCELED;
 
 			t += URT_LOCK_STOP_MAX_DELAY;
@@ -335,7 +335,7 @@ int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
 	return res;
 }
 
-int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
+int (urt_rwlock_write_lockf)(urt_rwlock *rwl, bool (*stop)(void *), void *data, ...)
 {
 	int res;
 	if (stop)
@@ -345,7 +345,7 @@ int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
 
 		do
 		{
-			if (*stop)
+			if (stop(data))
 				return ECANCELED;
 
 			t += URT_LOCK_STOP_MAX_DELAY;

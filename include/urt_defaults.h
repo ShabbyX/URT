@@ -47,12 +47,16 @@
 #define urt_shsem_new(...) urt_shsem_new(__VA_ARGS__, NULL)
 #define urt_shsem_attach(...) urt_shsem_attach(__VA_ARGS__, NULL)
 #define urt_sem_wait(...) urt_sem_wait(__VA_ARGS__, NULL)
+#define urt_sem_waitf(...) urt_sem_waitf(__VA_ARGS__, NULL)
+#define urt_mutex_lock(...) urt_mutex_lock(__VA_ARGS__, NULL)
 /* a helper macro is used for `, ##__VA_ARGS__` to correctly expand */
 #define urt_rwlock_new(...) urt_rwlock_new_(unused, ##__VA_ARGS__, NULL)
 #define urt_rwlock_new_(unused, ...) urt_rwlock_new(__VA_ARGS__)
 #define urt_shrwlock_new(...) urt_shrwlock_new(__VA_ARGS__, NULL)
 #define urt_shrwlock_attach(...) urt_shrwlock_attach(__VA_ARGS__, NULL)
 #define urt_rwlock_read_lock(...) urt_rwlock_read_lock(__VA_ARGS__, NULL)
+#define urt_rwlock_read_lockf(...) urt_rwlock_read_lockf(__VA_ARGS__, NULL)
 #define urt_rwlock_write_lock(...) urt_rwlock_write_lock(__VA_ARGS__, NULL)
+#define urt_rwlock_write_lockf(...) urt_rwlock_write_lockf(__VA_ARGS__, NULL)
 
 #endif
