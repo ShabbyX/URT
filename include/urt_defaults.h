@@ -48,6 +48,8 @@
 #define urt_shsem_attach(...) urt_shsem_attach(__VA_ARGS__, NULL)
 #define urt_sem_wait(...) urt_sem_wait(__VA_ARGS__, NULL)
 #define urt_sem_waitf(...) urt_sem_waitf(__VA_ARGS__, NULL)
+#define urt_shmutex_new(...) urt_shmutex_new(__VA_ARGS__, NULL)
+#define urt_shmutex_attach(...) urt_shmutex_attach(__VA_ARGS__, NULL)
 #define urt_mutex_lock(...) urt_mutex_lock(__VA_ARGS__, NULL)
 /* a helper macro is used for `, ##__VA_ARGS__` to correctly expand */
 #define urt_rwlock_new(...) urt_rwlock_new_(unused, ##__VA_ARGS__, NULL)
