@@ -130,6 +130,22 @@ NOTICE RT
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
 		- Possibly others based on subsystem.
 
+FUNCTION urt_sem_waitf: (sem: urt_sem *, stop: (void *): bool, data: void * = NULL): int
+NOTICE RT
+	Wait on a semaphore
+
+	This function is similar to `[#urt_sem_wait]`, except it takes a function and user data that decide when to stop, as opposed to a single
+	variable.
+
+	INPUT sem
+		See `[#urt_sem_wait]`.
+	INPUT stop
+		A function that can cancel the operation. See explanation [here](Style#Blocking Locks).
+	INPUT data
+		User data that would be passed to **`stop`**.
+	OUTPUT
+		See `[#urt_sem_wait]`.
+
 FUNCTION urt_sem_timed_wait: (sem: urt_sem *, wait_time: urt_time): int
 NOTICE RT
 	Wait on a semaphore for a maximum of given time
@@ -267,6 +283,22 @@ NOTICE RT
 		- `0` on success,
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
 		- Possibly others based on subsystem.
+
+FUNCTION urt_mutex_lockf: (mutex: urt_mutex *, stop: (void *): bool, data: void * = NULL): int
+NOTICE RT
+	Lock a mutex
+
+	This function is similar to `[#urt_mutex_lock]`, except it takes a function and user data that decide when to stop, as opposed to a single
+	variable.
+
+	INPUT mutex
+		See `[#urt_mutex_lock]`.
+	INPUT stop
+		A function that can cancel the operation. See explanation [here](Style#Blocking Locks).
+	INPUT data
+		User data that would be passed to **`stop`**.
+	OUTPUT
+		See `[#urt_mutex_lock]`.
 
 FUNCTION urt_mutex_timed_lock: (mutex: urt_mutex *, wait_time: urt_time): int
 NOTICE RT
@@ -412,6 +444,22 @@ NOTICE RT
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
 		- Possibly others based on subsystem.
 
+FUNCTION urt_rwlock_read_lockf: (rwlock: urt_rwlock *, stop: (void *): bool, data: void * = NULL): int
+NOTICE RT
+	Read-lock a readers-writers lock
+
+	This function is similar to `[#urt_rwlock_read_lock]`, except it takes a function and user data that decide when to stop, as opposed to a single
+	variable.
+
+	INPUT rwlock
+		See `[#urt_rwlock_read_lock]`.
+	INPUT stop
+		A function that can cancel the operation. See explanation [here](Style#Blocking Locks).
+	INPUT data
+		User data that would be passed to **`stop`**.
+	OUTPUT
+		See `[#urt_rwlock_read_lock]`.
+
 FUNCTION urt_rwlock_write_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
 NOTICE RT
 	Write-lock a readers-writers lock
@@ -432,6 +480,22 @@ NOTICE RT
 		- `0` on success,
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
 		- Possibly others based on subsystem.
+
+FUNCTION urt_rwlock_write_lockf: (rwlock: urt_rwlock *, stop: (void *): bool, data: void * = NULL): int
+NOTICE RT
+	Write-lock a writeers-writers lock
+
+	This function is similar to `[#urt_rwlock_write_lock]`, except it takes a function and user data that decide when to stop, as opposed to a single
+	variable.
+
+	INPUT rwlock
+		See `[#urt_rwlock_write_lock]`.
+	INPUT stop
+		A function that can cancel the operation. See explanation [here](Style#Blocking Locks).
+	INPUT data
+		User data that would be passed to **`stop`**.
+	OUTPUT
+		See `[#urt_rwlock_write_lock]`.
 
 FUNCTION urt_rwlock_timed_read_lock: (rwlock: urt_rwlock *, wait_time: urt_time): int
 NOTICE RT
