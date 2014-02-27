@@ -69,7 +69,6 @@ ifndef IGNORE_BUILD_OPTIONS
   URT_MAKE_USER = y
   URT_MAKE_KERNEL = n
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
-    URT_STATIC_EXTRA_CFLAGS +=
     URT_STATIC_EXTRA_LDFLAGS += -lpthread -lrt
     URT_CAN_VALGRIND := y
   else
@@ -83,18 +82,14 @@ ifndef IGNORE_BUILD_OPTIONS
     URT_NEEDS_KO := y
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), xenomai)
-    URT_STATIC_EXTRA_CFLAGS +=
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
-    URT_STATIC_EXTRA_CFLAGS +=
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
-    URT_STATIC_EXTRA_CFLAGS +=
   else
   ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtlinux)
     URT_MAKE_USER = n
     URT_MAKE_KERNEL = y
-    URT_STATIC_EXTRA_CFLAGS +=
   endif
   endif
   endif

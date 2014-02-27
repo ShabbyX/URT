@@ -5,7 +5,7 @@ _urt_config()
 	has_kernel="@URT_HAS_KERNEL@"
 	has_user="@URT_HAS_USER@"
 	cur="${COMP_WORDS[COMP_CWORD]}"
-	opts="--help --version --cc --ld --sys --build-user --build-kernel --prefix --bin-dir --include-dir --tool-clear --tool-names --tool-recover"
+	opts="--help --no-new-line --version --cc --ld --sys --build-user --build-kernel --prefix --bin-dir --include-dir --tool-clear --tool-names --tool-recover"
 	[ "$has_user" == y ] && opts="$opts --lib-dir --user-cflags --user-ldflags-static --user-ldflags-shared"
 	[ "$has_kernel" == y ] && opts="$opts --module-dir --kernel-cflags --kernel-symbols"
 	if [ ! $cur ] ; then

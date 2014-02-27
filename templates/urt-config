@@ -50,13 +50,25 @@ Options :
     --tool-clear            tool to clear objects from registry
     --tool-names            tool to list objects in the registry
     --tool-recover          tool to recover registry from crash
+
+    --no-new-line           instruct this script to not output new-line
 EOF
     exit $1
 }
 
+output_new_line=true
+
 unavailable() {
     echo "URT was not built to support $1"
     usage 1 1>&2
+}
+
+output() {
+    if $output_new_line; then
+        echo "$1";
+    else
+        printf -- "$1";
+    fi
 }
 
 if test $# -eq 0; then
@@ -71,61 +83,64 @@ while [ $# -gt 0 ]; do
             usage 0
             ;;
         --version)
-            echo $urt_version
+            output "$urt_version"
             ;;
         --sys)
-            echo $urt_sys
+            output "$urt_sys"
             ;;
         --cc)
-            echo $urt_cc
+            output "$urt_cc"
             ;;
         --ld)
-            echo $urt_ld
+            output "$urt_ld"
             ;;
         --prefix)
-            echo $urt_prefix
+            output "$urt_prefix"
             ;;
         --bin-dir)
-            echo $urt_bin_dir
+            output "$urt_bin_dir"
             ;;
         --include-dir)
-            echo $urt_include_dir
+            output "$urt_include_dir"
             ;;
         --lib-dir)
-            [ "$urt_has_user" == y ] && echo $urt_lib_dir || unavailable "user-space applications"
+            [ "$urt_has_user" == y ] && output "$urt_lib_dir" || unavailable "user-space applications"
             ;;
         --module-dir)
-            [ "$urt_has_kernel" == y ] && echo $urt_modules_dir || unavailable "kernel modules"
+            [ "$urt_has_kernel" == y ] && output "$urt_modules_dir" || unavailable "kernel modules"
             ;;
         --u*-cflags)
-            [ "$urt_has_user" == y ] && echo $urt_user_cflags || unavailable "user-space applications"
+            [ "$urt_has_user" == y ] && output "$urt_user_cflags" || unavailable "user-space applications"
             ;;
         --u*-ldflags-static)
-            [ "$urt_has_user" == y ] && echo $urt_user_static_ldflags || unavailable "user-space applications"
+            [ "$urt_has_user" == y ] && output "$urt_user_static_ldflags" || unavailable "user-space applications"
             ;;
         --u*-ldflags?(-shared))
-            [ "$urt_has_user" == y ] && echo $urt_user_shared_ldflags || unavailable "user-space applications"
+            [ "$urt_has_user" == y ] && output "$urt_user_shared_ldflags" || unavailable "user-space applications"
             ;;
         --k*-cflags|--m*-cflags)
-            [ "$urt_has_kernel" == y ] && echo $urt_kernel_cflags || unavailable "kernel modules"
+            [ "$urt_has_kernel" == y ] && output "$urt_kernel_cflags" || unavailable "kernel modules"
             ;;
         --k*-sym*|--m*-sym*)
-            [ "$urt_has_kernel" == y ] && echo $urt_kernel_symbols || unavailable "kernel modules"
+            [ "$urt_has_kernel" == y ] && output "$urt_kernel_symbols" || unavailable "kernel modules"
             ;;
-	--build-u*|--has-u*)
-	    echo $urt_has_user
-	    ;;
-	--build-k*|--has-k*)
-	    echo $urt_has_kernel
-	    ;;
+        --build-u*|--has-u*)
+            output "$urt_has_user"
+            ;;
+        --build-k*|--has-k*)
+            output "$urt_has_kernel"
+            ;;
         --tool-clear)
-            echo $urt_bin_dir/urt_clear
+            output "$urt_bin_dir"/urt_clear
             ;;
         --tool-names)
-            echo $urt_bin_dir/urt_names
+            output "$urt_bin_dir"/urt_names
             ;;
         --tool-recover)
-            echo $urt_bin_dir/urt_recover
+            output "$urt_bin_dir"/urt_recover
+            ;;
+        --no-new*line)
+            output_new_line=false
             ;;
         *)
             usage 1 1>&2
