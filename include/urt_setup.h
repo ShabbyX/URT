@@ -177,6 +177,7 @@ int main(int argc, char **argv)						\
 	sa = (struct sigaction){.sa_handler = NULL};			\
 	sa.sa_handler = urt_app_sig_handler_;				\
 	sigemptyset(&sa.sa_mask);					\
+	sigaction(SIGSEGV, &sa, NULL);					\
 	sigaction(SIGINT, &sa, NULL);					\
 	sigaction(SIGHUP, &sa, NULL);					\
 	sigaction(SIGTERM, &sa, NULL);					\
