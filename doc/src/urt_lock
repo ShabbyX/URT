@@ -161,7 +161,7 @@ NOTICE RT
 		Reurns one of the following:
 
 		- `0` on success,
-		- `EBUSY` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
+		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
 		- Possibly others based on subsystem.
 
 FUNCTION urt_sem_try_wait: (sem: urt_sem *): int
@@ -315,7 +315,7 @@ NOTICE RT
 		Reurns one of the following:
 
 		- `0` on success,
-		- `EBUSY` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
+		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
 		- Possibly others based on subsystem.
 
 FUNCTION urt_mutex_try_lock: (mutex: urt_mutex *): int
@@ -512,7 +512,7 @@ NOTICE RT
 		Reurns one of the following:
 
 		- `0` on success,
-		- `EBUSY` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
+		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
 		- Possibly others based on subsystem.
 
 FUNCTION urt_rwlock_timed_write_lock: (rwlock: urt_rwlock *, wait_time: urt_time): int
@@ -530,7 +530,7 @@ NOTICE RT
 		Reurns one of the following:
 
 		- `0` on success,
-		- `EBUSY` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
+		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
 		- Possibly others based on subsystem.
 
 FUNCTION urt_rwlock_try_read_lock: (rwlock: urt_rwlock *): int
