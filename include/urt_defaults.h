@@ -23,7 +23,7 @@
 /*
  * This file is a set of macros that sets default values to certain functions,
  * such as new/attach functions that take an optional `int *error` parameter,
- * or lock/wait functions that take an optional `bool *stop` parameter.
+ * or lock/wait functions that take an optional `volatile sig_atomic_t *stop` parameter.
  *
  * These functions are originally defined with variadic arguments.
  */

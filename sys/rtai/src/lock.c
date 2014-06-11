@@ -117,7 +117,7 @@ void urt_shsem_detach(urt_sem *sem)
 }
 URT_EXPORT_SYMBOL(urt_shsem_detach);
 
-int (urt_sem_waitf)(urt_sem *sem, bool (*stop)(void *), void *data, ...)
+int (urt_sem_waitf)(urt_sem *sem, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
 	if (stop)
@@ -251,7 +251,7 @@ void urt_shrwlock_detach(urt_rwlock *rwl)
 }
 URT_EXPORT_SYMBOL(urt_shrwlock_detach);
 
-int (urt_rwlock_read_lockf)(urt_rwlock *rwl, bool (*stop)(void *), void *data, ...)
+int (urt_rwlock_read_lockf)(urt_rwlock *rwl, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
 	if (stop)
@@ -267,7 +267,7 @@ int (urt_rwlock_read_lockf)(urt_rwlock *rwl, bool (*stop)(void *), void *data, .
 }
 URT_EXPORT_SYMBOL(urt_rwlock_read_lockf);
 
-int (urt_rwlock_write_lockf)(urt_rwlock *rwl, bool (*stop)(void *), void *data, ...)
+int (urt_rwlock_write_lockf)(urt_rwlock *rwl, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
 	if (stop)

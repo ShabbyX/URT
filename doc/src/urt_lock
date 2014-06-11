@@ -112,7 +112,7 @@ FUNCTION urt_shsem_detach: (sem: urt_sem *): void
 	INPUT sem
 		See `[#urt_shsem_delete]`.
 
-FUNCTION urt_sem_wait: (sem: urt_sem *, stop: bool * = NULL): int
+FUNCTION urt_sem_wait: (sem: urt_sem *, stop: volatile sig_atomic_t * = NULL): int
 NOTICE RT
 	Wait on a semaphore
 
@@ -130,7 +130,7 @@ NOTICE RT
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
 		- Possibly others based on subsystem.
 
-FUNCTION urt_sem_waitf: (sem: urt_sem *, stop: (void *): bool, data: void * = NULL): int
+FUNCTION urt_sem_waitf: (sem: urt_sem *, stop: (volatile void *): bool, data: volatile void * = NULL): int
 NOTICE RT
 	Wait on a semaphore
 
@@ -266,7 +266,7 @@ FUNCTION urt_shmutex_detach: (mutex: urt_mutex *): void
 	INPUT mutex
 		See `[#urt_shmutex_delete]`.
 
-FUNCTION urt_mutex_lock: (mutex: urt_mutex *, stop: bool * = NULL): int
+FUNCTION urt_mutex_lock: (mutex: urt_mutex *, stop: volatile sig_atomic_t * = NULL): int
 NOTICE RT
 	Lock a mutex
 
@@ -284,7 +284,7 @@ NOTICE RT
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
 		- Possibly others based on subsystem.
 
-FUNCTION urt_mutex_lockf: (mutex: urt_mutex *, stop: (void *): bool, data: void * = NULL): int
+FUNCTION urt_mutex_lockf: (mutex: urt_mutex *, stop: (volatile void *): bool, data: volatile void * = NULL): int
 NOTICE RT
 	Lock a mutex
 
@@ -423,7 +423,7 @@ FUNCTION urt_shrwlock_detach: (rwlock: urt_rwlock *): void
 	INPUT rwlock
 		See `[#urt_shrwlock_delete]`.
 
-FUNCTION urt_rwlock_read_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
+FUNCTION urt_rwlock_read_lock: (rwlock: urt_rwlock *, stop: volatile sig_atomic_t * = NULL): int
 NOTICE RT
 	Read-lock a readers-writers lock
 
@@ -444,7 +444,7 @@ NOTICE RT
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
 		- Possibly others based on subsystem.
 
-FUNCTION urt_rwlock_read_lockf: (rwlock: urt_rwlock *, stop: (void *): bool, data: void * = NULL): int
+FUNCTION urt_rwlock_read_lockf: (rwlock: urt_rwlock *, stop: (volatile void *): bool, data: volatile void * = NULL): int
 NOTICE RT
 	Read-lock a readers-writers lock
 
@@ -460,7 +460,7 @@ NOTICE RT
 	OUTPUT
 		See `[#urt_rwlock_read_lock]`.
 
-FUNCTION urt_rwlock_write_lock: (rwlock: urt_rwlock *, stop: bool * = NULL): int
+FUNCTION urt_rwlock_write_lock: (rwlock: urt_rwlock *, stop: volatile sig_atomic_t * = NULL): int
 NOTICE RT
 	Write-lock a readers-writers lock
 
@@ -481,7 +481,7 @@ NOTICE RT
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
 		- Possibly others based on subsystem.
 
-FUNCTION urt_rwlock_write_lockf: (rwlock: urt_rwlock *, stop: (void *): bool, data: void * = NULL): int
+FUNCTION urt_rwlock_write_lockf: (rwlock: urt_rwlock *, stop: (volatile void *): bool, data: volatile void * = NULL): int
 NOTICE RT
 	Write-lock a writeers-writers lock
 

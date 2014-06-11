@@ -35,7 +35,7 @@ URT_GLUE(test_start, test_body, test_end, int, interrupted, done)
 static urt_sem *sync_sem = NULL;
 static urt_sem *done_sem = NULL;
 static urt_task *tp = NULL, *tn = NULL;
-static bool stop_other_thread = false;
+static volatile sig_atomic_t stop_other_thread = 0;
 
 static void periodic(urt_task *task, void *data)
 {
@@ -60,7 +60,7 @@ static void periodic(urt_task *task, void *data)
 		urt_sem_post(sem);
 	}
 
-	stop_other_thread = true;
+	stop_other_thread = 1;
 	urt_sem_post(done_sem);
 }
 

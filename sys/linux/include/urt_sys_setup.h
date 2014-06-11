@@ -20,9 +20,6 @@
 #ifndef URT_SYS_SETUP_H
 #define URT_SYS_SETUP_H
 
-#include <signal.h>
-#include <unistd.h>
-
 URT_DECL_BEGIN
 
 static inline int urt_sys_init(void) { return 0; }

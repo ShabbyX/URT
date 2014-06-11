@@ -51,7 +51,7 @@ may be need to cancel this action. This could be either due to an error, e.g. th
 simply on a clean application exit where all threads are requested to gracefully terminate themselves and therefore need to be unblocked
 even if waiting for a lock.
 
-These functions therefore take an optional `bool *` as their last argument which can be used (by another thread) to cancel the operation.
+These functions therefore take an optional `volatile sig_atomic_t *` as their last argument which can be used (by a signal or thread) to cancel the operation.
 The locking function will in such a situation return after a maximum of a configurable time (`URT_CONFIG_LOCK_STOP_MAX_DELAY`) and have
 the return value of `ECANCELED`.  The functions that have suffix `f` are equivalent (e.g. `[#urt_sem_waitf](urt_lock)`, but they allow a
 callback function and user-provided pointer to decide whether the lock should be canceled.

@@ -93,30 +93,30 @@ void urt_global_sem_post(void)
 
 /* common lock to lockf translation */
 
-static bool _lock_stop(void *stop)
+static bool _lock_stop(volatile void *stop)
 {
-	return *(bool *)stop;
+	return *(volatile sig_atomic_t *)stop;
 }
 
-int (urt_sem_wait)(urt_sem *sem, bool *stop, ...)
+int (urt_sem_wait)(urt_sem *sem, volatile sig_atomic_t *stop, ...)
 {
 	return urt_sem_waitf(sem, stop?_lock_stop:NULL, stop);
 }
 URT_EXPORT_SYMBOL(urt_sem_wait);
 
-int (urt_mutex_lock)(urt_mutex *mutex, bool *stop, ...)
+int (urt_mutex_lock)(urt_mutex *mutex, volatile sig_atomic_t *stop, ...)
 {
 	return urt_mutex_lockf(mutex, stop?_lock_stop:NULL, stop);
 }
 URT_EXPORT_SYMBOL(urt_mutex_lock);
 
-int (urt_rwlock_read_lock)(urt_rwlock *rwl, bool *stop, ...)
+int (urt_rwlock_read_lock)(urt_rwlock *rwl, volatile sig_atomic_t *stop, ...)
 {
 	return urt_rwlock_read_lockf(rwl, stop?_lock_stop:NULL, stop);
 }
 URT_EXPORT_SYMBOL(urt_rwlock_read_lock);
 
-int (urt_rwlock_write_lock)(urt_rwlock *rwl, bool *stop, ...)
+int (urt_rwlock_write_lock)(urt_rwlock *rwl, volatile sig_atomic_t *stop, ...)
 {
 	return urt_rwlock_write_lockf(rwl, stop?_lock_stop:NULL, stop);
 }

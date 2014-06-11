@@ -22,11 +22,28 @@
 
 #include "urt_config.h"
 
+/* bring in fixed size integers, such as [u]int*_t */
 #ifdef __KERNEL__
 # include <linux/kernel.h>
 #else
-# include <stdbool.h>
 # include <stdint.h>
+#endif
+
+/* bring in bool */
+#ifdef __KERNEL__
+#else
+# include <stdbool.h>
+#endif
+
+/* bring in sig_atomic_t */
+#ifdef __KERNEL__
+/*
+ * Note: the kernel doesn't define sig_atomic_t.  Glibc on x86 seems to think int is fine.
+ * I don't currently know about other architectures
+ */
+typedef int sig_atomic_t;
+#else
+# include <signal.h>
 #endif
 
 #endif
