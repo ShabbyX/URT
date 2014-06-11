@@ -40,8 +40,6 @@ static urt_task *check_task = NULL;
 static void _check(urt_task *task, void *data)
 {
 	int i;
-	urt_out("main: waiting for 4 seconds\n");
-	urt_sleep(4000000000ll);
 	for (i = 0; i < 20; ++i)
 		urt_sem_post(req);
 	for (i = 0; i < 20; ++i)

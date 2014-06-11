@@ -94,6 +94,8 @@ else
 fi
 # if side processes, spawn them too
 if $has_side; then
+	# give a small delay, so the main process can allocate shared memories and locks, if any
+	sleep 1
 	for (( i=0; i<$side_count; ++i )); do
 		if $kernel_module; then
 			sudo insmod "${test_side%.ko}_$i.ko" "${side_options[@]}"
