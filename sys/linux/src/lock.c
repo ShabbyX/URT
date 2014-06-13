@@ -195,24 +195,186 @@ int urt_sem_try_wait(urt_sem *sem)
 	return sem_trywait(sem->sem_ptr) == 0?0:errno == EAGAIN?EBUSY:errno;
 }
 
-void urt_sem_post(urt_sem *sem)
+int urt_sem_post(urt_sem *sem)
 {
-	sem_post(sem->sem_ptr);
+	return sem_post(sem->sem_ptr);
+}
+
+/*
+ * allocation and deallocation of pthread_*_t locks are similar, although the function names are different.
+ * These functions are refactored here
+ */
+static void *_pthread_lock_new(int (*init)(void *l, int *e, int f), size_t size, int *error)
+{
+	void *lock = urt_mem_new(size, error);
+	if (lock == NULL)
+		goto exit_fail;
+
+	if (init(lock, error, PTHREAD_PROCESS_PRIVATE))
+		goto exit_bad_init;
+
+	return lock;
+exit_bad_init:
+	urt_mem_delete(lock);
+exit_fail:
+	return NULL;
+}
+
+static void _pthread_lock_delete(void (*destroy)(void *l), void *lock)
+{
+	if (lock != NULL)
+		destroy(lock);
+	urt_mem_delete(lock);
+}
+
+static void *_pthread_shlock_new(int (*init)(void *l, int *e, int f), size_t size, const char *name, int *error)
+{
+#if !defined(_POSIX_THREAD_PROCESS_SHARED) || _POSIX_THREAD_PROCESS_SHARED <= 0
+	if (error)
+		*error = ENOTSUP;
+	return NULL;
+#else
+	/*
+	 * Note: take care of the book keeping space since I'm doing shared memory
+	 * bypassing the size known in new_common.c
+	 */
+	void *lock = urt_sys_shmem_new(name, size + 16, error);
+	if (lock == NULL)
+		goto exit_fail;
+	lock = (void *)((char *)lock + 16);
+
+	if (init(lock, error, PTHREAD_PROCESS_SHARED))
+		goto exit_bad_init;
+
+	/* Note: once returned, the book keeping in new_common.c will again add the +16 */
+	return (void *)((char *)lock - 16);
+exit_bad_init:
+	/* Note: urt_shmem_delete will remove the +16 */
+	urt_shmem_delete(lock);
+exit_fail:
+	return NULL;
+#endif
+}
+
+static void _pthread_shlock_detach(void (*destroy)(void *l), size_t size, void *lock)
+{
+	/* Note: unmap needs the correct allocated size of memory */
+	urt_registered_object *ro;
+
+	if (lock == NULL)
+		return;
+
+	ro = urt_get_object_by_id(*(unsigned int *)((char *)lock - 16));
+	if (ro == NULL)
+		return;
+	ro->size = size + 16;
+	urt_shmem_detach_with_callback(lock, destroy);
+}
+
+static int _shmutex_init(void *lock, int *error, int flags)
+{
+	int err;
+	urt_mutex *mutex = lock;
+	pthread_mutexattr_t attr;
+
+	pthread_mutexattr_init(&attr);
+	pthread_mutexattr_setpshared(&attr, flags);
+	pthread_mutexattr_setprotocol(&attr, PTHREAD_PRIO_INHERIT);
+
+	if ((err = pthread_mutex_init(mutex, &attr)))
+		goto exit_bad_init;
+
+	pthread_mutexattr_destroy(&attr);
+	return 0;
+exit_bad_init:
+	if (error)
+		*error = err;
+	pthread_mutexattr_destroy(&attr);
+	return -1;
+}
+
+static void _shmutex_destroy(void *mutex)
+{
+	while (pthread_mutex_destroy(mutex) == EBUSY)
+		if (pthread_mutex_unlock(mutex))
+			break;
+}
+
+urt_mutex *(urt_mutex_new)(int *error, ...)
+{
+	return _pthread_lock_new(_shmutex_init, sizeof(urt_mutex), error);
+}
+
+void urt_mutex_delete(urt_mutex *mutex)
+{
+	_pthread_lock_delete(_shmutex_destroy, mutex);
 }
 
 urt_mutex *urt_sys_shmutex_new(const char *name, int *error)
 {
-	return urt_sys_shsem_new(name, 1, error);
+	return _pthread_shlock_new(_shmutex_init, sizeof(urt_mutex), name, error);
 }
 
 urt_mutex *urt_sys_shmutex_attach(const char *name, int *error)
 {
-	return urt_sys_shsem_attach(name, error);
+	return urt_sys_shmem_attach(name, error);
 }
 
-static int _shrwlock_common(urt_rwlock *rwl, int *error, int flags)
+void urt_shmutex_detach(urt_mutex *mutex)
+{
+	_pthread_shlock_detach(_shmutex_destroy, sizeof(urt_mutex), mutex);
+}
+
+int (urt_mutex_lockf)(urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...)
+{
+	int res;
+	if (stop)
+	{
+		struct timespec tp;
+		urt_time t = urt_get_time_epoch();
+
+		do
+		{
+			if (stop(data))
+				return ECANCELED;
+
+			t += URT_LOCK_STOP_MAX_DELAY;
+			tp.tv_sec = t / 1000000000ll;
+			tp.tv_nsec = t % 1000000000ll;
+		} while ((res = pthread_mutex_timedlock(mutex, &tp)) == ETIMEDOUT);
+	}
+	else
+		res = pthread_mutex_lock(mutex);
+
+	return res;
+}
+
+int urt_mutex_timed_lock(urt_mutex *mutex, urt_time max_wait)
+{
+	struct timespec tp;
+	urt_time t = urt_get_time_epoch();
+
+	t += max_wait;
+	tp.tv_sec = t / 1000000000ll;
+	tp.tv_nsec = t % 1000000000ll;
+
+	return pthread_mutex_timedlock(mutex, &tp);
+}
+
+int urt_mutex_try_lock(urt_mutex *mutex)
+{
+	return pthread_mutex_trylock(mutex);
+}
+
+int urt_mutex_unlock(urt_mutex *mutex)
+{
+	return pthread_mutex_unlock(mutex);
+}
+
+static int _shrwlock_init(void *lock, int *error, int flags)
 {
 	int err;
+	urt_rwlock *rwl = lock;
 	pthread_rwlockattr_t attr;
 
 	pthread_rwlockattr_init(&attr);
@@ -230,58 +392,26 @@ exit_bad_init:
 	return -1;
 }
 
+static void _shrwlock_destroy(void *rwl)
+{
+	while (pthread_rwlock_destroy(rwl) == EBUSY)
+		if (pthread_rwlock_unlock(rwl))
+			break;
+}
+
 urt_rwlock *(urt_rwlock_new)(int *error, ...)
 {
-	urt_rwlock *rwl = urt_mem_new(sizeof *rwl, error);
-	if (rwl == NULL)
-		goto exit_fail;
-
-	if (_shrwlock_common(rwl, error, PTHREAD_PROCESS_PRIVATE))
-		goto exit_bad_init;
-
-	return rwl;
-exit_bad_init:
-	urt_mem_delete(rwl);
-exit_fail:
-	return NULL;
+	return _pthread_lock_new(_shrwlock_init, sizeof(urt_rwlock), error);
 }
 
 void urt_rwlock_delete(urt_rwlock *rwl)
 {
-	if (rwl != NULL)
-		while (pthread_rwlock_destroy(rwl) == EBUSY)
-			if (pthread_rwlock_unlock(rwl))
-				break;
-	urt_mem_delete(rwl);
+	_pthread_lock_delete(_shrwlock_destroy, rwl);
 }
 
 urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error)
 {
-#if !defined(_POSIX_THREAD_PROCESS_SHARED) || _POSIX_THREAD_PROCESS_SHARED <= 0
-	if (error)
-		*error = ENOTSUP;
-	return NULL;
-#else
-	/*
-	 * Note: take care of the book keeping space since I'm doing shared memory
-	 * bypassing the size known in new_common.c
-	 */
-	urt_rwlock *rwl = urt_sys_shmem_new(name, sizeof *rwl + 16, error);
-	if (rwl == NULL)
-		goto exit_fail;
-	rwl = (void *)((char *)rwl + 16);
-
-	if (_shrwlock_common(rwl, error, PTHREAD_PROCESS_SHARED))
-		goto exit_bad_init;
-
-	/* Note: once returned, the book keeping in new_common.c will again add the +16 */
-	return (void *)((char *)rwl - 16);
-exit_bad_init:
-	/* Note: urt_shmem_delete will remove the +16 */
-	urt_shmem_delete(rwl);
-exit_fail:
-	return NULL;
-#endif
+	return _pthread_shlock_new(_shrwlock_init, sizeof(urt_rwlock), name, error);
 }
 
 urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error)
@@ -289,26 +419,9 @@ urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error)
 	return urt_sys_shmem_attach(name, error);
 }
 
-static void _shrwlock_detach(void *rwl)
-{
-	while (pthread_rwlock_destroy(rwl) == EBUSY)
-		if (pthread_rwlock_unlock(rwl))
-			break;
-}
-
 void urt_shrwlock_detach(urt_rwlock *rwl)
 {
-	/* Note: unmap needs the correct allocated size of memory */
-	urt_registered_object *ro;
-
-	if (rwl == NULL)
-		return;
-
-	ro = urt_get_object_by_id(*(unsigned int *)((char *)rwl - 16));
-	if (ro == NULL)
-		return;
-	ro->size = sizeof *rwl + 16;
-	urt_shmem_detach_with_callback(rwl, _shrwlock_detach);
+	_pthread_shlock_detach(_shrwlock_destroy, sizeof(urt_rwlock), rwl);
 }
 
 int (urt_rwlock_read_lockf)(urt_rwlock *rwl, bool (*stop)(volatile void *), volatile void *data, ...)
@@ -401,4 +514,103 @@ int urt_rwlock_read_unlock(urt_rwlock *rwl)
 int urt_rwlock_write_unlock(urt_rwlock *rwl)
 {
 	return pthread_rwlock_unlock(rwl);
+}
+
+static int _shcond_init(void *lock, int *error, int flags)
+{
+	int err;
+	urt_cond *cond = lock;
+	pthread_condattr_t attr;
+
+	pthread_condattr_init(&attr);
+	pthread_condattr_setpshared(&attr, flags);
+
+	if ((err = pthread_cond_init(cond, &attr)))
+		goto exit_bad_init;
+
+	pthread_condattr_destroy(&attr);
+	return 0;
+exit_bad_init:
+	if (error)
+		*error = err;
+	pthread_condattr_destroy(&attr);
+	return -1;
+}
+
+static void _shcond_destroy(void *cond)
+{
+	while (pthread_cond_destroy(cond) == EBUSY)
+		if (pthread_cond_broadcast(cond))
+			break;
+}
+
+urt_cond *(urt_cond_new)(int *error, ...)
+{
+	return _pthread_lock_new(_shcond_init, sizeof(urt_cond), error);
+}
+
+void urt_cond_delete(urt_cond *cond)
+{
+	_pthread_lock_delete(_shcond_destroy, cond);
+}
+
+urt_cond *urt_sys_shcond_new(const char *name, int *error)
+{
+	return _pthread_shlock_new(_shcond_init, sizeof(urt_cond), name, error);
+}
+
+urt_cond *urt_sys_shcond_attach(const char *name, int *error)
+{
+	return urt_sys_shmem_attach(name, error);
+}
+
+void urt_shcond_detach(urt_cond *cond)
+{
+	_pthread_shlock_detach(_shcond_destroy, sizeof(urt_cond), cond);
+}
+
+int (urt_cond_waitf)(urt_cond *cond, urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...)
+{
+	int res;
+	if (stop)
+	{
+		struct timespec tp;
+		urt_time t = urt_get_time_epoch();
+
+		do
+		{
+			if (stop(data))
+				return ECANCELED;
+
+			t += URT_LOCK_STOP_MAX_DELAY;
+			tp.tv_sec = t / 1000000000ll;
+			tp.tv_nsec = t % 1000000000ll;
+		} while ((res = pthread_cond_timedwait(cond, mutex, &tp)) == ETIMEDOUT);
+	}
+	else
+		res = pthread_cond_wait(cond, mutex);
+
+	return res;
+}
+
+int urt_cond_timed_wait(urt_cond *cond, urt_mutex *mutex, urt_time max_wait)
+{
+	struct timespec tp;
+	urt_time t = urt_get_time_epoch();
+
+	t += max_wait;
+	tp.tv_sec = t / 1000000000ll;
+	tp.tv_nsec = t % 1000000000ll;
+
+	return pthread_cond_timedwait(cond, mutex, &tp);
+}
+
+int urt_cond_signal(urt_cond *cond)
+{
+	return pthread_cond_signal(cond);
+}
+
+int urt_cond_broadcast(urt_cond *cond)
+{
+	return pthread_cond_broadcast(cond);
 }

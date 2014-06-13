@@ -38,14 +38,17 @@ static inline urt_sem *urt_sys_add_sem_book_keeping(urt_sem *sem, unsigned int i
 
 static inline urt_mutex *urt_sys_add_mutex_book_keeping(urt_mutex *mutex, unsigned int id)
 {
-	mutex->id = id;
-	return mutex;
+	return urt_sys_add_mem_book_keeping(mutex, id);
 }
 
 static inline urt_rwlock *urt_sys_add_rwlock_book_keeping(urt_rwlock *rwl, unsigned int id)
 {
-	*(unsigned int *)rwl = id;
-	return (void *)((char *)rwl + 16);
+	return urt_sys_add_mem_book_keeping(rwl, id);
+}
+
+static inline urt_cond *urt_sys_add_cond_book_keeping(urt_cond *cond, unsigned int id)
+{
+	return urt_sys_add_mem_book_keeping(cond, id);
 }
 
 #endif

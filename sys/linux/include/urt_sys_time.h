@@ -52,6 +52,7 @@ static inline void urt_sleep(urt_time t)
 	ts = t / 1000000;
 	tu = t % 1000000;
 
+	/* Note: nanosleep is not used since it can be interrupted, which unnecessarily complicates things! */
 	sleep(ts);
 	usleep(tu);
 }

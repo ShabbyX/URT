@@ -37,10 +37,11 @@ void urt_sys_force_clear_name(urt_registered_object *ro)
 	switch (ro->type)
 	{
 	case URT_TYPE_MEM:
+	case URT_TYPE_MUTEX:
 	case URT_TYPE_RWLOCK:
+	case URT_TYPE_COND:
 		shm_unlink(n);
 		break;
-	case URT_TYPE_MUTEX:
 	case URT_TYPE_SEM:
 		sem_unlink(n);
 		break;

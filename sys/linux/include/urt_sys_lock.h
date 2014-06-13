@@ -31,18 +31,9 @@ typedef struct urt_sem
 	sem_t *sem_ptr;		/* shared semaphore requires pointer (sem is unused) */
 	unsigned int id;
 } urt_sem;
-typedef urt_sem urt_mutex;
+typedef pthread_mutex_t urt_mutex;
 typedef pthread_rwlock_t urt_rwlock;
-
-#define urt_mutex_new(...) urt_sem_new(1, ##__VA_ARGS__)
-#define urt_mutex_delete(m) urt_sem_delete(m)
-
-#define urt_shmutex_detach(m) urt_shsem_detach(m)
-
-#define urt_mutex_lockf(...) urt_sem_waitf(__VA_ARGS__)
-#define urt_mutex_timed_lock(m, t) urt_sem_timed_wait(m, t)
-#define urt_mutex_try_lock(m) urt_sem_try_wait(m)
-#define urt_mutex_unlock(m) urt_sem_post(m)
+typedef pthread_cond_t urt_cond;
 
 URT_DECL_END
 

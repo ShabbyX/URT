@@ -147,9 +147,10 @@ int urt_sem_try_wait(urt_sem *sem)
 }
 URT_EXPORT_SYMBOL(urt_sem_try_wait);
 
-void urt_sem_post(urt_sem *sem)
+int urt_sem_post(urt_sem *sem)
 {
-	rt_sem_signal(sem->sem_ptr);
+	int res = rt_sem_signal(sem->sem_ptr);
+	return res >= RTE_BASE?EINVAL:0;
 }
 URT_EXPORT_SYMBOL(urt_sem_post);
 
@@ -164,10 +165,46 @@ urt_mutex *urt_sys_shmutex_new(const char *name, int *error)
 	return urt_sys_shsem_new(name, 1, error);
 }
 
+void urt_mutex_delete(urt_mutex *mutex)
+{
+	urt_sem_delete(mutex);
+}
+URT_EXPORT_SYMBOL(urt_mutex_delete);
+
 urt_mutex *urt_sys_shmutex_attach(const char *name, int *error)
 {
 	return urt_sys_shsem_attach(name, error);
 }
+
+void urt_shmutex_detach(urt_mutex *mutex)
+{
+	urt_shsem_detach(mutex);
+}
+URT_EXPORT_SYMBOL(urt_shmutex_detach);
+
+int (urt_mutex_lockf)(urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...)
+{
+	return (urt_sem_waitf)(mutex, stop, data);
+}
+URT_EXPORT_SYMBOL(urt_mutex_lockf);
+
+int urt_mutex_timed_lock(urt_mutex *mutex, urt_time max_wait)
+{
+	return urt_sem_timed_wait(mutex, max_wait);
+}
+URT_EXPORT_SYMBOL(urt_mutex_timed_lock);
+
+int urt_mutex_try_lock(urt_mutex *mutex)
+{
+	return urt_sem_try_wait(mutex);
+}
+URT_EXPORT_SYMBOL(urt_mutex_try_lock);
+
+int urt_mutex_unlock(urt_mutex *mutex)
+{
+	return urt_sem_post(mutex);
+}
+URT_EXPORT_SYMBOL(urt_mutex_unlock);
 
 urt_rwlock *(urt_rwlock_new)(int *error, ...)
 {

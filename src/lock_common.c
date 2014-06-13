@@ -121,3 +121,9 @@ int (urt_rwlock_write_lock)(urt_rwlock *rwl, volatile sig_atomic_t *stop, ...)
 	return urt_rwlock_write_lockf(rwl, stop?_lock_stop:NULL, stop);
 }
 URT_EXPORT_SYMBOL(urt_rwlock_write_lock);
+
+int (urt_cond_wait)(urt_cond *cond, urt_mutex *mutex, volatile sig_atomic_t *stop, ...)
+{
+	return urt_cond_waitf(cond, mutex, stop?_lock_stop:NULL, stop);
+}
+URT_EXPORT_SYMBOL(urt_cond_wait);

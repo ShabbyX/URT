@@ -1,6 +1,6 @@
 functions urt_mem
 # URT - Unified Real-Time Interface
-version version 0.3.0
+version version 0.4.0
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware

@@ -369,7 +369,8 @@ void urt_print_names(void)
 				obj->type == URT_TYPE_MEM?"MEM ":
 				obj->type == URT_TYPE_SEM?"SEM ":
 				obj->type == URT_TYPE_MUTEX?"MUTEX":
-				obj->type == URT_TYPE_RWLOCK?"RWLOCK":"??????");
+				obj->type == URT_TYPE_RWLOCK?"RWLOCK":
+				obj->type == URT_TYPE_COND?"COND":"??????");
 	}
 	urt_out_cont("\nmax index: %u\n", urt_global_mem->objects_max_index);
 	urt_out_cont("next free name: %*s%s\n", URT_NAME_LEN, urt_global_mem->next_free_name,

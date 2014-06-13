@@ -43,24 +43,24 @@ int (urt_sem_wait)(urt_sem *sem, volatile sig_atomic_t *stop, ...);
 int (urt_sem_waitf)(urt_sem *sem, bool (*stop)(volatile void *), volatile void *data, ...);
 int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait);
 int urt_sem_try_wait(urt_sem *sem);
-void urt_sem_post(urt_sem *sem);
+int urt_sem_post(urt_sem *sem);
 
 /* unnamed mutex */
-/* URT_ATTR_WARN_UNUSED urt_mutex *(urt_mutex_new)(int *error, ...); */
-/* void urt_mutex_delete(urt_mutex *mutex); */
+URT_ATTR_WARN_UNUSED urt_mutex *(urt_mutex_new)(int *error, ...);
+void urt_mutex_delete(urt_mutex *mutex);
 
 /* shared mutex */
 URT_ATTR_WARN_UNUSED urt_mutex *(urt_shmutex_new)(const char *name, int *error, ...);
 URT_ATTR_WARN_UNUSED urt_mutex *(urt_shmutex_attach)(const char *name, int *error, ...);
-/* void urt_shmutex_detach(urt_mutex *mutex); */
+void urt_shmutex_detach(urt_mutex *mutex);
 static inline void urt_shmutex_delete(urt_mutex *mutex) { urt_shmutex_detach(mutex); }
 
 /* common mutex operations */
 int (urt_mutex_lock)(urt_mutex *mutex, volatile sig_atomic_t *stop, ...);
-/* int (urt_mutex_lockf)(urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...); */
-/* int urt_mutex_timed_lock(urt_mutex *mutex, urt_time max_lock); */
-/* int urt_mutex_try_lock(urt_mutex *mutex); */
-/* void urt_mutex_unlock(urt_mutex *mutex); */
+int (urt_mutex_lockf)(urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...);
+int urt_mutex_timed_lock(urt_mutex *mutex, urt_time max_wait);
+int urt_mutex_try_lock(urt_mutex *mutex);
+int urt_mutex_unlock(urt_mutex *mutex);
 
 /* unnamed rwlock */
 URT_ATTR_WARN_UNUSED urt_rwlock *(urt_rwlock_new)(int *error, ...);
@@ -83,6 +83,23 @@ int urt_rwlock_try_read_lock(urt_rwlock *rwl);
 int urt_rwlock_try_write_lock(urt_rwlock *rwl);
 int urt_rwlock_read_unlock(urt_rwlock *rwl);
 int urt_rwlock_write_unlock(urt_rwlock *rwl);
+
+/* unnamed condition variable */
+URT_ATTR_WARN_UNUSED urt_cond *(urt_cond_new)(int *error, ...);
+void urt_cond_delete(urt_cond *cond);
+
+/* shared condition variable */
+URT_ATTR_WARN_UNUSED urt_cond *(urt_shcond_new)(const char *name, int *error, ...);
+URT_ATTR_WARN_UNUSED urt_cond *(urt_shcond_attach)(const char *name, int *error, ...);
+void urt_shcond_detach(urt_cond *cond);
+static inline void urt_shcond_delete(urt_cond *cond) { urt_shcond_detach(cond); }
+
+/* common condition variable operations */
+int (urt_cond_wait)(urt_cond *cond, urt_mutex *mutex, volatile sig_atomic_t *stop, ...);
+int (urt_cond_waitf)(urt_cond *cond, urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...);
+int urt_cond_timed_wait(urt_cond *cond, urt_mutex *mutex, urt_time max_wait);
+int urt_cond_signal(urt_cond *cond);
+int urt_cond_broadcast(urt_cond *cond);
 
 URT_DECL_END
 

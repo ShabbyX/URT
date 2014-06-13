@@ -1,7 +1,7 @@
 include ../Makefile.config
 include ../Makefile.common
 
-DOC_THIS := ../../personal/DocThis/docthis
+DOC_THIS := docthis
 RM := rm -f
 MKDIR := mkdir -p
 

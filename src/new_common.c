@@ -117,3 +117,15 @@ urt_rwlock *(urt_shrwlock_attach)(const char *name, int *error, ...)
 	SHOBJ_ATTACH(name, error, urt_rwlock *, urt_sys_shrwlock_attach(name, error), urt_sys_add_rwlock_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shrwlock_attach);
+
+urt_cond *(urt_shcond_new)(const char *name, int *error, ...)
+{
+	SHOBJ_NEW(name, error, urt_cond *, sizeof(urt_cond), urt_sys_shcond_new(name, error), COND, urt_sys_add_cond_book_keeping);
+}
+URT_EXPORT_SYMBOL(urt_shcond_new);
+
+urt_cond *(urt_shcond_attach)(const char *name, int *error, ...)
+{
+	SHOBJ_ATTACH(name, error, urt_cond *, urt_sys_shcond_attach(name, error), urt_sys_add_cond_book_keeping);
+}
+URT_EXPORT_SYMBOL(urt_shcond_attach);

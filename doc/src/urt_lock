@@ -1,6 +1,6 @@
 functions urt_lock
 # URT - Unified Real-Time Interface
-version version 0.3.0
+version version 0.4.0
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware
@@ -28,6 +28,11 @@ TYPE urt_rwlock: opaque
 	A type representing a readers-writers lock
 
 	A system dependent type representing a readers-writers lock.
+
+TYPE urt_cond: opaque
+	A type representing a condition variable
+
+	A system-dependent type representing a condition variable.
 
 FUNCTION urt_sem_new: (init_value: unsigned int, error: int * = NULL): urt_sem *
 	Create a new semaphore
@@ -86,7 +91,7 @@ FUNCTION urt_shsem_delete: (sem: urt_sem *): void
 	INPUT sem
 		The semaphore to be detached from or freed.
 
-FUNCTION urt_shsem_attach: (name: const char *, error: int * = NULL): void *
+FUNCTION urt_shsem_attach: (name: const char *, error: int * = NULL): urt_sem *
 	Attach to shared semaphore
 
 	This function attaches to the shared semaphore created under **`name`**. If no semaphore with that name exists, the function
@@ -124,7 +129,7 @@ NOTICE RT
 	INPUT stop
 		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
@@ -158,7 +163,7 @@ NOTICE RT
 	INPUT wait_time
 		Maximum waiting time on the semaphore.
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
@@ -173,13 +178,13 @@ NOTICE RT
 	INPUT sem
 		The semaphore to wait on.
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `EBUSY` if lock was not available,
 		- Possibly others based on subsystem.
 
-FUNCTION urt_sem_post: (sem: urt_sem *): void
+FUNCTION urt_sem_post: (sem: urt_sem *): int
 NOTICE RT
 	Post a semaphore
 
@@ -187,6 +192,10 @@ NOTICE RT
 
 	INPUT sem
 		The semaphore to post.
+	OUTPUT
+
+		- `0` on success,
+		- Possibly others based on subsystem.
 
 FUNCTION urt_mutex_new: (error: int * = NULL): urt_mutex *
 	Create a new mutex
@@ -197,6 +206,7 @@ FUNCTION urt_mutex_new: (error: int * = NULL): urt_mutex *
 		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
 
 		- `ENOMEM` if out of memory,
+		- `EAGAIN` if operation failed but there is a chance of success on retry,
 		- Possibly others based on subsystem.
 	OUTPUT
 		A new mutex, or `NULL` if not possible.
@@ -224,6 +234,7 @@ FUNCTION urt_shmutex_new: (name: const char *, error: int * = NULL): urt_mutex *
 		- `EEXIST` if an object with that name already exists,
 		- `EINVAL` if given an invalid name,
 		- `ENOSPC` if maximum number of shared objects reached,
+		- `ENOSUP` if the underlying system doesn't support shared readers-writers locks,
 		- Possibly others based on subsystem.
 	OUTPUT
 		A new mutex, or `NULL` if not possible.
@@ -240,7 +251,7 @@ FUNCTION urt_shmutex_delete: (mutex: urt_mutex *): void
 	INPUT mutex
 		The mutex to be detached from or freed.
 
-FUNCTION urt_shmutex_attach: (name: const char *, error: int * = NULL): void *
+FUNCTION urt_shmutex_attach: (name: const char *, error: int * = NULL): urt_mutex *
 	Attach to shared mutex
 
 	This function attaches to the shared mutex created under **`name`**. If no mutex with that name exists, the function
@@ -278,7 +289,7 @@ NOTICE RT
 	INPUT stop
 		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
@@ -312,7 +323,7 @@ NOTICE RT
 	INPUT wait_time
 		Maximum waiting time on the mutex.
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
@@ -327,13 +338,13 @@ NOTICE RT
 	INPUT mutex
 		The mutex to lock.
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `EBUSY` if lock was not available,
 		- Possibly others based on subsystem.
 
-FUNCTION urt_mutex_unlock: (mutex: urt_mutex *): void
+FUNCTION urt_mutex_unlock: (mutex: urt_mutex *): int
 NOTICE RT
 	Unlock a mutex
 
@@ -341,6 +352,11 @@ NOTICE RT
 
 	INPUT mutex
 		The mutex to unlock.
+	OUTPUT
+		Returns one of the following:
+
+		- `0` on success,
+		- Possibly others based on subsystem.
 
 FUNCTION urt_rwlock_new: (error: int * = NULL): urt_rwlock *
 	Create a new readers-writers lock
@@ -397,7 +413,7 @@ FUNCTION urt_shrwlock_delete: (rwlock: urt_rwlock *): void
 	INPUT rwlock
 		The readers-writers lock to be detached from or freed.
 
-FUNCTION urt_shrwlock_attach: (name: const char *, error: int * = NULL): void *
+FUNCTION urt_shrwlock_attach: (name: const char *, error: int * = NULL): urt_rwlock *
 	Attach to shared readers-writers lock
 
 	This function attaches to the shared readers-writers lock created under **`name`**. If no lock with that name exists, the function
@@ -438,7 +454,7 @@ NOTICE RT
 	INPUT stop
 		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
@@ -475,7 +491,7 @@ NOTICE RT
 	INPUT stop
 		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
@@ -509,7 +525,7 @@ NOTICE RT
 	INPUT wait_time
 		Maximum waiting time on the lock.
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
@@ -527,7 +543,7 @@ NOTICE RT
 	INPUT wait_time
 		Maximum waiting time on the lock.
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
@@ -542,7 +558,7 @@ NOTICE RT
 	INPUT rwlock
 		The readers-writers lock to lock.
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `EBUSY` if lock was not available,
@@ -557,13 +573,13 @@ NOTICE RT
 	INPUT rwlock
 		The readers-writers lock to lock.
 	OUTPUT
-		Reurns one of the following:
+		Returns one of the following:
 
 		- `0` on success,
 		- `EBUSY` if lock was not available,
 		- Possibly others based on subsystem.
 
-FUNCTION urt_rwlock_read_unlock: (rwlock: urt_rwlock *): void
+FUNCTION urt_rwlock_read_unlock: (rwlock: urt_rwlock *): int
 NOTICE RT
 	Read-unlock a readers-writers lock
 
@@ -571,8 +587,13 @@ NOTICE RT
 
 	INPUT rwlock
 		The readers-writers lock to unlock.
+	OUTPUT
+		Returns one of the following:
 
-FUNCTION urt_rwlock_write_unlock: (rwlock: urt_rwlock *): void
+		- `0` on success,
+		- Possibly others based on subsystem.
+
+FUNCTION urt_rwlock_write_unlock: (rwlock: urt_rwlock *): int
 NOTICE RT
 	Write-unlock a readers-writers lock
 
@@ -580,3 +601,198 @@ NOTICE RT
 
 	INPUT rwlock
 		The readers-writers lock to unlock.
+	OUTPUT
+		Returns one of the following:
+
+		- `0` on success,
+		- Possibly others based on subsystem.
+
+FUNCTION urt_cond_new: (error: int * = NULL): urt_cond *
+	Create a new condition variable
+
+	This function creates and returns a new condition variable. This lock is unnamed and cannot be shared with other processes.
+
+	INPUT error
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `ENOMEM` if out of memory,
+		- `EAGAIN` if operation failed but there is a chance of success on retry,
+		- Possibly others based on subsystem.
+	OUTPUT
+		A new condition variable, or `NULL` if not possible.
+
+FUNCTION urt_cond_delete: (cond: urt_cond *): void
+	Free a condition variable created by `urt_cond_new`
+
+	This function frees a condition variable created by `[#urt_cond_new]`. If **`cond`** is `NULL`, the function silently returns.
+
+	INPUT cond
+		The condition variable to be freed.
+
+FUNCTION urt_shcond_new: (name: const char *, error: int * = NULL): urt_cond *
+	Create a new shared condition variable
+
+	This function creates and returns a new shared condition variable. This lock will be shared
+	with other processes under the given **`name`**. See further details [here](Style#Shared Resource Allocation).
+
+	INPUT name
+		The name under which the lock is shared.
+	INPUT error
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `ENOMEM` if out of memory,
+		- `EEXIST` if an object with that name already exists,
+		- `EINVAL` if given an invalid name,
+		- `ENOSPC` if maximum number of shared objects reached,
+		- `ENOSUP` if the underlying system doesn't support shared condition variables,
+		- Possibly others based on subsystem.
+
+	OUTPUT
+		A new condition variable, or `NULL` if not possible.
+
+FUNCTION urt_shcond_delete: (cond: urt_cond *): void
+	Free or detach from shared condition variable
+
+	This function detaches from shared condition variable, attached to by `[#urt_shcond_attach]`, or created by `[#urt_shcond_new]`.
+	If **`cond`** is `NULL`, the function silently returns. If the number of processes attached to the shared lock become
+	zero as a result of a call to this function, the lock will be freed.
+
+	See further details [here](Style#Shared Resource Allocation).
+
+	INPUT cond
+		The condition variable to be detached from or freed.
+
+FUNCTION urt_shcond_attach: (name: const char *, error: int * = NULL): urt_cond *
+	Attach to shared condition variable
+
+	This function attaches to the shared condition variable created under **`name`**. If no lock with that name exists, the function
+	will fail.
+
+	INPUT name
+		The name under which the lock is shared.
+	INPUT error
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `ENOMEM` if out of memory,
+		- `EINVAL` if given an invalid name,
+		- `ENOENT` if no shared object with given name exists,
+		- Possibly others based on subsystem.
+	OUTPUT
+		A pointer to the shared condition variable, or `NULL` if failed.
+
+FUNCTION urt_shcond_detach: (cond: urt_cond *): void
+	Free or detach from shared condition variable
+
+	The same as `[#urt_shcond_delete]`.
+
+	INPUT cond
+		See `[#urt_shcond_delete]`.
+
+FUNCTION urt_cond_wait: (cond: urt_cond *, mutex: urt_mutex *, stop: volatile sig_atomic_t * = NULL): int
+NOTICE RT
+	Wait on a condition variable
+
+	This function waits on a condition variable **`cond`**. If the lock is not available, it will stay blocked until either it is
+	[unlocked](#urt_cond_write_unlock), there is an error, or the optional argument **`stop`** becomes `true`. **`mutex`** is automatically locked and
+	unlocked by this function.  The usage of `urt_cond_wait` is as such:
+
+	```
+		urt_mutex_lock(mutex);
+		while (!condition(data))
+			urt_cond_wait(cond, mutex);
+		process(data);
+		urt_mutex_unlock(mutex);
+	```
+
+	In this scheme, `condition` and `process` access shared data that need to be protected by **`mutex`**.
+
+	INPUT cond
+		The condition variable to wait on.
+	INPUT mutex
+		The mutex associated with the condition variable.
+	INPUT stop
+		Optional argument that can cancel the operation. See explanation [here](Style#Blocking Locks).
+	OUTPUT
+		Returns one of the following:
+
+		- `0` on success,
+		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
+		- Possibly others based on subsystem.
+
+FUNCTION urt_cond_waitf: (cond: urt_cond *, mutex: urt_mutex *, stop: (volatile void *): bool, data: volatile void * = NULL): int
+NOTICE RT
+	Wait on a condition variable
+
+	This function is similar to `[#urt_cond_wait]`, except it takes a function and user data that decide when to stop, as opposed to a single
+	variable.
+
+	INPUT cond
+		See `[#urt_cond_wait]`.
+	INPUT mutex
+		See `[#urt_cond_wait]`.
+	INPUT stop
+		A function that can cancel the operation. See explanation [here](Style#Blocking Locks).
+	INPUT data
+		User data that would be passed to **`stop`**.
+	OUTPUT
+		See `[#urt_cond_wait]`.
+
+FUNCTION urt_cond_timed_wait: (cond: urt_cond *, mutex: urt_mutex *, wait_time: urt_time): int
+NOTICE RT
+	Wait on a condition variable if possible in a maximum of given time
+
+	This function waits on condition variable **`cond`**. If the lock is not available until **`wait_time`** nanoseconds has passed, the function
+	will return. See `[#urt_cond_wait]` for usage as well as explanation of the role of **`mutex`**.
+
+	INPUT cond
+		The condition variable to lock.
+	INPUT mutex
+		The mutex associated with the condition variable.
+	INPUT wait_time
+		Maximum waiting time on the lock.
+	OUTPUT
+		Returns one of the following:
+
+		- `0` on success,
+		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
+		- Possibly others based on subsystem.
+
+FUNCTION urt_cond_signal: (cond: urt_cond *): int
+NOTICE RT
+	Signal a condition variable
+
+	This function signals condition variable **`cond`**. If there are threads waiting on the lock, one of them arbitrarily is chosen and unblocked.
+	The usage of `urt_cond_signal` is as such:
+
+	```
+		urt_mutex_lock(mutex);
+		process(data);
+		urt_cond_signal(cond);
+		urt_mutex_unlock(mutex);
+	```
+
+	In this scheme, `process` accesses shared data that need to be protected by `mutex`. See also `[#urt_cond_wait]`.
+
+
+	INPUT cond
+		The condition variable to signal.
+	OUTPUT
+		Returns one of the following:
+
+		- `0` on success,
+		- Possibly others based on subsystem.
+
+FUNCTION urt_cond_broadcast: (cond: urt_cond *): int
+NOTICE RT
+	Broadcast a condition variable
+
+	This function broadcasts condition variable **`cond`**. If there are threads waiting on the lock, all of them arbitrarily is chosen and unblocked.
+	The usage is similar to `[#urt_cond_signal]`.
+
+	INPUT cond
+		The condition variable to broadcast.
+	OUTPUT
+		Returns one of the following:
+
+		- `0` on success,
+		- Possibly others based on subsystem.

@@ -49,6 +49,7 @@ extern struct semaphore urt_global_sem;
 #define URT_TYPE_SEM 2
 #define URT_TYPE_MUTEX 3
 #define URT_TYPE_RWLOCK 4
+#define URT_TYPE_COND 5
 
 typedef struct urt_registered_object
 {
@@ -84,7 +85,14 @@ extern urt_internal *urt_global_mem;
 void urt_registry_init(void);
 urt_registered_object *urt_reserve_name(const char *name, int *error);
 void urt_inc_name_count(urt_registered_object *ro);
-/* dec name count may call callbacks that need to be fixed per process */
+/*
+ * dec name count may call callbacks that need to be adjusted per process,
+ * since each process accesses the shared object through their own pointer.
+ * This means that it doesn't make sense to save this address in shared
+ * memory.  The callback uses the urt_registered_object passed to it specifically
+ * to retrieve address, size and user_data and that's why they are stored in
+ * that structure.
+ */
 void urt_dec_name_count(urt_registered_object *ro,
 		void *address, size_t size,
 		void (*release)(struct urt_registered_object *),
@@ -120,6 +128,8 @@ urt_mutex *urt_sys_shmutex_new(const char *name, int *error);
 urt_mutex *urt_sys_shmutex_attach(const char *name, int *error);
 urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error);
 urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error);
+urt_cond *urt_sys_shcond_new(const char *name, int *error);
+urt_cond *urt_sys_shcond_attach(const char *name, int *error);
 
 #ifdef __KERNEL__
 # define URT_EXPORT_SYMBOL(s) EXPORT_SYMBOL_GPL(s)
