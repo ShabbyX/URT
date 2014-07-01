@@ -17,6 +17,11 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* pull in newer features of POSIX */
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE
+#endif
+
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
