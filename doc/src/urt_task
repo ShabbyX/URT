@@ -46,7 +46,8 @@ FUNCTION urt_task_delete: (task: urt_task *): void
 	Cleanup a task
 
 	This function cleans up and removes a task. Note that this function may not terminate the thread calling the task, but wait for it
-	to finish. Therefore, it is important to make sure the task is terminated before calling this function.
+	to finish, or alternatively terminate the thread calling the task without waiting for it to finish. Therefore, it is important to
+	make sure the task is terminated before calling this function.
 
 	INPUT task
 		The task to be cleaned up.
