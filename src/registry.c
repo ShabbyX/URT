@@ -24,13 +24,18 @@
 
 static bool _name_eq(const char *n1, const char *n2)
 {
-	while (*n1 != '\0' && *n1 == *n2)
+	unsigned int len = 0;
+
+	/* n1 is taken from the registery, so it should be always NUL-terminated.  The check for length is redundant */
+	while (len < URT_NAME_LEN && *n1 != '\0' && *n1 == *n2)
 	{
 		++n1;
 		++n2;
+		++len;
 	}
 
-	return *n1 == '\0' && *n2 == '\0';
+	/* the check for length here is to make sure n2 is not accessed beyond URT_NAME_LEN */
+	return len >= URT_NAME_LEN || (*n1 == '\0' && *n2 == '\0');
 }
 
 static void _name_cpy(char *to, const char *from)
