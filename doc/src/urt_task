@@ -67,6 +67,7 @@ FUNCTION urt_task_start: (task: urt_task *): int
 		- `0` on success,
 		- `ENOMEM` if out of memory,
 		- `EAGAIN` if operation failed but there is a chance of success on retry,
+		- `EINVAL` if **`task`** is invalid,
 		- Possibly others based on subsystem.
 
 FUNCTION urt_task_wait_period: (task: urt_task *): void

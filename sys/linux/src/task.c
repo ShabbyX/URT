@@ -48,6 +48,9 @@ int urt_task_start(urt_task *task)
 	pthread_attr_t attr;
 	int ret;
 
+	if (task == NULL)
+		return EINVAL;
+
 	if ((ret = pthread_attr_init(&attr)))
 		return ret;
 
