@@ -47,9 +47,12 @@ void urt_recover(void);
  * print_names		These functions output information regarding internal states of URT.
  *			`urt_init` and `urt_exit` need to be called by the tool itself.
  * force_clear_name	Make the name available, cleaning up as much as possible.
+ * dump_memory		Take a name and dump the content of its memory.  If end is 0, it will
+ *			dump until the end.
  */
 void urt_print_names(void);
 void urt_force_clear_name(const char *name);
+void urt_dump_memory(const char *name, size_t start, size_t end);
 
 /*
  * helper macros for abstracting from kernel space and user space execution model.

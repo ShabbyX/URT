@@ -17,13 +17,17 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_STRING_H
-#define URT_STRING_H
+#ifndef URT_STD_H
+#define URT_STD_H
 
 #ifdef __KERNEL__
 # include <linux/string.h>
+# include <linux/ctype.h>
+# include <linux/stddef.h>
 #else
 # include <string.h>
+# include <ctype.h>
+# include <stddef.h>
 #endif
 
 #endif

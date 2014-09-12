@@ -1,7 +1,7 @@
 include ../Makefile.config
 include ../Makefile.common
 
-TOOLS := urt_names urt_clear urt_recover
+TOOLS := urt_names urt_clear urt_recover urt_dump
 
 .PHONY: all
 all:

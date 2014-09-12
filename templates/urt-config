@@ -50,6 +50,7 @@ Options :
     --tool-clear            tool to clear objects from registry
     --tool-names            tool to list objects in the registry
     --tool-recover          tool to recover registry from crash
+    --tool-dump             tool to dump contents of memory
 
     --no-new-line           instruct this script to not output new-line
 EOF
@@ -138,6 +139,9 @@ while [ $# -gt 0 ]; do
             ;;
         --tool-recover)
             output "$urt_bin_dir"/urt_recover
+            ;;
+        --tool-dump)
+            output "$urt_bin_dir"/urt_dump
             ;;
         --no-new*line)
             output_new_line=false

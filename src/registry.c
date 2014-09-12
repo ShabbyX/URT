@@ -17,10 +17,11 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <urt_string.h>
+#include <urt_std.h>
 #include <urt_log.h>
 #include "urt_internal.h"
 #include <urt_sys_internal.h>
+#include <urt_mem.h>
 
 static bool _name_eq(const char *n1, const char *n2)
 {
@@ -382,4 +383,107 @@ void urt_print_names(void)
 			urt_global_mem->names_exhausted?" (cycled)":"");
 
 	urt_global_sem_post();
+}
+
+void urt_dump_memory(const char *name, size_t start, size_t end)
+{
+	urt_registered_object *ro = NULL;
+	short int type;
+	size_t size;
+	void *obj;
+	int error;
+	size_t i, j;
+
+	urt_global_sem_wait();
+	ro = _find_by_name(name);
+	if (!ro)
+		urt_out_cont("No such name '%s'\n", name);
+	else
+	{
+		type = ro->type;
+		size = ro->size;
+	}
+	urt_global_sem_post();
+
+	if (ro == NULL)
+		return;
+
+	/* attach to the object to get its address mapped into this process */
+	switch (type)
+	{
+	case URT_TYPE_MEM:
+		obj = urt_shmem_attach(name, &error);
+		break;
+	case URT_TYPE_SEM:
+		obj = urt_shsem_attach(name, &error);
+		break;
+	case URT_TYPE_MUTEX:
+		obj = urt_shmutex_attach(name, &error);
+		break;
+	case URT_TYPE_RWLOCK:
+		obj = urt_shrwlock_attach(name, &error);
+		break;
+	case URT_TYPE_COND:
+		obj = urt_shcond_attach(name, &error);
+		break;
+	default:
+		urt_err("internal error: bad object type %d for name '%s'\n", type, name);
+		return;
+	}
+
+	if (obj == NULL)
+	{
+		urt_out_cont("failed to attach to object with name '%s' (error: %d)\n", name, error);
+		return;
+	}
+
+	/* limit the result to sane values */
+	if (start > size)
+		start = ro->size;
+	if (end == 0 || end > ro->size)
+		end = ro->size;
+
+	/* dump the object */
+	urt_out_cont("Displaying contents of '%s':\n", name);
+	for (i = start; i < end; i += 16)
+	{
+		urt_out_cont("%08X:", i);
+
+		/* hex codes */
+		for (j = 0; j < 16 && i + j < end; ++j)
+			urt_out_cont("%s %02X", j == 8?" ":"", ((unsigned char *)obj)[i + j]);
+		for (; j < 16; ++j)
+			urt_out_cont("%s   ", j == 8?" ":"");
+		urt_out_cont("  ");
+
+		/* printable characters */
+		for (j = 0; j < 16 && i + j < end; ++j)
+		{
+			char c = ((char *)obj)[i + j];
+			urt_out_cont("%c", isalnum(c)?c:'.');
+		}
+		urt_out_cont("\n");
+	}
+
+	/* detach from the object */
+	switch (type)
+	{
+	case URT_TYPE_MEM:
+		urt_shmem_detach(obj);
+		break;
+	case URT_TYPE_SEM:
+		urt_shsem_detach(obj);
+		break;
+	case URT_TYPE_MUTEX:
+		urt_shmutex_detach(obj);
+		break;
+	case URT_TYPE_RWLOCK:
+		urt_shrwlock_detach(obj);
+		break;
+	case URT_TYPE_COND:
+		urt_shcond_detach(obj);
+		break;
+	default:
+		break;
+	}
 }

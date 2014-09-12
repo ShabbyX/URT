@@ -30,6 +30,6 @@
 #include "urt_mem.h"
 #include "urt_lock.h"
 #include "urt_log.h"
-#include "urt_string.h"
+#include "urt_std.h"
 
 #endif
