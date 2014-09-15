@@ -6,6 +6,7 @@ TODO
 - Make DocThis! build and clean messages also short
 
 Known issues
+- with all
 - with linux
 - with RTAI (user space)
 - with RTAI (kernel space)

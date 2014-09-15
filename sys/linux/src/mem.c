@@ -115,10 +115,10 @@ void urt_global_mem_free(const char *name)
 static void _shmem_detach(struct urt_registered_object *ro)
 {
 	char n[URT_SYS_NAME_LEN];
-	void (*callback)(void *) = ro->user_data;
+	void (*callback)(void *, unsigned int) = ro->user_data;
 
 	if (callback)
-		callback((char *)ro->address + 16);
+		callback((char *)ro->address + 16, ro->count);
 
 	/* FIXME: return value of munmap for debug */
 	if (munmap(ro->address, ro->size))
@@ -132,7 +132,7 @@ void urt_shmem_detach(void *mem)
 	urt_shmem_detach_with_callback(mem, NULL);
 }
 
-void urt_shmem_detach_with_callback(void *mem, void (*f)(void *))
+void urt_shmem_detach_with_callback(void *mem, void (*f)(void *, unsigned int))
 {
 	urt_registered_object *ro;
 

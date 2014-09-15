@@ -225,10 +225,10 @@ exit_fail:
 	return NULL;
 }
 
-static void _pthread_lock_delete(void (*destroy)(void *l), void *lock)
+static void _pthread_lock_delete(void (*destroy)(void *l, unsigned int count), void *lock)
 {
 	if (lock != NULL)
-		destroy(lock);
+		destroy(lock, 0);
 	urt_mem_delete(lock);
 }
 
@@ -261,7 +261,7 @@ exit_fail:
 #endif
 }
 
-static void _pthread_shlock_detach(void (*destroy)(void *l), size_t size, void *lock)
+static void _pthread_shlock_detach(void (*destroy)(void *l, unsigned int c), size_t size, void *lock)
 {
 	/* Note: unmap needs the correct allocated size of memory */
 	urt_registered_object *ro;
@@ -298,8 +298,10 @@ exit_bad_init:
 	return -1;
 }
 
-static void _shmutex_destroy(void *mutex)
+static void _shmutex_destroy(void *mutex, unsigned int count)
 {
+	if (count > 0)
+		return;
 	while (pthread_mutex_destroy(mutex) == EBUSY)
 		if (pthread_mutex_unlock(mutex))
 			break;
@@ -397,8 +399,10 @@ exit_bad_init:
 	return -1;
 }
 
-static void _shrwlock_destroy(void *rwl)
+static void _shrwlock_destroy(void *rwl, unsigned int count)
 {
+	if (count > 0)
+		return;
 	while (pthread_rwlock_destroy(rwl) == EBUSY)
 		if (pthread_rwlock_unlock(rwl))
 			break;
@@ -542,8 +546,10 @@ exit_bad_init:
 	return -1;
 }
 
-static void _shcond_destroy(void *cond)
+static void _shcond_destroy(void *cond, unsigned int count)
 {
+	if (count > 0)
+		return;
 	while (pthread_cond_destroy(cond) == EBUSY)
 		if (pthread_cond_broadcast(cond))
 			break;

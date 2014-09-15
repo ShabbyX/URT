@@ -22,6 +22,6 @@
 
 #include <urt_mem.h>
 
-void urt_shmem_detach_with_callback(void *mem, void (*f)(void *));
+void urt_shmem_detach_with_callback(void *mem, void (*f)(void *, unsigned int));
 
 #endif
