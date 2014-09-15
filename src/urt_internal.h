@@ -55,7 +55,12 @@ typedef struct urt_registered_object
 {
 	char name[URT_NAME_LEN + 1];		/* name of object */
 	bool reserved;				/* count could be zero, but name reserved */
-	short int type;				/* type of object, one of URT_TYPE_* */
+	bool has_bookkeeping;			/*
+						 * whether object has bookkeeping.  Bookkeeping is placed
+						 * before the object so it is transparent to the user.
+						 * bookkeeping is always 16 bytes.
+						 */
+	int8_t type;				/* type of object, one of URT_TYPE_* */
 	unsigned int count;			/* usage count */
 	void *address;				/*
 						 * address of the registered object

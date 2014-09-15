@@ -54,21 +54,11 @@ static void _name_cpy(char *to, const char *from)
 
 void urt_registry_init(void)
 {
-/*	unsigned int i; */
-
 	if (urt_global_mem->initialized)
 		return;
 	*urt_global_mem = (urt_internal){
 		.initialized = true
 	};
-
-/*	for (i = 0; i < URT_MAX_OBJECTS; ++i)
-		urt_global_mem->objects[i] = (urt_registered_object){
-			.name[0] = '\0',
-			.reserved = false,
-			.count = 0,
-			.address = NULL
-		};*/
 
 	urt_global_mem->next_free_name[0] = '_';
 	urt_global_mem->next_free_name[1] = '_';
@@ -360,18 +350,19 @@ void urt_print_names(void)
 	urt_out_cont("name");
 	for (i = 0; i < URT_NAME_LEN - URT_NAME_LEN / 2 - 2; ++i)
 		urt_out_cont(" ");
-	urt_out_cont(" |  count  | reserved |      address       | size (bytes) |  type\n");
+	urt_out_cont(" |  count  | reserved | bookkeeping |      address       | size (bytes) |  type\n");
 	urt_out_cont("---------+-");
 	for (i = 0; i < URT_NAME_LEN; ++i)
 		urt_out_cont("-");
-	urt_out_cont("-+---------+----------+--------------------+--------------+--------\n");
+	urt_out_cont("-+---------+----------+-------------+--------------------+--------------+--------\n");
 	for (i = 0; i < URT_MAX_OBJECTS; ++i)
 	{
 		obj = &urt_global_mem->objects[i];
 		if (!obj->reserved && obj->count == 0)
 			continue;
-		urt_out_cont(" %7u | %*s | %7u | %8s | %18p | %12zu | %6s\n", i, URT_NAME_LEN, obj->name, obj->count,
-				obj->reserved?"Yes":"No", obj->address, obj->size,
+		urt_out_cont(" %7u | %*s | %7u | %8s | %11s | %18p | %12zu | %6s\n", i, URT_NAME_LEN, obj->name, obj->count,
+				obj->reserved?"Yes":"No", obj->has_bookkeeping?"Yes":"No",
+				obj->address, obj->size - (obj->has_bookkeeping?16:0),
 				obj->type == URT_TYPE_MEM?"MEM ":
 				obj->type == URT_TYPE_SEM?"SEM ":
 				obj->type == URT_TYPE_MUTEX?"MUTEX":
@@ -388,7 +379,7 @@ void urt_print_names(void)
 void urt_dump_memory(const char *name, size_t start, size_t end)
 {
 	urt_registered_object *ro = NULL;
-	short int type;
+	int8_t type;
 	size_t size;
 	void *obj;
 	int error;
@@ -402,6 +393,8 @@ void urt_dump_memory(const char *name, size_t start, size_t end)
 	{
 		type = ro->type;
 		size = ro->size;
+		if (ro->has_bookkeeping)
+			size -= 16;
 	}
 	urt_global_sem_post();
 
@@ -439,9 +432,9 @@ void urt_dump_memory(const char *name, size_t start, size_t end)
 
 	/* limit the result to sane values */
 	if (start > size)
-		start = ro->size;
-	if (end == 0 || end > ro->size)
-		end = ro->size;
+		start = size;
+	if (end == 0 || end > size)
+		end = size;
 
 	/* dump the object */
 	urt_out_cont("Displaying contents of '%s':\n", name);

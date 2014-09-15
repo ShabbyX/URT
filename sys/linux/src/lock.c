@@ -261,18 +261,10 @@ exit_fail:
 #endif
 }
 
-static void _pthread_shlock_detach(void (*destroy)(void *l, unsigned int c), size_t size, void *lock)
+static void _pthread_shlock_detach(void (*destroy)(void *l, unsigned int c), void *lock)
 {
-	/* Note: unmap needs the correct allocated size of memory */
-	urt_registered_object *ro;
-
 	if (lock == NULL)
 		return;
-
-	ro = urt_get_object_by_id(*(unsigned int *)((char *)lock - 16));
-	if (ro == NULL)
-		return;
-	ro->size = size + 16;
 	urt_shmem_detach_with_callback(lock, destroy);
 }
 
@@ -329,7 +321,7 @@ urt_mutex *urt_sys_shmutex_attach(const char *name, int *error)
 
 void urt_shmutex_detach(urt_mutex *mutex)
 {
-	_pthread_shlock_detach(_shmutex_destroy, sizeof(urt_mutex), mutex);
+	_pthread_shlock_detach(_shmutex_destroy, mutex);
 }
 
 int (urt_mutex_lockf)(urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...)
@@ -430,7 +422,7 @@ urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error)
 
 void urt_shrwlock_detach(urt_rwlock *rwl)
 {
-	_pthread_shlock_detach(_shrwlock_destroy, sizeof(urt_rwlock), rwl);
+	_pthread_shlock_detach(_shrwlock_destroy, rwl);
 }
 
 int (urt_rwlock_read_lockf)(urt_rwlock *rwl, bool (*stop)(volatile void *), volatile void *data, ...)
@@ -577,7 +569,7 @@ urt_cond *urt_sys_shcond_attach(const char *name, int *error)
 
 void urt_shcond_detach(urt_cond *cond)
 {
-	_pthread_shlock_detach(_shcond_destroy, sizeof(urt_cond), cond);
+	_pthread_shlock_detach(_shcond_destroy, cond);
 }
 
 int (urt_cond_waitf)(urt_cond *cond, urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...)

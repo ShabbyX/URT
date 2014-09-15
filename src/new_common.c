@@ -31,10 +31,13 @@ do {								\
 	obj = call;						\
 	if (obj == NULL)					\
 		goto exit_fail;					\
-	obj = proc(obj, ro - urt_global_mem->objects);		\
+	ro->has_bookkeeping = false; /* set in proc, if any */	\
+	obj = proc(obj, ro - urt_global_mem->objects, ro);	\
 	ro->type = URT_TYPE_##TYPE;				\
 	ro->address = obj;					\
 	ro->size = sz;						\
+	if (ro->has_bookkeeping)				\
+		ro->size += 16;					\
 	urt_inc_name_count(ro);					\
 	return obj;						\
 exit_fail:							\
@@ -54,7 +57,7 @@ do {								\
 	obj = call;						\
 	if (obj == NULL)					\
 		goto exit_fail;					\
-	obj = proc(obj, ro - urt_global_mem->objects);		\
+	obj = proc(obj, ro - urt_global_mem->objects, ro);	\
 	return obj;						\
 exit_no_obj:							\
 	if (error)						\
@@ -68,11 +71,8 @@ exit_fail:							\
 
 void *(urt_shmem_new)(const char *name, size_t size, int *error, ...)
 {
-	/*
-	 * Note: there would be 16 bytes book keeping to keep
-	 * information such as index in registry
-	 */
-	SHOBJ_NEW(name, error, void *, size + 16, urt_sys_shmem_new(name, size + 16, error), MEM, urt_sys_add_mem_book_keeping);
+	/* Note: there would be 16 bytes book keeping to keep information such as index in registry */
+	SHOBJ_NEW(name, error, void *, size, urt_sys_shmem_new(name, size + 16, error), MEM, urt_sys_add_mem_book_keeping);
 }
 URT_EXPORT_SYMBOL(urt_shmem_new);
 
