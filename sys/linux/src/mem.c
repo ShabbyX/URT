@@ -27,15 +27,6 @@
 #include "names.h"
 #include "mem_internal.h"
 
-void *(urt_mem_new)(size_t size, int *error, ...)
-{
-	void *mem = malloc(size);
-	if (URT_UNLIKELY(mem == NULL))
-		if (error)
-			*error = errno;
-	return mem;
-}
-
 static void *_shmem_common(const char *name, size_t size, int *error, int flags)
 {
 	char n[URT_SYS_NAME_LEN];

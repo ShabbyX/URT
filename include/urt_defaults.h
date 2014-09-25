@@ -39,6 +39,7 @@
 
 /* Memory module */
 #define urt_mem_new(...) urt_mem_new(__VA_ARGS__, NULL)
+#define urt_mem_resize(...) urt_mem_resize(__VA_ARGS__, NULL)
 #define urt_shmem_new(...) urt_shmem_new(__VA_ARGS__, NULL)
 #define urt_shmem_attach(...) urt_shmem_attach(__VA_ARGS__, NULL)
 

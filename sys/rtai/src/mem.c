@@ -22,20 +22,6 @@
 #include <rtai_shm.h>
 #include <rtai_registry.h>
 
-void *(urt_mem_new)(size_t size, int *error, ...)
-{
-#ifdef __KERNEL__
-	void *mem = vmalloc(size);
-#else
-	void *mem = malloc(size);
-#endif
-	if (URT_UNLIKELY(mem == NULL))
-		if (error)
-			*error = ENOMEM;
-	return mem;
-}
-URT_EXPORT_SYMBOL(urt_mem_new);
-
 void *urt_global_mem_get(const char *name, size_t size, int *error)
 {
 	void *mem = rt_shm_alloc(nam2num(name), size, USE_VMALLOC);

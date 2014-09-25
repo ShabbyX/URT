@@ -27,7 +27,7 @@ static bool _name_eq(const char *n1, const char *n2)
 {
 	unsigned int len = 0;
 
-	/* n1 is taken from the registery, so it should be always NUL-terminated.  The check for length is redundant */
+	/* n1 is taken from the registry, so it should be always NUL-terminated.  The check for length is redundant */
 	while (len < URT_NAME_LEN && *n1 != '\0' && *n1 == *n2)
 	{
 		++n1;

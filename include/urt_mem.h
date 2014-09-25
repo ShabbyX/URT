@@ -27,9 +27,12 @@
 
 URT_DECL_BEGIN
 
+/* unnamed memory */
 URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *(urt_mem_new)(size_t size, int *error, ...);
 /* void urt_mem_delete(void *mem); */
+URT_ATTR_WARN_UNUSED void *(urt_mem_resize)(void *old_mem, size_t old_size, size_t size, int *error, ...);
 
+/* shared memory */
 URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *(urt_shmem_new)(const char *name, size_t size, int *error, ...);
 URT_ATTR_WARN_UNUSED void *(urt_shmem_attach)(const char *name, int *error, ...);
 void urt_shmem_detach(void *mem);

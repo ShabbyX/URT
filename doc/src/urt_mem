@@ -27,6 +27,28 @@ FUNCTION urt_mem_new: (size: size_t, error: int * = NULL): void *
 	OUTPUT
 		Similar to `malloc`, returns a pointer to the allocated memory, or `NULL` if failed.
 
+FUNCTION urt_mem_resize: (old_mem: void *, old_size: size_t, size: size_t, error: int * = NULL): void *
+	Enlarge memory to a given size
+
+	This function enlarges mempory previously allocated with `[#urt_mem_new]` with size **`old_size`** to size **`size`**
+	similar to `realloc`.
+
+	If **`size`** is zero or smaller than **`old_size`**, the function doesn't reduce the memory size and simply returns
+	**`old_mem`**.
+
+	INPUT old_mem
+		Memory to be enlarged
+	INPUT old_size
+		Previous size of memory
+	INPUT size
+		Size of memory to be allocated.
+	INPUT error
+		Optional error code return value. See explanation [here](Style#Error Reporting). One of the following values:
+
+		- `ENOMEM` if out of memory.
+	OUTPUT
+		Similar to `realloc`, returns a pointer to the allocated memory, or `NULL` if failed.
+
 FUNCTION urt_mem_delete: (mem: void *): void
 	Free memory allocated with `urt_mem_new`
 
