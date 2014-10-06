@@ -1,6 +1,6 @@
 functions urt_utils
 # URT - Unified Real-Time Interface
-version version 0.4.0
+version version 0.4.1
 author Shahbaz Youssefi
 keyword real-time
 keyword middleware
@@ -19,8 +19,8 @@ FUNCTION urt_get_free_name: (name: char[URT_NAME_LEN]): int
 	This function finds an unused name, fills it in **`name`** and reserves it.
 
 	Currently, the function generates unique names that cannot be used by the user. This makes the function faster for the first ~70 million names.
-	After that, the function reiterates the previous names and finds one that is not used. As long as the maximum possible number of object
-	(`URT_CONFIG_MAX_SHARED_OBJECTS`) is less than about 70 million, this functions should always eventually find a free name.
+	After that, the function reiterates the previous names and finds one that is not used. As long as the maximum possible number of objects
+	(`URT_CONFIG_MAX_SHARED_OBJECTS`) is less than about 70 million, this function should always eventually find a free name.
 
 	INPUT name
 		A new name available to be used as a shared object name.
