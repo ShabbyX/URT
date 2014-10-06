@@ -34,7 +34,6 @@ do {								\
 	ro->has_bookkeeping = false; /* set in proc, if any */	\
 	obj = proc(obj, ro - urt_global_mem->objects, ro);	\
 	ro->type = URT_TYPE_##TYPE;				\
-	ro->address = obj;					\
 	ro->size = sz;						\
 	if (ro->has_bookkeeping)				\
 		ro->size += 16;					\
@@ -42,8 +41,7 @@ do {								\
 	return obj;						\
 exit_fail:							\
 	if (ro)							\
-		urt_deregister(ro, ro->address, ro->size,	\
-				ro->release, ro->user_data);	\
+		urt_deregister(ro, NULL, NULL, NULL);		\
 	return NULL;						\
 } while (0)
 
@@ -64,8 +62,7 @@ exit_no_obj:							\
 		*error = ENOENT;				\
 exit_fail:							\
 	if (ro)							\
-		urt_deregister(ro, ro->address, ro->size,	\
-				ro->release, ro->user_data);	\
+		urt_deregister(ro, NULL, NULL, NULL);		\
 	return NULL;						\
 } while (0)
 

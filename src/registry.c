@@ -159,7 +159,9 @@ static void _internal_mem_check(void)
 # define _internal_mem_check() ((void)0)
 #endif
 
-static void _dec_count_common(urt_registered_object *ro)
+static void _dec_count_common(urt_registered_object *ro,
+		void (*release)(struct urt_registered_object *, void *, void *),
+		void *address, void *user_data)
 {
 	unsigned int index = ro - urt_global_mem->objects;
 	if (ro->count > 0)
@@ -167,9 +169,8 @@ static void _dec_count_common(urt_registered_object *ro)
 	ro->reserved = false;
 
 	/* take care of object cleanup */
-	if (ro->release)
-		ro->release(ro);
-	ro->release = NULL;	/* make NULL since it should be called only once */
+	if (release)
+		release(ro, address, user_data);
 
 	/* if others still attached to this object, don't continue with cleanup */
 	if (ro->count > 0)
@@ -188,17 +189,11 @@ static void _dec_count_common(urt_registered_object *ro)
 }
 
 void urt_dec_name_count(urt_registered_object *ro,
-		void *address, size_t size,
-		void (*release)(struct urt_registered_object *),
-		void *user_data)
+		void (*release)(struct urt_registered_object *, void *, void *),
+		void *address, void *user_data)
 {
 	urt_global_sem_wait();
-	ro->address = address;
-	if (size > 0)
-		ro->size = size;
-	ro->release = release;
-	ro->user_data = user_data;
-	_dec_count_common(ro);
+	_dec_count_common(ro, release, address, user_data);
 	urt_global_sem_post();
 }
 
@@ -214,7 +209,7 @@ void urt_force_clear_name(const char *name)
 		urt_sys_force_clear_name(ro);
 		do
 		{
-			_dec_count_common(ro);
+			_dec_count_common(ro, NULL, NULL, NULL);
 		} while (ro->count > 0);
 	}
 	urt_global_sem_post();
@@ -350,19 +345,19 @@ void urt_print_names(void)
 	urt_out_cont("name");
 	for (i = 0; i < URT_NAME_LEN - URT_NAME_LEN / 2 - 2; ++i)
 		urt_out_cont(" ");
-	urt_out_cont(" |  count  | reserved | bookkeeping |      address       | size (bytes) |  type\n");
+	urt_out_cont(" |  count  | reserved | bookkeeping | size (bytes) |  type\n");
 	urt_out_cont("---------+-");
 	for (i = 0; i < URT_NAME_LEN; ++i)
 		urt_out_cont("-");
-	urt_out_cont("-+---------+----------+-------------+--------------------+--------------+--------\n");
+	urt_out_cont("-+---------+----------+-------------+--------------+--------\n");
 	for (i = 0; i < URT_MAX_OBJECTS; ++i)
 	{
 		obj = &urt_global_mem->objects[i];
 		if (!obj->reserved && obj->count == 0)
 			continue;
-		urt_out_cont(" %7u | %*s | %7u | %8s | %11s | %18p | %12zu | %6s\n", i, URT_NAME_LEN, obj->name, obj->count,
+		urt_out_cont(" %7u | %*s | %7u | %8s | %11s | %12zu | %6s\n", i, URT_NAME_LEN, obj->name, obj->count,
 				obj->reserved?"Yes":"No", obj->has_bookkeeping?"Yes":"No",
-				obj->address, obj->size - (obj->has_bookkeeping?16:0),
+				obj->size - (obj->has_bookkeeping?16:0),
 				obj->type == URT_TYPE_MEM?"MEM ":
 				obj->type == URT_TYPE_SEM?"SEM ":
 				obj->type == URT_TYPE_MUTEX?"MUTEX":

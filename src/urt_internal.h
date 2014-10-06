@@ -62,17 +62,7 @@ typedef struct urt_registered_object
 						 */
 	int8_t type;				/* type of object, one of URT_TYPE_* */
 	unsigned int count;			/* usage count */
-	void *address;				/*
-						 * address of the registered object
-						 * Note: this address may be different per process, so it should not be
-						 * used in a shared way.  Currently, only used for holding the object
-						 * that is immediately going to be deleted, updated by each process
-						 * upon their own call to urt_*_detach
-						 */
 	size_t size;				/* size of memory, if object is shared memory */
-	void *user_data;			/* additional data to detach/free */
-	void (*release)(struct urt_registered_object *);
-						/* function to call on use count decrement (arg: the registry object) */
 } urt_registered_object;
 
 typedef struct urt_internal
@@ -99,15 +89,13 @@ void urt_inc_name_count(urt_registered_object *ro);
  * that structure.
  */
 void urt_dec_name_count(urt_registered_object *ro,
-		void *address, size_t size,
-		void (*release)(struct urt_registered_object *),
-		void *user_data);
+		void (*release)(struct urt_registered_object *, void *, void *),
+		void *address, void *user_data);
 static inline void urt_deregister(urt_registered_object *ro,
-		void *address, size_t size,
-		void (*release)(struct urt_registered_object *),
-		void *user_data)
+		void (*release)(struct urt_registered_object *, void *, void *),
+		void *address, void *user_data)
 {
-	urt_dec_name_count(ro, address, size, release, user_data);
+	urt_dec_name_count(ro, release, address, user_data);
 }
 void urt_force_clear_name(const char *name);
 

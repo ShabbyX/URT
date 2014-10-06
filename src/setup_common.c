@@ -143,7 +143,6 @@ void urt_recover(void)
 	for (i = 0; i < URT_MAX_OBJECTS; ++i)
 	{
 		urt_registered_object *ro = &urt_global_mem->objects[i];
-		ro->release = NULL;
 		if ((ro->reserved || ro->count > 0) && urt_global_mem->objects_max_index < i)
 			urt_global_mem->objects_max_index = i;
 	}

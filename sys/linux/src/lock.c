@@ -130,10 +130,10 @@ void urt_global_sem_post(void)
 	urt_sem_post(urt_global_sem);
 }
 
-static void _shsem_detach(struct urt_registered_object *ro)
+static void _shsem_detach(struct urt_registered_object *ro, void *address, void *user_data)
 {
 	char n[URT_SYS_NAME_LEN];
-	urt_sem *sem = ro->address;
+	urt_sem *sem = address;
 
 	sem_close(sem->sem_ptr);
 	if (ro->count == 0 && urt_convert_name(n, ro->name) == 0)
@@ -151,7 +151,7 @@ void urt_shsem_detach(urt_sem *sem)
 	ro = urt_get_object_by_id(sem->id);
 	if (ro == NULL)
 		return;
-	urt_deregister(ro, sem, ro->size, _shsem_detach, NULL);
+	urt_deregister(ro, _shsem_detach, sem, NULL);
 }
 
 int (urt_sem_waitf)(urt_sem *sem, bool (*stop)(volatile void *), volatile void *data, ...)
