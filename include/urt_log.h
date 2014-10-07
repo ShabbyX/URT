@@ -56,6 +56,6 @@
 # define urt_out(...) urt_log(URT_OUT_FILE, __VA_ARGS__)
 # define urt_err(...) urt_log(URT_ERR_FILE, __VA_ARGS__)
 # define urt_out_cont(...) urt_log_cont(URT_OUT_FILE, __VA_ARGS__)
-# define urt_err_cont(...) urt_err_cont(URT_ERR_FILE, __VA_ARGS__)
+# define urt_err_cont(...) urt_log_cont(URT_ERR_FILE, __VA_ARGS__)
 
 #endif
