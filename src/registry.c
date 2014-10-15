@@ -435,7 +435,7 @@ void urt_dump_memory(const char *name, size_t start, size_t end)
 	urt_out_cont("Displaying contents of '%s':\n", name);
 	for (i = start; i < end; i += 16)
 	{
-		urt_out_cont("%08X:", i);
+		urt_out_cont("%08zX:", i);
 
 		/* hex codes */
 		for (j = 0; j < 16 && i + j < end; ++j)
