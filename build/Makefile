@@ -12,7 +12,7 @@ else
 endif
 
 ifeq ($(URT_CONFIG_DEVELOPER_MODE), y)
-  INC_BUILD_DEP := $(INC_BUILD) $(BUILD_FILE)
+  INC_BUILD_DEP := $(INC_BUILD)
 endif
 
 include Makefile.build
@@ -20,7 +20,11 @@ include Makefile.src
 
 .PHONY: all modules dep clean
 all: dep modules $(INC_BUILD_DEP)
+ifeq ($(URT_CONFIG_DEVELOPER_MODE), y)
+	@$(MAKE) $(BUILD_FILE)
+else
 	@$(SHELL_NOOP)
+endif
 quiet_cmd_clean = CLEAN   $(CURDIR)/
       cmd_clean = $(RM) Makefile.dep
 clean:
