@@ -82,8 +82,11 @@ TO_X(ulong, unsigned long, unsigned long, strtoul)
 static int to_charp(struct urt_module_param *param, const char *value, size_t index)
 {
 	size_t len;
-	const char *next_comma = strchr(value, ',');
+	const char *next_comma = NULL;
 	char *copy;
+
+	if (param->is_array)
+		next_comma = strchr(value, ',');
 
 	if (next_comma == NULL)
 		len = strlen(value);
@@ -164,7 +167,7 @@ static int parse_arg(struct urt_module_param *param, char *arg)
 	else if (strcmp(param->type, "ulong") == 0)	convert = to_ulong;
 	else if (strcmp(param->type, "charp") == 0)	convert = to_charp;
 	else if (strcmp(param->type, "bool") == 0)	convert = to_bool;
-	else if (strcmp(param->type, "_Bool") == 0)	convert = to_bool;	/* bool maybe defined as _Bool instead of typedefed */
+	else if (strcmp(param->type, "_Bool") == 0)	convert = to_bool;	/* bool may be defined as _Bool instead of typedefed */
 	else if (strcmp(param->type, "invbool") == 0)	convert = to_invbool;
 	else
 	{
