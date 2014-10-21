@@ -28,9 +28,9 @@ library: config
 	@$(MAKE) -C build
 doc:
 	@$(MAKE) -C doc
-tools: config
+tools: library config
 	@$(MAKE) -C tools
-tests: config
+tests: library config
 	@$(MAKE) -C tests
 
 .PHONY: check
