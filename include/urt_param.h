@@ -20,6 +20,10 @@
 #ifndef URT_MODULE_H
 #define URT_MODULE_H
 
+#include "urt_compiler.h"
+
+URT_DECL_BEGIN
+
 /*
  * This file unifies the way kernel modules and user space applications receive arguments.
  * In kernel space, this is already done through the `module_param` macro and friends.  This
@@ -78,14 +82,15 @@ struct urt_module_param
 	static struct urt_module_param urt_app_params_[] = {	\
 		{0},	/* one fake in case no params */
 #define URT_MODULE_PARAM_COMMON(nam, v, typ, num, dsc, ia, d)	\
-		{						\
-			.name = #nam,				\
-			.type = #typ,				\
-			.desc = dsc,				\
-			.var = v,				\
-			.is_array = ia,				\
-			.nump = num,				\
-			.max = sizeof nam / d			\
+		{ /* avoid designated initializer for C++ */	\
+			#nam,					\
+			#typ,					\
+			dsc,					\
+			sizeof nam / d,				\
+			v,					\
+			0,					\
+			num,					\
+			ia,					\
 		},
 #define URT_MODULE_PARAM(name, type, desc)			\
 	URT_MODULE_PARAM_COMMON(name, &name, type, NULL, desc, false, 1)
@@ -98,5 +103,7 @@ int urt_parse_args(struct urt_module_param *params, size_t params_count, int arg
 void urt_free_args(struct urt_module_param *params, size_t params_count);
 
 #endif /* __KERNEL__ */
+
+URT_DECL_END
 
 #endif

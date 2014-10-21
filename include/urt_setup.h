@@ -177,7 +177,11 @@ int main(int argc, char **argv)						\
 	int err = 0;							\
 	/* set signal handler */					\
 	struct sigaction sa;						\
-	sa = (struct sigaction){.sa_handler = NULL};			\
+	/*								\
+	 * memset is inevitable, because C++				\
+	 * doesn't understand designated initializers			\
+	 */								\
+	memset(&sa, 0, sizeof sa);					\
 	sa.sa_handler = urt_app_sig_handler_;				\
 	sigemptyset(&sa.sa_mask);					\
 	sigaction(SIGSEGV, &sa, NULL);					\
