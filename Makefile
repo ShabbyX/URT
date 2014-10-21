@@ -15,14 +15,14 @@ endif
 .PHONY: all config library tools tests doc
 all: config library tools tests doc
 
-config: Makefile.common
-Makefile.common: Makefile.config Makefile.generate
+config: ChangeLog
+ChangeLog: Makefile.common Makefile.config Makefile.generate
 	@$(MAKE) -f Makefile.generate all
 	@$(RM) build/Makefile.dep tests/*/Makefile.dep
 	@$(MAKE) -C build dep
 	@$(MAKE) -C tools dep
 	@$(MAKE) -C tests dep
-	@touch Makefile.common
+	@touch $@
 
 library: config
 	@$(MAKE) -C build

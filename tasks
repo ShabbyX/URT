@@ -4,6 +4,8 @@ TODO
 - See if RTAI's exectime is correct
 - Add condition variables to RTAI
 - Make DocThis! build and clean messages also short
+- Change the macro definition of functions to static inline!  Otherwise it would not be possible to take them as a function pointer,
+  which could come as a surprise if somebody needs it.
 
 Known issues
 - with all
