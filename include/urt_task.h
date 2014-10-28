@@ -40,7 +40,7 @@ typedef struct urt_task_attr
 URT_DECL_BEGIN
 
 URT_ATTR_WARN_UNUSED urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data,
-		urt_task_attr *attr, int *error, ...);
+		const urt_task_attr *attr, int *error, ...);
 void urt_task_delete(urt_task *task);
 
 int urt_task_start(urt_task *task);

@@ -21,7 +21,7 @@
 #include <urt_mem.h>
 #include "urt_internal.h"
 
-urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data, urt_task_attr *attr, int *error, ...)
+urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data, const urt_task_attr *attr, int *error, ...)
 {
 	urt_task *task;
 
