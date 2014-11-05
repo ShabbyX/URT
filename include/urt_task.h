@@ -35,7 +35,7 @@ typedef struct urt_task_attr
 	bool soft;		/* whether task is soft real-time */
 } urt_task_attr;
 
-#include <urt_sys_task.h>
+#include "urt_sys_task.h"
 
 URT_DECL_BEGIN
 

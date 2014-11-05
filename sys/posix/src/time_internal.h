@@ -20,8 +20,11 @@
 #ifndef URT_TIME_INTERNAL_H
 #define URT_TIME_INTERNAL_H
 
-#include <sys/time.h>
 #include <urt_time.h>
+#ifndef CLOCK_REALTIME
+# warning CLOCK_REALTIME is not implemented
+# include <sys/time.h>
+#endif
 
 /* posix functions taking abs_timeout require time since epoch */
 static inline urt_time urt_get_time_epoch(void)
@@ -31,7 +34,6 @@ static inline urt_time urt_get_time_epoch(void)
 	clock_gettime(CLOCK_REALTIME, &t);
 	return t.tv_sec * 1000000000ll + t.tv_nsec;
 #else
-# warning CLOCK_REALTIME is not implemented
 	struct timeval t;
 	gettimeofday(&t, NULL);
 	return t.tv_sec * 1000000000ll + t.tv_usec * 1000;

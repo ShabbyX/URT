@@ -23,7 +23,7 @@
 #include "urt_stdtypes.h"
 #include "urt_compiler.h"
 #include "urt_consts.h"
-#include <urt_sys_utils.h>
+#include "urt_sys_utils.h"
 
 URT_DECL_BEGIN
 

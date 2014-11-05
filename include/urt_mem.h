@@ -23,7 +23,7 @@
 #include "urt_stdtypes.h"
 #include "urt_compiler.h"
 #include "urt_defaults.h"
-#include <urt_sys_mem.h>
+#include "urt_sys_mem.h"
 
 URT_DECL_BEGIN
 

@@ -47,10 +47,10 @@ CONST_GROUP Meta
 
 	These are constants that give information about the API itself.
 
-	CONSTANT URT_SYS_LINUX
-		Indicates Linux back-end
+	CONSTANT URT_SYS_POSIX
+		Indicates POSIX back-end
 
-		If defined, Linux is the back-end of the API
+		If defined, POSIX is the back-end of the API
 
 	CONSTANT URT_SYS_RTAI_KERNEL
 		Indicates RTAI (kernel space) back-end

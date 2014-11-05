@@ -22,7 +22,7 @@
 
 #include "urt_stdtypes.h"
 #include "urt_compiler.h"
-#include <urt_sys_time.h>
+#include "urt_sys_time.h"
 
 /* urt_time urt_get_time(void); */
 /* void urt_sleep(urt_time t); */

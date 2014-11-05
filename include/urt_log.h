@@ -21,7 +21,7 @@
 #define URT_LOG_H
 
 #include "urt_config.h"
-#include <urt_sys_log.h>
+#include "urt_sys_log.h"
 
 #ifndef URT_LOG_PREFIX
 # define URT_LOG_PREFIX "URT: "
