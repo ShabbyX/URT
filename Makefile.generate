@@ -4,23 +4,14 @@ include Makefile.common
 .PHONY: all clean
 all: config_headers version_header
 
-ifeq ($(URT_CONFIG_RT_SUBSYSTEM), linux)
-  URT_SYS_DEF := \#define URT_SYS_LINUX
+ifeq ($(URT_CONFIG_RT_SUBSYSTEM), posix)
+  URT_SYS_DEF := \#define URT_SYS_POSIX
   URT_BI_SPACE := 0
 else
 ifeq ($(URT_CONFIG_RT_SUBSYSTEM), rtai)
   URT_SYS_DEF := \#ifdef __KERNEL__\n\# define URT_SYS_RTAI_KERNEL\n\#else\n\# define URT_SYS_RTAI_USER\n\#endif
   URT_BI_SPACE := 1
 else
-ifeq ($(URT_CONFIG_RT_SUBSYSTEM), qnx)
-  URT_SYS_DEF := \#define URT_SYS_QNX
-  URT_BI_SPACE := 0
-else
-ifeq ($(URT_CONFIG_RT_SUBSYSTEM), vxworks)
-  URT_SYS_DEF := \#define URT_SYS_VXWORKS
-  URT_BI_SPACE := 0
-endif
-endif
 endif
 endif
 
