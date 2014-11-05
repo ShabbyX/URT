@@ -52,12 +52,16 @@ int urt_init(void)
 	if (urt_global_mem == NULL)
 		goto exit_no_mem;
 
-	urt_registry_init();
+	if (urt_registry_init())
+		goto exit_bad_init;
 
 exit_no_mem:
 	urt_global_sem_post();
 exit_no_sem:
 	return error;
+exit_bad_init:
+	error = EBUSY;
+	goto exit_no_mem;
 }
 URT_EXPORT_SYMBOL(urt_init);
 
