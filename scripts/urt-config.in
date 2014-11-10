@@ -1,0 +1,86 @@
+#! /bin/bash
+
+newline=""
+[ -t 1 ] && newline="\n"
+
+urt_version="@URT_VERSION@"
+urt_sys="@URT_SYS@"
+urt_build_kernel="@URT_BUILD_KERNEL@"
+urt_build_user="@URT_BUILD_USER@"
+urt_cflags_user="@URT_CFLAGS_USER@"
+urt_ldflags_user="@URT_LDFLAGS_USER@ @LIBS@"
+urt_cflags_kernel="@URT_CFLAGS_KERNEL@"
+urt_symbols_kernel="@URT_SYMBOLS_KERNEL@"
+urt_suffix="@URT_SUFFIX@"
+
+msg_help_build_kernel=
+msg_help_build_user=
+[ "$urt_build_kernel" != y ] && msg_help_build_kernel=" (not available)"
+[ "$urt_build_user" != y ] && msg_help_build_user=" (not available)"
+
+usage() {
+cat <<EOF
+Usage urt-config OPTIONS
+Options :
+    --help              print this help message
+    --version           print URT version
+    --sys               Subsystem being used by URT
+    --user-cflags       C flags for user-space applications$msg_help_build_user
+    --user-ldflags      link flags for user-space applications $msg_help_build_user
+    --kernel-cflags     C flags for kernel modules$msg_help_build_kernel
+    --kernel-symbols    symbol information for kernel modules
+                           (for KBUILD_EXTRA_SYMBOLS)$msg_help_build_kernel
+    --build-user        whether build for user-space applications is possible (y/n)
+    --build-kernel      whether build for kernel-modules is possible (y/n)
+EOF
+    exit $1
+}
+
+unavailable() {
+    echo "URT was not built to support $1"
+    usage 1 1>&2
+}
+
+output() {
+    printf -- "%s$newline" "$1";
+}
+
+if test $# -eq 0; then
+    usage 1 1>&2
+fi
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --help)
+            usage 0
+            ;;
+        --version)
+            output "$urt_version"
+            ;;
+        --sys)
+            output "$urt_sys"
+            ;;
+        --u*-cflags)
+            [ "$urt_build_user" == y ] && output "$urt_cflags_user" || unavailable "user-space applications"
+            ;;
+        --u*-ldflags)
+            [ "$urt_build_user" == y ] && output "$urt_ldflags_user" || unavailable "user-space applications"
+            ;;
+        --k*-cflags|--m*-cflags)
+            [ "$urt_build_kernel" == y ] && output "$urt_cflags_kernel" || unavailable "kernel modules"
+            ;;
+        --k*-sym*|--m*-sym*)
+            [ "$urt_build_kernel" == y ] && output "$urt_symbols_kernel" || unavailable "kernel modules"
+            ;;
+        --build-u*|--has-u*)
+            output "$urt_build_user"
+            ;;
+        --build-k*|--has-k*)
+            output "$urt_build_kernel"
+            ;;
+        *)
+            usage 1 1>&2
+            ;;
+    esac
+    shift
+done

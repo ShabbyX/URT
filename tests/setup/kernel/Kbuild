@@ -1,6 +1,0 @@
--include $(M)/../Makefile.dep
-
-obj-m += test.o
-test-y := main.o
-
-%.o: %.c

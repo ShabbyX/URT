@@ -1,0 +1,43 @@
+ACLOCAL_AMFLAGS = -I m4
+
+AM_TESTS_ENVIRONMENT = \
+needs_ko=$(URT_TESTS_NEED_URT_KO); export needs_ko; \
+top_srcdir=$(top_srcdir); export top_srcdir; \
+srcdir=$(srcdir); export srcdir;
+if HAVE_VALGRIND
+  AM_TESTS_ENVIRONMENT += \
+  have_valgrind=y; export have_valgrind;
+endif
+
+TESTS =
+
+if HAVE_USER
+check_PROGRAMS = test_master test_slave
+
+test_master_SOURCES = main.c
+test_master_CFLAGS = $(URT_CFLAGS_USER) -I$(top_srcdir)/include -I$(top_srcdir)/sys/$(URT_SYS)/include
+test_master_LDADD = ../../src/liburt@URT_SUFFIX@.la $(URT_LDFLAGS_USER)
+
+test_slave_SOURCES = other.c
+test_slave_CFLAGS = $(URT_CFLAGS_USER) -I$(top_srcdir)/include -I$(top_srcdir)/sys/$(URT_SYS)/include
+test_slave_LDADD = ../../src/liburt@URT_SUFFIX@.la $(URT_LDFLAGS_USER)
+
+TESTS += run.sh
+endif
+
+if HAVE_KERNEL
+KBUILD_EXTRA_CFLAGS = \
+                      -I$(top_srcdir)/include \
+                      -I$(top_srcdir)/sys/$(URT_SYS)/include \
+KBUILD_EXTRA_SYMBOLS = \
+                       $(top_srcdir)/src/Modules.symvers
+
+TESTS += run_kernel.sh
+
+check-local:
+	$(URT_KERNEL_INVOKE) modules
+clean-local:
+	$(URT_KERNEL_INVOKE) clean
+endif
+
+check_SCRIPTS = $(TESTS)

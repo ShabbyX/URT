@@ -1,0 +1,28 @@
+SOURCE_FILES = \
+               kern_main.c \
+               lock_common.c \
+               mem_common.c \
+               new_common.c \
+               param.c \
+               registry.c \
+               setup_common.c \
+               task_common.c \
+               $(M)/../sys/@URT_SYS@/src/lock.c \
+               $(M)/../sys/@URT_SYS@/src/mem.c \
+               $(M)/../sys/@URT_SYS@/src/setup.c \
+               $(M)/../sys/@URT_SYS@/src/task.c
+
+ifeq (@URT_SYS@, posix)
+  SOURCE_FILES += \
+                  $(M)/../sys/@URT_SYS@/src/names.c
+endif
+
+ifeq (@URT_SYS@, rtai)
+  SOURCE_FILES += \
+                  $(M)/../sys/@URT_SYS@/src/utils.c
+endif
+
+OBJECT_FILES = $(SOURCE_FILES:.c=.o)
+
+obj-m += urt.o
+urt-y = $(OBJECT_FILES)

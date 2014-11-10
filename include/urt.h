@@ -20,9 +20,6 @@
 #ifndef UNIFIED_RT_H
 #define UNIFIED_RT_H
 
-#include "urt_version.h"
-#include "urt_config.h"
-
 #include "urt_setup.h"
 #include "urt_utils.h"
 #include "urt_time.h"

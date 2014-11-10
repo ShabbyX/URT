@@ -21,18 +21,16 @@
 
 URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
-URT_MODULE_DESCRIPTION("sem test: main");
+URT_MODULE_DESCRIPTION("sem test: wait");
 
-int test_arg = 0;			/* must be set to 123456 */
-bool test_arg2 = 2;			/* must be set to 1 */
-char *test_arg3[3] = {NULL};		/* must be set to "abc def", "ghi" */
-unsigned int test_arg3_count = 0;	/* must be set to 2 */
+char *test_arg = NULL;			/* must be set to "x y" */
+unsigned char test_arg2[4] = {0};	/* must be set to {1, 2, 3} */
+unsigned int test_arg2_count = 0;	/* must be set to 3 */
 char *sem_name = NULL;
 
 URT_MODULE_PARAM_START()
-URT_MODULE_PARAM(test_arg, int, "test argument")
-URT_MODULE_PARAM(test_arg2, bool, "another argument")
-URT_MODULE_PARAM_ARRAY(test_arg3, charp, &test_arg3_count, "last argument")
+URT_MODULE_PARAM(test_arg, charp, "test argument")
+URT_MODULE_PARAM_ARRAY(test_arg2, byte, &test_arg2_count, "another argument")
 URT_MODULE_PARAM(sem_name, charp, "sem name")
 URT_MODULE_PARAM_END()
 
@@ -43,22 +41,18 @@ static void test_end(int *unused);
 URT_GLUE(test_start, test_body, test_end, int, interrupted, done)
 
 static urt_sem *sem = NULL;
-static urt_task *check_task = NULL;
+static urt_task *test_task = NULL;
 
-static void _check(urt_task *task, void *data)
+static void _test(urt_task *task, void *data)
 {
-	int i;
-	urt_out("main: waiting for 3 seconds\n");
-	urt_sleep(3000000000ll);
-	for (i = 0; i < 15; ++i)
-		urt_sem_post(sem);
+	urt_sem_wait(sem);
 	done = 1;
 }
 
 static void _cleanup(void)
 {
-	urt_task_delete(check_task);
-	urt_shsem_delete(sem);
+	urt_task_delete(test_task);
+	urt_shsem_detach(sem);
 	urt_exit();
 }
 
@@ -72,27 +66,32 @@ static int test_start(int *unused)
 		return EXIT_FAILURE;
 	}
 
-	urt_out("main: starting test...\n");
-	if (test_arg != 123456 || test_arg2 != 1 || test_arg3_count != 2 || test_arg3[0] == NULL || test_arg3[1] == NULL
-			|| strcmp(test_arg3[0], "abc def") != 0 || strcmp(test_arg3[1], "ghi") != 0)
+	urt_time start;
+	urt_out("wait: spawned\n");
+	if (test_arg == NULL || strcmp(test_arg, "x y") != 0 || test_arg2_count != 3 || test_arg2[0] != 1 || test_arg2[1] != 2 || test_arg2[2] != 3)
 	{
-		urt_out("main: bad arguments %d, %d and {%s, %s, %s}@%u\n", test_arg, test_arg2,
-				test_arg3[0]?test_arg3[0]:"", test_arg3[1]?test_arg3[1]:"", test_arg3[2]?test_arg3[2]:"", test_arg3_count);
+		urt_out("bad arguments %s and {%u, %u, %u, %u}@%u\n", test_arg?test_arg:"",
+				test_arg2[0], test_arg2[1], test_arg2[2], test_arg2[3], test_arg2_count);
 		return EXIT_FAILURE;
 	}
-	ret = urt_init();
+	ret = urt_init();	/* tests race condition for urt_init */
 	if (ret)
 	{
-		urt_out("main: init returned %d\n", ret);
+		urt_out("wait: init returned %d\n", ret);
 		goto exit_no_init;
 	}
-	sem = urt_shsem_new(sem_name, 5);
+	start = urt_get_time();
+	do
+	{
+		sem = urt_shsem_attach(sem_name);
+		urt_sleep(10000000);
+	} while (sem == NULL && urt_get_time() - start < 1000000000ll);
 	if (sem == NULL)
 	{
-		urt_out("main: no shared sem\n");
+		urt_out("wait: no shared sem\n");
 		goto exit_no_sem;
 	}
-	urt_out("main: sem allocated\n");
+	urt_out("wait: sem attached\n");
 	return 0;
 exit_no_sem:
 	_cleanup();
@@ -102,13 +101,13 @@ exit_no_init:
 
 static void test_body(int *unused)
 {
-	check_task = urt_task_new(_check);
-	if (check_task == NULL)
+	test_task = urt_task_new(_test);
+	if (test_task == NULL)
 	{
-		urt_out("main: failed to create task\n");
+		urt_out("wait: failed to create task\n");
 		goto exit_no_task;
 	}
-	urt_task_start(check_task);
+	urt_task_start(test_task);
 	return;
 exit_no_task:
 	done = 1;
@@ -117,5 +116,5 @@ exit_no_task:
 static void test_end(int *unused)
 {
 	_cleanup();
-	urt_out("main: test done\n");
+	urt_out("wait: test done\n");
 }

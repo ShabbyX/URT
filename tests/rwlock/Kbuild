@@ -1,0 +1,6 @@
+obj-m += master.o slave_0.o slave_1.o slave_2.o slave_3.o
+master-y := main.o
+slave_0-y := other.o
+slave_1-y := other.o
+slave_2-y := other.o
+slave_3-y := other.o

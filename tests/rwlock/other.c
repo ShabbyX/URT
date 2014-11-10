@@ -21,7 +21,7 @@
 
 URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
-URT_MODULE_DESCRIPTION("rwlock test: main");
+URT_MODULE_DESCRIPTION("rwlock test: read");
 
 char *rwlock_name = NULL;
 
@@ -36,27 +36,42 @@ static void test_end(int *unused);
 URT_GLUE(test_start, test_body, test_end, int, interrupted, done)
 
 static urt_rwlock *rwl = NULL;
-static urt_task *check_task = NULL;
+static urt_task *test_task = NULL;
 
-static void _check(urt_task *task, void *data)
+static void _test(urt_task *task, void *data)
 {
 	int ret;
-	urt_rwlock_write_lock(rwl);
-	urt_out("main: waiting for 3 seconds\n");
+	urt_sleep(500000000);
+	ret = urt_rwlock_try_read_lock(rwl);
+	urt_out("read: try read lock returned: %d\n", ret);
+	if (ret == 0)
+		urt_rwlock_read_unlock(rwl);
+	ret = urt_rwlock_try_write_lock(rwl);
+	urt_out("read: try write lock returned: %d\n", ret);
+	if (ret == 0)
+		urt_rwlock_write_unlock(rwl);
+	urt_out("read: timed read lock for 1 second\n");
+	ret = urt_rwlock_timed_read_lock(rwl, 1000000000);
+	urt_out("read: timed read lock returned: %d\n", ret);
+	if (ret == 0)
+		urt_rwlock_read_unlock(rwl);
+	urt_out("read: timed read lock for 4 second\n");
+	ret = urt_rwlock_timed_read_lock(rwl, 4000000000ll);
+	urt_out("read: timed read lock returned: %d\n", ret);
+	urt_out("read: waiting for 3s\n");
 	urt_sleep(3000000000ll);
-	urt_out("main: write unlock\n");
-	urt_rwlock_write_unlock(rwl);
-	urt_sleep(1000000000ll);
-	urt_out("main: waiting for write lock\n");
-	ret = urt_rwlock_write_lock(rwl);
-	urt_out("main: write lock returned: %d\n", ret);
+	if (ret == 0)
+	{
+		urt_out("read: read unlock\n");
+		urt_rwlock_read_unlock(rwl);
+	}
 	done = 1;
 }
 
 static void _cleanup(void)
 {
-	urt_task_delete(check_task);
-	urt_shrwlock_delete(rwl);
+	urt_task_delete(test_task);
+	urt_shrwlock_detach(rwl);
 	urt_exit();
 }
 
@@ -70,20 +85,26 @@ static int test_start(int *unused)
 		return EXIT_FAILURE;
 	}
 
-	urt_out("main: starting test...\n");
+	urt_time start;
+	urt_out("read: spawned\n");
 	ret = urt_init();
 	if (ret)
 	{
-		urt_out("main: init returned %d\n", ret);
+		urt_out("read: init returned %d\n", ret);
 		goto exit_no_init;
 	}
-	rwl = urt_shrwlock_new(rwlock_name);
+	start = urt_get_time();
+	do
+	{
+		rwl = urt_shrwlock_attach(rwlock_name);
+		urt_sleep(10000000);
+	} while (rwl == NULL && urt_get_time() - start < 1000000000ll);
 	if (rwl == NULL)
 	{
-		urt_out("main: no shared rwl\n");
+		urt_out("read: no shared rwl\n");
 		goto exit_no_rwl;
 	}
-	urt_out("main: rwl allocated\n");
+	urt_out("read: rwl attached\n");
 	return 0;
 exit_no_rwl:
 	_cleanup();
@@ -93,13 +114,13 @@ exit_no_init:
 
 static void test_body(int *unused)
 {
-	check_task = urt_task_new(_check);
-	if (check_task == NULL)
+	test_task = urt_task_new(_test);
+	if (test_task == NULL)
 	{
-		urt_out("main: failed to create task\n");
+		urt_out("wait: failed to create task\n");
 		goto exit_no_task;
 	}
-	urt_task_start(check_task);
+	urt_task_start(test_task);
 	return;
 exit_no_task:
 	done = 1;
@@ -108,5 +129,5 @@ exit_no_task:
 static void test_end(int *unused)
 {
 	_cleanup();
-	urt_out("main: test done\n");
+	urt_out("read: test done\n");
 }

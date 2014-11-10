@@ -1,0 +1,2 @@
+obj-m += master.o
+master-y := main.o

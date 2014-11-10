@@ -1,9 +1,0 @@
-URT_BASE := $(abspath $(M)/../..)
-include $(URT_BASE)/Makefile.config
-URT_KERNEL_BUILD := y
-include $(URT_BASE)/Makefile.common
-include $(URT_BASE)/build/Makefile.src
--include $(URT_BASE)/build/Makefile.dep
-
-obj-m += urt$(URT_CONFIG_SUFFIX).o
-urt$(URT_CONFIG_SUFFIX)-y := $(LIB_OBJ)

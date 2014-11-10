@@ -23,7 +23,7 @@
 #include <urt_consts.h>
 #include <urt_stdtypes.h>
 #include <urt_lock.h>
-#include "urt_internal_config.h"
+#include "config.h"
 
 #ifdef __KERNEL__
 # include <linux/version.h>

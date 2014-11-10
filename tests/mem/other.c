@@ -21,7 +21,7 @@
 
 URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
-URT_MODULE_DESCRIPTION("mem test: main");
+URT_MODULE_DESCRIPTION("mem test: add");
 
 char *req_sem_name = NULL;
 char *res_sem_name = NULL;
@@ -42,21 +42,28 @@ URT_GLUE(test_start, test_body, test_end, int, interrupted, done)
 static urt_sem *req = NULL;
 static urt_sem *res = NULL;
 static int *mem = NULL;
-static urt_task *check_task = NULL;
+static urt_task *test_task = NULL;
 
-static void _check(urt_task *task, void *data)
+static void _test(urt_task *task, void *data)
 {
-	int i;
-	for (i = 0; i < 20; ++i)
-		urt_sem_post(req);
-	for (i = 0; i < 20; ++i)
-		urt_sem_wait(res);
+	urt_sem_wait(req);
+	mem[0] += 1;
+	urt_sem_post(req);
+	urt_sem_wait(req);
+	mem[1] += 2;
+	urt_sem_post(req);
+	urt_sem_wait(req);
+	mem[2] += 3;
+	urt_sem_post(req);
+	urt_sem_wait(req);
+	mem[3] += -1;
+	urt_sem_post(res);
 	done = 1;
 }
 
 static void _cleanup(void)
 {
-	urt_task_delete(check_task);
+	urt_task_delete(test_task);
 	urt_shsem_delete(req);
 	urt_shsem_delete(res);
 	urt_shmem_delete(mem);
@@ -73,29 +80,41 @@ static int test_start(int *unused)
 		return EXIT_FAILURE;
 	}
 
-	urt_out("main: starting test...\n");
-	ret = urt_init();
+	urt_time start;
+	urt_out("add: spawned\n");
+	ret = urt_init();	/* tests race condition for urt_init */
 	if (ret)
 	{
-		urt_out("main: init returned %d\n", ret);
+		urt_out("add: init returned %d\n", ret);
 		goto exit_no_init;
 	}
-	req = urt_shsem_new(req_sem_name, 0);
-	res = urt_shsem_new(res_sem_name, 0);
+	start = urt_get_time();
+	do
+	{
+		if (!req)
+			req = urt_shsem_attach(req_sem_name);
+		if (!res)
+			res = urt_shsem_attach(res_sem_name);
+		urt_sleep(10000000);
+	} while ((req == NULL || res == NULL) && urt_get_time() - start < 1000000000ll);
 	if (req == NULL || res == NULL)
 	{
-		urt_out("main: no shared sem\n");
+		urt_out("add: no shared sem\n");
 		goto exit_no_sem;
 	}
-	urt_out("main: sem allocated\n");
-	mem = urt_shmem_new(mem_name, 4 * sizeof *mem);
+	urt_out("add: sem attached\n");
+	start = urt_get_time();
+	do
+	{
+		mem = urt_shmem_attach(mem_name);
+		urt_sleep(10000000);
+	} while (mem == NULL && urt_get_time() - start < 1000000000ll);
 	if (mem == NULL)
 	{
-		urt_out("main: no shared mem\n");
+		urt_out("add: no shared mem\n");
 		goto exit_no_mem;
 	}
-	urt_out("main: mem allocated\n");
-	mem[0] = mem[1] = mem[2] = mem[3] = 0;
+	urt_out("add: mem attached\n");
 	return 0;
 exit_no_sem:
 exit_no_mem:
@@ -106,13 +125,13 @@ exit_no_init:
 
 static void test_body(int *unused)
 {
-	check_task = urt_task_new(_check);
-	if (check_task == NULL)
+	test_task = urt_task_new(_test);
+	if (test_task == NULL)
 	{
-		urt_out("main: failed to create task\n");
+		urt_out("wait: failed to create task\n");
 		goto exit_no_task;
 	}
-	urt_task_start(check_task);
+	urt_task_start(test_task);
 	return;
 exit_no_task:
 	done = 1;
@@ -120,8 +139,6 @@ exit_no_task:
 
 static void test_end(int *unused)
 {
-	if (!(mem[0] == 20 && mem[1] == 40 && mem[2] == 60 && mem[3] == -20))
-		urt_out("main: bad synchronization (wrong results)\n");
 	_cleanup();
-	urt_out("main: test done\n");
+	urt_out("add: test done\n");
 }

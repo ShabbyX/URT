@@ -43,8 +43,8 @@ static void periodic(urt_task *task, void *data)
 	urt_sem *sem = data;
 	urt_time start_time = urt_get_time();
 
-	urt_out("Periodic: sleep for 2s to lose some periods\n");
-	urt_sleep(2000000000);
+	urt_out("Periodic: sleep for 0.5s to lose some periods\n");
+	urt_sleep(500000000);
 	for (i = 0; i < 5; ++i)
 	{
 		urt_out("Periodic: %lld: Time to next period: %lld (exec time: %lld)\n", urt_get_time() - start_time,
@@ -52,7 +52,7 @@ static void periodic(urt_task *task, void *data)
 		urt_task_wait_period(task);
 	}
 
-	for (i = 0; i < 20 && !interrupted; ++i)
+	for (i = 0; i < 10 && !interrupted; ++i)
 	{
 		urt_out("Periodic: %lld: Time to next period: %lld (exec time: %lld)\n", urt_get_time() - start_time,
 				urt_task_period_time_left(task), urt_get_exec_time());
@@ -68,7 +68,7 @@ static void normal(urt_task *task, void *data)
 {
 	int i;
 
-	for (i = 0; i < 20; ++i)
+	for (i = 0; i < 10; ++i)
 	{
 		if (urt_sem_wait(sync_sem, &stop_other_thread))
 		{
@@ -126,8 +126,8 @@ static void test_body(int *unused)
 
 	tn = urt_task_new(normal);
 	attr = (urt_task_attr){
-		.period = 500000000,
-		.start_time = urt_get_time() + 2000000000ll
+		.period = 100000000,
+		.start_time = urt_get_time() + 1500000000ll
 	};
 	tp = urt_task_new(periodic, sync_sem, &attr, &ret);
 	if (tn == NULL || tp == NULL)
