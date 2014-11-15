@@ -357,3 +357,124 @@ int urt_rwlock_write_unlock(urt_rwlock *rwl)
 	return rt_rwl_unlock(rwl->rwl_ptr) == 0?0:EINVAL;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_write_unlock);
+
+urt_cond *(urt_cond_new)(int *error, ...)
+{
+	urt_cond *cond = urt_mem_new(sizeof *cond, error);
+	if (cond == NULL)
+	{
+		if (error)
+			*error = ENOMEM;
+		return NULL;
+	}
+#ifdef __KERNEL__
+	rt_cond_init(&cond->cond);
+	cond->cond_ptr = &cond->cond;
+	return cond;
+#else
+	cond->cond_ptr = rt_cond_init(0);
+	if (cond->cond_ptr)
+		return cond;
+	if (error)
+		*error = ENOMEM;
+	urt_mem_delete(cond);
+	return NULL;
+#endif
+}
+URT_EXPORT_SYMBOL(urt_cond_new);
+
+void urt_cond_delete(urt_cond *cond)
+{
+	if (cond != NULL)
+		rt_cond_delete(cond->cond_ptr);
+	urt_mem_delete(cond);
+}
+URT_EXPORT_SYMBOL(urt_cond_delete);
+
+urt_cond *urt_sys_shcond_new(const char *name, int *error)
+{
+	urt_cond *cond = urt_mem_new(sizeof *cond, error);
+	if (cond == NULL)
+		goto exit_no_mem;
+	/* note: an RTAI conditional variable is a kind of semaphore, and there is no rt_named_cond_init */
+	cond->cond_ptr = rt_typed_named_sem_init(name, 0, BIN_SEM | PRIO_Q);
+	if (cond->cond_ptr == NULL)
+		goto exit_no_mem;
+	return cond;
+exit_no_mem:
+	if (error)
+		*error = ENOMEM;
+	urt_mem_delete(cond);
+	return NULL;
+}
+
+urt_cond *urt_sys_shcond_attach(const char *name, int *error)
+{
+	urt_cond *cond = urt_mem_new(sizeof *cond, error);
+	if (cond == NULL)
+		goto exit_no_mem;
+	cond->cond_ptr = rt_get_adr(nam2num(name));
+	if (cond->cond_ptr == NULL)
+		goto exit_no_obj;
+	return cond;
+exit_no_mem:
+	if (error)
+		*error = ENOMEM;
+	goto exit_fail;
+exit_no_obj:
+	if (error)
+		*error = ENOENT;
+	goto exit_fail;
+exit_fail:
+	urt_mem_delete(cond);
+	return NULL;
+}
+
+void urt_shcond_detach(urt_cond *cond)
+{
+	urt_registered_object *ro;
+	if (cond == NULL)
+		return;
+	ro = urt_get_object_by_id(cond->id);
+	/* see note in urt_shcond_new */
+	rt_named_sem_delete(cond->cond_ptr);
+	urt_deregister(ro, NULL, NULL, NULL);
+}
+URT_EXPORT_SYMBOL(urt_shcond_detach);
+
+int (urt_cond_waitf)(urt_cond *cond, urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...)
+{
+	int res;
+	if (stop)
+	{
+		while ((res = rt_cond_wait_timed(cond->cond_ptr, mutex->sem_ptr, nano2count(URT_LOCK_STOP_MAX_DELAY))) == RTE_TIMOUT)
+			if (stop(data))
+				return ECANCELED;
+	}
+	else
+		res = rt_cond_wait(cond->cond_ptr, mutex->sem_ptr);
+
+	return res == 0?0:EDEADLK;
+}
+URT_EXPORT_SYMBOL(urt_cond_waitf);
+
+int urt_cond_timed_wait(urt_cond *cond, urt_mutex *mutex, urt_time max_wait)
+{
+	int res = rt_cond_wait_timed(cond->cond_ptr, mutex->sem_ptr, nano2count(max_wait));
+	return res == RTE_TIMOUT?ETIMEDOUT:res == 0?0:EINVAL;
+}
+URT_EXPORT_SYMBOL(urt_cond_timed_wait);
+
+int urt_cond_signal(urt_cond *cond)
+{
+	int res = rt_cond_signal(cond->cond_ptr);
+	return res >= RTE_BASE?EINVAL:0;
+}
+URT_EXPORT_SYMBOL(urt_cond_signal);
+
+int urt_cond_broadcast(urt_cond *cond)
+{
+	int res = rt_cond_broadcast(cond->cond_ptr);
+	return res >= RTE_BASE?EINVAL:0;
+}
+URT_EXPORT_SYMBOL(urt_cond_broadcast);
