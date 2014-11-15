@@ -45,9 +45,8 @@ endif
 
 if HAVE_KERNEL
 KBUILD_EXTRA_CFLAGS = \
-                      -I$(top_srcdir)/include \
-                      -I$(top_srcdir)/sys/$(URT_SYS)/include \
-                      -I$(top_srcdir)/sys/$(URT_SYS)/src \
+                      -I$(abs_top_srcdir)/src \
+                      -I$(abs_top_srcdir)/sys/$(URT_SYS)/src
 KBUILD_EXTRA_SYMBOLS =
 
 all-local:

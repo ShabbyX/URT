@@ -26,11 +26,9 @@ TESTS += run.sh
 endif
 
 if HAVE_KERNEL
-KBUILD_EXTRA_CFLAGS = \
-                      -I$(top_srcdir)/include \
-                      -I$(top_srcdir)/sys/$(URT_SYS)/include \
+KBUILD_EXTRA_CFLAGS =
 KBUILD_EXTRA_SYMBOLS = \
-                       $(top_srcdir)/src/Modules.symvers
+                       $(abs_top_srcdir)/src/Modules.symvers
 
 TESTS += run_kernel.sh
 

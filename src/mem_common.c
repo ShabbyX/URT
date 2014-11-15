@@ -56,7 +56,7 @@ void *(urt_mem_resize)(void *old_mem, size_t old_size, size_t size, int *error, 
 	if (URT_UNLIKELY(mem == NULL))
 	{
 		if (error)
-			*error = errno;
+			*error = ENOMEM;
 	}
 
 #ifdef __KERNEL__

@@ -231,13 +231,13 @@ urt_rwlock *(urt_rwlock_new)(int *error, ...)
 }
 URT_EXPORT_SYMBOL(urt_rwlock_new);
 
-void urt_rwlock_detach(urt_rwlock *rwl)
+void urt_rwlock_delete(urt_rwlock *rwl)
 {
 	if (rwl != NULL)
 		rt_rwl_delete(rwl->rwl_ptr);
 	urt_mem_delete(rwl);
 }
-URT_EXPORT_SYMBOL(urt_rwlock_detach);
+URT_EXPORT_SYMBOL(urt_rwlock_delete);
 
 urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error)
 {

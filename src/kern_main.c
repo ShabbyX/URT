@@ -20,6 +20,7 @@
 #ifdef __KERNEL__
 
 #include <linux/module.h>
+#include <linux/semaphore.h>
 #include <linux/sysfs.h>
 #include <linux/kobject.h>
 #include <urt.h>

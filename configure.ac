@@ -1,5 +1,5 @@
 AC_PREREQ([2.68])
-AC_INIT([URT], [0.4.1], [https://github.com/ShabbyX/URT/issues])
+AC_INIT([URT], [0.4.2], [https://github.com/ShabbyX/URT/issues])
 AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE([1.11 -Wall -Werror foreign subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
@@ -56,11 +56,11 @@ AS_CASE(["$subsystem"],
                [*], [rtai_config_tool="$withval"])]
            )
            # Make sure the given rtai-config actually works
-           if $rtai_config_tool --version > /dev/NULL 2>&1
+           if $rtai_config_tool --version > /dev/null 2>&1
            then
-             AC_MSG_RESULT(["$rtai_config_tool"])
+             AC_MSG_RESULT([$rtai_config_tool])
            else
-             AC_MSG_ERROR(["'$rtai_config_tool'" did n"'"t work])
+             AC_MSG_ERROR(["$rtai_config_tool" didn't work])
            fi
            build_kernel_module=y]
 )
@@ -82,14 +82,14 @@ AS_CASE(["$subsystem"],
   [rtai], [extra_cflags_user=$($rtai_config_tool --lxrt-cflags)
            extra_ldflags_user=$($rtai_config_tool --lxrt-ldflags)
            extra_cflags_kernel=$($rtai_config_tool --module-cflags)
-           extra_symbols_kernel=$($rtai_config_tool --module-dir)/modules/Module.symvers
+           extra_symbols_kernel=$($rtai_config_tool --module-dir)/Module.symvers
            tests_need_urt_ko=y]
 )
 
 AS_IF([test x"$build_kernel_module" = xy],
   [kernel_build_path=/lib/modules/$(uname -r)/build
-   kernel_invoke="\$(MAKE) -C '$kernel_build_path' M='\$(srcdir)' V=\$(V) \
-                  EXTRA_CFLAGS='$extra_cflags_kernel \$(KBUILD_EXTRA_CFLAGS)' \
+   kernel_invoke="\$(MAKE) -C '$kernel_build_path' M='\$(abs_builddir)' V=\$(V) \
+                  EXTRA_CFLAGS='-I\$(abs_top_srcdir)/include -I\$(abs_top_srcdir)/sys/\$(URT_SYS)/include $extra_cflags_kernel \$(KBUILD_EXTRA_CFLAGS)' \
                   KBUILD_EXTRA_SYMBOLS='$extra_symbols_kernel \$(KBUILD_EXTRA_SYMBOLS)'"])
 
 # Checks for typedefs, structures, and compiler characteristics
@@ -167,8 +167,8 @@ AS_CASE(["$subsystem"],
 AC_DEFINE_UNQUOTED(URT_MAX_OBJECTS, [$max_shared_objects], [maximum possible number of shared objects])
 AC_DEFINE_UNQUOTED(URT_LOCK_STOP_MAX_DELAY, [$lock_stop_max_delay], [maximum delay for locks to respond to cancelation])
 AC_DEFINE_UNQUOTED(URT_DEFAULT_STACK_SIZE, [$default_stack_size], [the default stack size for tasks])
-AC_DEFINE_UNQUOTED(URT_SUFFIX, ['"'$suffix'"'], [the suffix used to build URT with])
-AC_DEFINE(URT_BI_SPACE, [$bi_space], [whether URT is runnable on both user and kernel spaces]) # TODO: see what happens when quoted!
+AC_DEFINE_UNQUOTED(URT_SUFFIX, ["$suffix"], [the suffix used to build URT with])
+AC_DEFINE_UNQUOTED(URT_BI_SPACE, [$bi_space], [whether URT is runnable on both user and kernel spaces])
 
 # Build
 AC_SUBST(URT_SYS, [$subsystem])

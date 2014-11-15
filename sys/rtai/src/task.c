@@ -95,11 +95,15 @@ exit_no_periodic:
 
 int urt_task_start(urt_task *task)
 {
+#ifdef __KERNEL__
+	int ret;
+#endif
+
 	if (task == NULL)
 		return EINVAL;
 
 #ifdef __KERNEL__
-	int ret = rt_task_init(&task->rt_task, _task_wrapper, (long)task, task->attr.stack_size, task->attr.priority, task->attr.uses_fpu, NULL);
+	ret = rt_task_init(&task->rt_task, _task_wrapper, (long)task, task->attr.stack_size, task->attr.priority, task->attr.uses_fpu, NULL);
 	if (ret)
 		goto exit_bad_init;
 

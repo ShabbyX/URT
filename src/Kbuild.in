@@ -1,25 +1,25 @@
 SOURCE_FILES = \
-               kern_main.c \
-               lock_common.c \
-               mem_common.c \
-               new_common.c \
-               param.c \
-               registry.c \
-               setup_common.c \
-               task_common.c \
-               $(M)/../sys/@URT_SYS@/src/lock.c \
-               $(M)/../sys/@URT_SYS@/src/mem.c \
-               $(M)/../sys/@URT_SYS@/src/setup.c \
-               $(M)/../sys/@URT_SYS@/src/task.c
+               @srcdir@/kern_main.c \
+               @srcdir@/lock_common.c \
+               @srcdir@/mem_common.c \
+               @srcdir@/new_common.c \
+               @srcdir@/param.c \
+               @srcdir@/registry.c \
+               @srcdir@/setup_common.c \
+               @srcdir@/task_common.c \
+               @srcdir@/../sys/@URT_SYS@/src/lock.c \
+               @srcdir@/../sys/@URT_SYS@/src/mem.c \
+               @srcdir@/../sys/@URT_SYS@/src/setup.c \
+               @srcdir@/../sys/@URT_SYS@/src/task.c
 
 ifeq (@URT_SYS@, posix)
   SOURCE_FILES += \
-                  $(M)/../sys/@URT_SYS@/src/names.c
+                  @srcdir@/../sys/@URT_SYS@/src/names.c
 endif
 
 ifeq (@URT_SYS@, rtai)
   SOURCE_FILES += \
-                  $(M)/../sys/@URT_SYS@/src/utils.c
+                  @srcdir@/../sys/@URT_SYS@/src/utils.c
 endif
 
 OBJECT_FILES = $(SOURCE_FILES:.c=.o)
