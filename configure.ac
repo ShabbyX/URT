@@ -194,6 +194,7 @@ AM_CONDITIONAL([HAVE_DOCTHIS], [test x"$DOCTHIS" = xy])
 AM_CONDITIONAL([HAVE_PDFLATEX], [test x"$PDFLATEX" = xy])
 AM_CONDITIONAL([HAVE_SYS_POSIX], [test x"$subsystem" = xposix])
 AM_CONDITIONAL([HAVE_SYS_RTAI], [test x"$subsystem" = xrtai])
+AM_CONDITIONAL([NEED_ROOT], [test x"$subsystem" = xrtai])
 
 AC_CONFIG_FILES([Makefile
                  doc/Makefile

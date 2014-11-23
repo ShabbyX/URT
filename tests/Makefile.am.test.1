@@ -8,6 +8,10 @@ if HAVE_VALGRIND
   AM_TESTS_ENVIRONMENT += \
   have_valgrind=y; export have_valgrind;
 endif
+if NEED_ROOT
+  AM_TESTS_ENVIRONMENT += \
+  needs_root=y; export needs_root;
+endif
 
 TESTS =
 

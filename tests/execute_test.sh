@@ -14,13 +14,18 @@
 # Environment:
 #
 # - needs_ko: tells that the main urt.ko file should be loaded before executing the test.
+# - needs_root: tells that running applications require root access.
 # - verbose: tells that the output should not be trimmed to only errors and warnings
 
 # check if doing valgrind check
 pre_command=
+if [ x"$needs_root" = xy]; then
+	pre_command=sudo
+fi
+
 grep_pattern="internal error\\|bad\\|error:\\|wrong\\|fail\\|invalid"
 if [ "$1" == valgrind ]; then
-	pre_command=valgrind
+	pre_command="$pre_command valgrind"
 	grep_pattern="in use at exit:\\|== Invalid\\|== Conditional\\|$grep_pattern"
 	shift;
 fi
