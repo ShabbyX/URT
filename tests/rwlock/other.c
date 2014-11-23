@@ -78,6 +78,7 @@ static void _cleanup(void)
 static int test_start(int *unused)
 {
 	int ret;
+	urt_time start;
 
 	if (rwlock_name == NULL)
 	{
@@ -85,7 +86,6 @@ static int test_start(int *unused)
 		return EXIT_FAILURE;
 	}
 
-	urt_time start;
 	urt_out("read: spawned\n");
 	ret = urt_init();
 	if (ret)

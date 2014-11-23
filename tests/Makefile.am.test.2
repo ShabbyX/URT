@@ -3,7 +3,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_TESTS_ENVIRONMENT = \
 needs_ko=$(URT_TESTS_NEED_URT_KO); export needs_ko; \
 top_srcdir=$(top_srcdir); export top_srcdir; \
-srcdir=$(srcdir); export srcdir;
+top_builddir=$(top_builddir); export top_builddir;
 if HAVE_VALGRIND
   AM_TESTS_ENVIRONMENT += \
   have_valgrind=y; export have_valgrind;
@@ -30,13 +30,16 @@ TESTS += run.sh
 endif
 
 if HAVE_KERNEL
+EXTRA_DIST = Kbuild
+
 KBUILD_EXTRA_CFLAGS =
 KBUILD_EXTRA_SYMBOLS = \
-                       $(abs_top_srcdir)/src/Modules.symvers
+                       $(abs_top_builddir)/src/Module.symvers
 
 TESTS += run_kernel.sh
 
-check-local:
+# Note: check-local is actually check-hook and there is no check-local!
+all-local:
 	$(URT_KERNEL_INVOKE) modules
 clean-local:
 	$(URT_KERNEL_INVOKE) clean

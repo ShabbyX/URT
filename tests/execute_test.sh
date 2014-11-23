@@ -19,7 +19,7 @@
 
 # check if doing valgrind check
 pre_command=
-if [ x"$needs_root" = xy]; then
+if [ x"$needs_root" = xy ]; then
 	pre_command=sudo
 fi
 
@@ -75,15 +75,15 @@ fi
 # spawn main process
 urt_ko=
 if [ x"$needs_ko" = xy ]; then
-	urt_ko="$top_srdir/src/urt.ko"
-	if [ -z "$urt_ko" ]; then
-		echo "Error: URT not built for kernel"
+	urt_ko="$top_builddir/src/urt.ko"
+	if [ ! -f "$urt_ko" ]; then
+		echo "Error: URT not built for kernel ('$urt_ko' missing)"
 		exit 1
 	fi
 	if lsmod | grep -q '^urt'; then
 		sudo rmmod urt
 	fi
-	sudo insmod "$urt_ko" || exit 1
+	sudo insmod "$urt_ko" || true
 fi
 if $kernel_module; then
 	sudo insmod "$test_main" "${main_options[@]}"

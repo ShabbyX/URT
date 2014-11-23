@@ -198,7 +198,6 @@ AM_CONDITIONAL([NEED_ROOT], [test x"$subsystem" = xrtai])
 
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
-                 src/Kbuild
                  src/Makefile
                  include/Makefile
                  tests/Makefile
@@ -216,6 +215,15 @@ AS_IF([test x"$build_user_lib" = xy],
                     tools/dump/Makefile
                     tools/names/Makefile
                     tools/recover/Makefile])])
+
+AS_IF([test x"$build_kernel_module" = xy],
+  [AC_CONFIG_FILES([src/Kbuild
+                    tests/mem/Kbuild
+                    tests/mutex/Kbuild
+                    tests/rwlock/Kbuild
+                    tests/sem/Kbuild
+                    tests/setup/Kbuild
+                    tests/task/Kbuild])])
 
 AC_CONFIG_FILES([scripts/urt${suffix}-config:scripts/urt-config.in],
                 [chmod +x scripts/urt${suffix}-config])

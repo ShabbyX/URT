@@ -59,6 +59,7 @@ static void _cleanup(void)
 static int test_start(int *unused)
 {
 	int ret;
+	urt_time start;
 
 	if (sem_name == NULL)
 	{
@@ -66,7 +67,6 @@ static int test_start(int *unused)
 		return EXIT_FAILURE;
 	}
 
-	urt_time start;
 	urt_out("wait: spawned\n");
 	if (test_arg == NULL || strcmp(test_arg, "x y") != 0 || test_arg2_count != 3 || test_arg2[0] != 1 || test_arg2[1] != 2 || test_arg2[2] != 3)
 	{

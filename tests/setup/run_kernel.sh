@@ -1,5 +1,3 @@
 #! /bin/bash
 
-module_path=$srcdir
-
-$top_srcdir/tests/execute_test.sh "$module_path"/master.ko sem_name="KSSEM"
+$top_srcdir/tests/execute_test.sh master.ko sem_name="KSSEM"
