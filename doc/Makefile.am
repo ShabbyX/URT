@@ -48,7 +48,7 @@ generated/tex/documentation.tex:
 files: $(FILES)
 	@:
 
-# Note: I can't find a way around the repition without using GNU extensions
+# Note: I can't find a way around the repetition without using GNU extensions
 DT_CMD = $(V_DOCTHIS)$(DT) $< +html +tex +notices $(DOCDIR)/notices
 generated/html/index.html: $(DOCDIR)/index $(DOCDIR)/notices
 	$(DT_CMD)

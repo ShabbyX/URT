@@ -51,11 +51,7 @@ build_kernel_module=n
 AS_CASE(["$subsystem"],
   [posix], [],
   [rtai], [AC_MSG_CHECKING([for working rtai-config])
-           AC_ARG_WITH(rtai-config,
-             [AS_HELP_STRING([--with-rtai-config=<path/to/rtai-config>], [Path to rtai-config (only if subsystem=rtai) @<:@default=rtai-config@:>@])],
-             [AS_CASE(["$withval"],
-               ["" | y | ye | yes | n | no], [AC_MSG_ERROR([Missing argument to --with-rtai-config.  See --help])],
-               [*], [rtai_config_tool="$withval"])])
+           SH_GET_CONFIG_STR(rtai-config, rtai_config_tool, [Path to rtai-config (only if subsystem=rtai)], [rtai-config])
            # Make sure the given rtai-config actually works
            AS_IF([$rtai_config_tool --version > /dev/null 2>&1],
              [AC_MSG_RESULT([$rtai_config_tool])],
@@ -109,38 +105,18 @@ AS_IF([test x"$functions_to_check" != x""],
 # A suffix is useful for having multiple URT installations.  Esentially, everywhere a file name has
 # urt in it, it becomes urt$suffix
 suffix=
-AC_ARG_WITH(suffix,
-            [AS_HELP_STRING([--with-suffix=<string>], [A suffix to append to urt in every file name @<:@default=""@:>@])],
-            [AS_CASE(["$withval"],
-              ["" | y | ye | yes | n | no], [AC_MSG_ERROR([Missing argument to --with-suffix.  See --help])],
-              [*], [suffix="$withval"]
-            )])
+SH_GET_CONFIG_STR(suffix, suffix, [A suffix to append to urt in every file name], "")
 
 # Check for URT parameters
 max_shared_objects=4096
 lock_stop_max_delay=10000000
 default_stack_size=4096
-AC_ARG_WITH(max-shared-objects,
-            [AS_HELP_STRING([--with-max-shared-objects=<num>], [Maximum number of shared objects @<:@default=4096@:>@])],
-            [AS_CASE(["$withval"],
-              ["" | y | ye | yes | n | no], [AC_MSG_ERROR([Missing argument to --with-max-shared-objects.  See --help])],
-              [0 | *[^0-9]*], [AC_MSG_ERROR([Argument to --with-max-shared-objects must be a positive number])],
-              [*], [max_shared_objects="$withval"])])
-AC_ARG_WITH(lock-stop-max-delay,
-            [AS_HELP_STRING([--with-lock-stop-max-delay=<num>], [Maximum delay for lock to respond to cancellation.
-                                                                 Higher values decrease responsiveness in such cases,
-                                                                 but decrease processor usage.  Too low values would
-                                                                 result in busy-waiting @<:@default=10000000@:>@])],
-            [AS_CASE(["$withval"],
-              ["" | y | ye | yes | n | no], [AC_MSG_ERROR([Missing argument to --with-lock-stop-max-delay.  See --help])],
-              [0 | *[^0-9]*], [AC_MSG_ERROR([Argument to --with-with-lock-stop-max-delay must be a positive number])],
-              [*], [lock_stop_max_delay="$withval"])])
-AC_ARG_WITH(default-stack-size,
-            [AS_HELP_STRING([--with-default-stack-size=<num>], [Default stack size to request when not specified @<:@default=4096@:>@])],
-            [AS_CASE(["$withval"],
-              ["" | y | ye | yes | n | no], [AC_MSG_ERROR([Missing argument to --with-default-stack-size.  See --help])],
-              [0 | *[^0-9]*], [AC_MSG_ERROR([Argument to --with-default-stack-size must be a positive number])],
-              [*], [default_stack_size="$withval"])])
+SH_GET_CONFIG_NUM(max-shared-objects, max_shared_objects, [Maximum number of shared objects], 4096)
+SH_GET_CONFIG_NUM(lock-stop-max-delay, lock_stop_max_delay, [Maximum delay for lock to respond to cancellation.
+                                                             Higher values decrease responsiveness in such cases,
+                                                             but decrease processor usage.  Too low values would
+                                                             result in busy-waiting], 10000000)
+SH_GET_CONFIG_NUM(default-stack-size, default_stack_size, [Default stack size to request when not specified], 4096)
 
 # Check for valgrind
 AS_IF([test x"$build_user_lib" = xy && test x"$subsystem" != xrtai],

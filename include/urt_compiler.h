@@ -40,7 +40,6 @@
 #ifdef __cplusplus
 # define URT_DECL_BEGIN extern "C" {
 # define URT_DECL_END }
-# define URT_CPP
 #else
 # define URT_DECL_BEGIN
 # define URT_DECL_END

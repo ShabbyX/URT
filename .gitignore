@@ -1,6 +1,5 @@
 # autotools generated files
 autom4te.cache
-m4/
 Makefile
 Makefile.in
 configure
