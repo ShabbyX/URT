@@ -1,13 +1,15 @@
 AC_PREREQ([2.68])
 AC_INIT([URT], [0.4.2], [https://github.com/ShabbyX/URT/issues])
-AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE([1.11 -Wall -Werror foreign subdir-objects])
+AC_CONFIG_AUX_DIR([bin])
 AC_CONFIG_MACRO_DIR([m4])
+AC_CANONICAL_SYSTEM
+
+AM_INIT_AUTOMAKE([1.14 -Wall -Werror foreign subdir-objects])
 
 AC_CONFIG_SRCDIR([src/registry.c])
 AC_CONFIG_HEADERS([src/config.h])
 
-# Checks for programs.
+# Checks for programs
 AC_PROG_CC_C99
 AC_PROG_INSTALL
 AM_PROG_AR
@@ -17,7 +19,7 @@ LT_INIT
 
 # Make sure C99 is available
 AS_IF([test x"$ac_cv_prog_cc_c99" = xno],
-  AC_MSG_ERROR([C99 support is required]))
+  [AC_MSG_ERROR([C99 support is required])])
 
 # Check the real-time subsystem.  One of the following
 #
@@ -53,17 +55,12 @@ AS_CASE(["$subsystem"],
              [AS_HELP_STRING([--with-rtai-config=<path/to/rtai-config>], [Path to rtai-config (only if subsystem=rtai) @<:@default=rtai-config@:>@])],
              [AS_CASE(["$withval"],
                ["" | y | ye | yes | n | no], [AC_MSG_ERROR([Missing argument to --with-rtai-config.  See --help])],
-               [*], [rtai_config_tool="$withval"])]
-           )
+               [*], [rtai_config_tool="$withval"])])
            # Make sure the given rtai-config actually works
-           if $rtai_config_tool --version > /dev/null 2>&1
-           then
-             AC_MSG_RESULT([$rtai_config_tool])
-           else
-             AC_MSG_ERROR(["$rtai_config_tool" didn't work])
-           fi
-           build_kernel_module=y]
-)
+           AS_IF([$rtai_config_tool --version > /dev/null 2>&1],
+             [AC_MSG_RESULT([$rtai_config_tool])],
+             [AC_MSG_ERROR(["$rtai_config_tool" did not work])])
+           build_kernel_module=y])
 
 AS_IF([test x"$headers_to_check" != x""],
   [AC_CHECK_HEADERS([$headers_to_check], [], [AC_MSG_ERROR(Required header missing)])])
@@ -89,21 +86,21 @@ AS_CASE(["$subsystem"],
 AS_IF([test x"$build_kernel_module" = xy],
   [kernel_build_path=/lib/modules/$(uname -r)/build
    kernel_invoke="\$(MAKE) -C '$kernel_build_path' M='\$(abs_builddir)' V=\$(V) \
-                  EXTRA_CFLAGS='-I\$(abs_top_srcdir)/include -I\$(abs_top_srcdir)/sys/\$(URT_SYS)/include $extra_cflags_kernel \$(KBUILD_EXTRA_CFLAGS)' \
-                  KBUILD_EXTRA_SYMBOLS='$extra_symbols_kernel \$(KBUILD_EXTRA_SYMBOLS)'"])
+EXTRA_CFLAGS='-I\$(abs_top_srcdir)/include -I\$(abs_top_srcdir)/sys/\$(URT_SYS)/include $extra_cflags_kernel \$(KBUILD_EXTRA_CFLAGS)' \
+KBUILD_EXTRA_SYMBOLS='$extra_symbols_kernel \$(KBUILD_EXTRA_SYMBOLS)'"])
 
 # Checks for typedefs, structures, and compiler characteristics
 AS_IF([test x"$build_user_lib" = xy],
   [AC_C_INLINE
-  AC_TYPE_SIZE_T])
+   AC_TYPE_SIZE_T])
 
-# Checks for library functions.
+# Checks for library functions
 AS_IF([test x"$build_user_lib" = xy],
   [functions_to_check="malloc"
-  AS_CASE(["$subsystem"],
-    [posix], [AS_VAR_APPEND(functions_to_check, " realloc mmap munmap ftruncate memset strchr strerror")],
-    [rtai], []
-  )])
+   AS_CASE(["$subsystem"],
+     [posix], [AS_VAR_APPEND(functions_to_check, " realloc mmap munmap ftruncate memset strchr strerror")],
+     [rtai], []
+   )])
 
 AS_IF([test x"$functions_to_check" != x""],
   [AC_CHECK_FUNCS([$functions_to_check], [], [AC_MSG_ERROR(Required function missing)])])
@@ -128,25 +125,22 @@ AC_ARG_WITH(max-shared-objects,
             [AS_CASE(["$withval"],
               ["" | y | ye | yes | n | no], [AC_MSG_ERROR([Missing argument to --with-max-shared-objects.  See --help])],
               [0 | *[^0-9]*], [AC_MSG_ERROR([Argument to --with-max-shared-objects must be a positive number])],
-              [*], [max_shared_objects="$withval"]
-            )])
+              [*], [max_shared_objects="$withval"])])
 AC_ARG_WITH(lock-stop-max-delay,
             [AS_HELP_STRING([--with-lock-stop-max-delay=<num>], [Maximum delay for lock to respond to cancellation.
-                                                                Higher values decrease responsiveness in such cases,
-                                                                but decrease processor usage.  Too low values would
-                                                                result in busy-waiting @<:@default=10000000@:>@])],
+                                                                 Higher values decrease responsiveness in such cases,
+                                                                 but decrease processor usage.  Too low values would
+                                                                 result in busy-waiting @<:@default=10000000@:>@])],
             [AS_CASE(["$withval"],
               ["" | y | ye | yes | n | no], [AC_MSG_ERROR([Missing argument to --with-lock-stop-max-delay.  See --help])],
               [0 | *[^0-9]*], [AC_MSG_ERROR([Argument to --with-with-lock-stop-max-delay must be a positive number])],
-              [*], [lock_stop_max_delay="$withval"]
-            )])
+              [*], [lock_stop_max_delay="$withval"])])
 AC_ARG_WITH(default-stack-size,
             [AS_HELP_STRING([--with-default-stack-size=<num>], [Default stack size to request when not specified @<:@default=4096@:>@])],
             [AS_CASE(["$withval"],
               ["" | y | ye | yes | n | no], [AC_MSG_ERROR([Missing argument to --with-default-stack-size.  See --help])],
               [0 | *[^0-9]*], [AC_MSG_ERROR([Argument to --with-default-stack-size must be a positive number])],
-              [*], [default_stack_size="$withval"]
-            )])
+              [*], [default_stack_size="$withval"])])
 
 # Check for valgrind
 AS_IF([test x"$build_user_lib" = xy && test x"$subsystem" != xrtai],
@@ -186,15 +180,15 @@ AC_SUBST(URT_KERNEL_INVOKE, [$kernel_invoke])
 AC_SUBST(URT_TESTS_NEED_URT_KO, [$tests_need_urt_ko])
 
 # Optional build
-AM_CONDITIONAL([HAVE_USER], [test x"$build_user_lib" = xy])
-AM_CONDITIONAL([HAVE_KERNEL], [test x"$build_kernel_module" = xy])
-AM_CONDITIONAL([HAVE_TOOLS], [test x"$build_user_lib" = xy])
-AM_CONDITIONAL([HAVE_VALGRIND], [test x"$VALGRIND" = xy])
-AM_CONDITIONAL([HAVE_DOCTHIS], [test x"$DOCTHIS" = xy])
-AM_CONDITIONAL([HAVE_PDFLATEX], [test x"$PDFLATEX" = xy])
-AM_CONDITIONAL([HAVE_SYS_POSIX], [test x"$subsystem" = xposix])
-AM_CONDITIONAL([HAVE_SYS_RTAI], [test x"$subsystem" = xrtai])
-AM_CONDITIONAL([NEED_ROOT], [test x"$subsystem" = xrtai])
+AM_CONDITIONAL(HAVE_USER, [test x"$build_user_lib" = xy])
+AM_CONDITIONAL(HAVE_KERNEL, [test x"$build_kernel_module" = xy])
+AM_CONDITIONAL(HAVE_TOOLS, [test x"$build_user_lib" = xy])
+AM_CONDITIONAL(HAVE_VALGRIND, [test x"$VALGRIND" = xy])
+AM_CONDITIONAL(HAVE_DOCTHIS, [test x"$DOCTHIS" = xy])
+AM_CONDITIONAL(HAVE_PDFLATEX, [test x"$PDFLATEX" = xy])
+AM_CONDITIONAL(HAVE_SYS_POSIX, [test x"$subsystem" = xposix])
+AM_CONDITIONAL(HAVE_SYS_RTAI, [test x"$subsystem" = xrtai])
+AM_CONDITIONAL(NEED_ROOT, [test x"$subsystem" = xrtai])
 
 AC_CONFIG_FILES([Makefile
                  doc/Makefile

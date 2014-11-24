@@ -1,6 +1,6 @@
 # autotools generated files
 autom4te.cache
-m4
+m4/
 Makefile
 Makefile.in
 configure
@@ -13,15 +13,7 @@ src/config.h
 
 # autotools installed files
 aclocal.m4
-ar-lib
-compile
-config.guess
-config.sub
-depcomp
-install-sh
-ltmain.sh
-missing
-test-driver
+bin/
 
 # build artifacts
 *.o
