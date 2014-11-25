@@ -74,7 +74,7 @@ FUNCTION urt_shmem_new: (name: const char *, size: size_t, error: int * = NULL):
 		- `EEXIST` if an object with that name already exists,
 		- `EINVAL` if given an invalid name or if **`size`** is invalid,
 		- `ENOSPC` if maximum number of shared objects reached,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A pointer to the allocated shared memory region, or `NULL` if failed.
 
@@ -104,7 +104,7 @@ FUNCTION urt_shmem_attach: (name: const char *, error: int * = NULL): void *
 		- `ENOMEM` if out of memory,
 		- `EINVAL` if given an invalid name,
 		- `ENOENT` if no shared object with given name exists,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A pointer to the shared memory region, or `NULL` if failed.
 

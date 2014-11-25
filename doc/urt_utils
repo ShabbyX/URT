@@ -51,7 +51,7 @@ FUNCTION urt_make_rt_context: (prev: int *): int
 
 		- `0` on success,
 		- `ENOSUP` if operation is not possible given the underlying host system,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_unmake_rt_context: (prev: int): void
 	Restore previous context after a call to `urt_make_rt_context`.

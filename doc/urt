@@ -24,7 +24,7 @@ FUNCTION urt_init: (): int
 		- `0` if successful,
 		- `EALREADY` if URT is already initialized,
 		- `ENOMEM` if out of memory,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_calibrate: (): void
 	Calibrate URT

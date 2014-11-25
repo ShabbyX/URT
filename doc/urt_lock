@@ -46,7 +46,7 @@ FUNCTION urt_sem_new: (init_value: unsigned int, error: int * = NULL): urt_sem *
 
 		- `ENOMEM` if out of memory,
 		- `EINVAL` if **`init_value`** is invalid,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A new semaphore, or `NULL` if not possible.
 
@@ -75,7 +75,7 @@ FUNCTION urt_shsem_new: (name: const char *, init_value: unsigned int, error: in
 		- `EEXIST` if an object with that name already exists,
 		- `EINVAL` if given an invalid name or if **`init_value`** is invalid,
 		- `ENOSPC` if maximum number of shared objects reached,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A new semaphore, or `NULL` if not possible.
 
@@ -105,7 +105,7 @@ FUNCTION urt_shsem_attach: (name: const char *, error: int * = NULL): urt_sem *
 		- `ENOMEM` if out of memory,
 		- `EINVAL` if given an invalid name,
 		- `ENOENT` if no shared object with given name exists,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A pointer to the shared semaphore, or `NULL` if failed.
 
@@ -133,7 +133,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_sem_waitf: (sem: urt_sem *, stop: (volatile void *): bool, data: volatile void * = NULL): int
 NOTICE RT
@@ -167,7 +167,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_sem_try_wait: (sem: urt_sem *): int
 NOTICE RT
@@ -182,7 +182,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `EBUSY` if lock was not available,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_sem_post: (sem: urt_sem *): int
 NOTICE RT
@@ -195,7 +195,7 @@ NOTICE RT
 	OUTPUT
 
 		- `0` on success,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_mutex_new: (error: int * = NULL): urt_mutex *
 	Create a new mutex
@@ -207,7 +207,7 @@ FUNCTION urt_mutex_new: (error: int * = NULL): urt_mutex *
 
 		- `ENOMEM` if out of memory,
 		- `EAGAIN` if operation failed but there is a chance of success on retry,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A new mutex, or `NULL` if not possible.
 
@@ -235,7 +235,7 @@ FUNCTION urt_shmutex_new: (name: const char *, error: int * = NULL): urt_mutex *
 		- `EINVAL` if given an invalid name,
 		- `ENOSPC` if maximum number of shared objects reached,
 		- `ENOSUP` if the underlying system doesn't support shared readers-writers locks,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A new mutex, or `NULL` if not possible.
 
@@ -265,7 +265,7 @@ FUNCTION urt_shmutex_attach: (name: const char *, error: int * = NULL): urt_mute
 		- `ENOMEM` if out of memory,
 		- `EINVAL` if given an invalid name,
 		- `ENOENT` if no shared object with given name exists,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A pointer to the shared mutex, or `NULL` if failed.
 
@@ -293,7 +293,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_mutex_lockf: (mutex: urt_mutex *, stop: (volatile void *): bool, data: volatile void * = NULL): int
 NOTICE RT
@@ -327,7 +327,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_mutex_try_lock: (mutex: urt_mutex *): int
 NOTICE RT
@@ -342,7 +342,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `EBUSY` if lock was not available,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_mutex_unlock: (mutex: urt_mutex *): int
 NOTICE RT
@@ -356,7 +356,7 @@ NOTICE RT
 		Returns one of the following:
 
 		- `0` on success,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_rwlock_new: (error: int * = NULL): urt_rwlock *
 	Create a new readers-writers lock
@@ -368,7 +368,7 @@ FUNCTION urt_rwlock_new: (error: int * = NULL): urt_rwlock *
 
 		- `ENOMEM` if out of memory,
 		- `EAGAIN` if operation failed but there is a chance of success on retry,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A new readers-writers lock, or `NULL` if not possible.
 
@@ -396,7 +396,7 @@ FUNCTION urt_shrwlock_new: (name: const char *, error: int * = NULL): urt_rwlock
 		- `EINVAL` if given an invalid name,
 		- `ENOSPC` if maximum number of shared objects reached,
 		- `ENOSUP` if the underlying system doesn't support shared readers-writers locks,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 	OUTPUT
 		A new readers-writers lock, or `NULL` if not possible.
@@ -427,7 +427,7 @@ FUNCTION urt_shrwlock_attach: (name: const char *, error: int * = NULL): urt_rwl
 		- `ENOMEM` if out of memory,
 		- `EINVAL` if given an invalid name,
 		- `ENOENT` if no shared object with given name exists,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A pointer to the shared readers-writers lock, or `NULL` if failed.
 
@@ -458,7 +458,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_rwlock_read_lockf: (rwlock: urt_rwlock *, stop: (volatile void *): bool, data: volatile void * = NULL): int
 NOTICE RT
@@ -495,7 +495,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_rwlock_write_lockf: (rwlock: urt_rwlock *, stop: (volatile void *): bool, data: volatile void * = NULL): int
 NOTICE RT
@@ -529,7 +529,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_rwlock_timed_write_lock: (rwlock: urt_rwlock *, wait_time: urt_time): int
 NOTICE RT
@@ -547,7 +547,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_rwlock_try_read_lock: (rwlock: urt_rwlock *): int
 NOTICE RT
@@ -562,7 +562,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `EBUSY` if lock was not available,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_rwlock_try_write_lock: (rwlock: urt_rwlock *): int
 NOTICE RT
@@ -577,7 +577,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `EBUSY` if lock was not available,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_rwlock_read_unlock: (rwlock: urt_rwlock *): int
 NOTICE RT
@@ -591,7 +591,7 @@ NOTICE RT
 		Returns one of the following:
 
 		- `0` on success,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_rwlock_write_unlock: (rwlock: urt_rwlock *): int
 NOTICE RT
@@ -605,7 +605,7 @@ NOTICE RT
 		Returns one of the following:
 
 		- `0` on success,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_cond_new: (error: int * = NULL): urt_cond *
 	Create a new condition variable
@@ -617,7 +617,7 @@ FUNCTION urt_cond_new: (error: int * = NULL): urt_cond *
 
 		- `ENOMEM` if out of memory,
 		- `EAGAIN` if operation failed but there is a chance of success on retry,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A new condition variable, or `NULL` if not possible.
 
@@ -645,7 +645,7 @@ FUNCTION urt_shcond_new: (name: const char *, error: int * = NULL): urt_cond *
 		- `EINVAL` if given an invalid name,
 		- `ENOSPC` if maximum number of shared objects reached,
 		- `ENOSUP` if the underlying system doesn't support shared condition variables,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 	OUTPUT
 		A new condition variable, or `NULL` if not possible.
@@ -676,7 +676,7 @@ FUNCTION urt_shcond_attach: (name: const char *, error: int * = NULL): urt_cond 
 		- `ENOMEM` if out of memory,
 		- `EINVAL` if given an invalid name,
 		- `ENOENT` if no shared object with given name exists,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 	OUTPUT
 		A pointer to the shared condition variable, or `NULL` if failed.
 
@@ -717,7 +717,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `ECANCELED` if **`stop`** is provided and it becomes `true` before the lock is aquired,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_cond_waitf: (cond: urt_cond *, mutex: urt_mutex *, stop: (volatile void *): bool, data: volatile void * = NULL): int
 NOTICE RT
@@ -755,7 +755,7 @@ NOTICE RT
 
 		- `0` on success,
 		- `ETIMEDOUT` if **`wait_time`** nanoseconds has passed and the semaphore was not available,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_cond_signal: (cond: urt_cond *): int
 NOTICE RT
@@ -780,7 +780,7 @@ NOTICE RT
 		Returns one of the following:
 
 		- `0` on success,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_cond_broadcast: (cond: urt_cond *): int
 NOTICE RT
@@ -795,4 +795,4 @@ NOTICE RT
 		Returns one of the following:
 
 		- `0` on success,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.

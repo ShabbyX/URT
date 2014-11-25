@@ -49,7 +49,7 @@ VAR soft: bool
 	Whether the task is soft-real-time
 
 	This field chooses between soft-real-time and hard-real-time.  In both cases the task would be in real-time context and functions marked as
-	`RT` are available.  However, soft-real-time tasks don't have any deadline guarantees and are best-effort.  If a subsystem doesn't support
+	`RT` are available.  However, soft-real-time tasks don't have any deadline guarantees and are best-effort.  If a back-end doesn't support
 	soft-real-time tasks, they will be created as hard-real-time.
 
 FUNCTION urt_priority_is_valid: (priority: int): bool

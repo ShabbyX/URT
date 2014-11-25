@@ -21,37 +21,37 @@ LT_INIT
 AS_IF([test x"$ac_cv_prog_cc_c99" = xno],
   [AC_MSG_ERROR([C99 support is required])])
 
-# Check the real-time subsystem.  One of the following
+# Check the real-time back-end.  One of the following
 #
 #     posix:            Linux (non-realtime) (alpha version), QNX (Noy yet implemented), VxWorks (Not yet implemented)
 #     rtai:             Real-time library and kernel module for Linux  (In implementation)
 #     xenomai:          Real-time library for Linux (Not yet implemented)
 #     rtlinux:          Real-time patches (RT-Linux) for the Linux kernel (Not yet implemented)
 #
-AC_MSG_CHECKING([real-time subsystem to use])
-subsystem=posix
-AC_ARG_WITH(subsystem,
-            [AS_HELP_STRING([--with-subsystem=<rt-system>], [One of {posix, rtai}])],
+AC_MSG_CHECKING([real-time back-end to use])
+backend=posix
+AC_ARG_WITH(back-end,
+            [AS_HELP_STRING([--with-back-end=<rt-system>], [One of {posix, rtai}])],
             [AS_CASE(["$withval"],
-              ["" | y | ye | yes | n | no], [AC_MSG_ERROR([Missing argument to --with-subsystem.  See --help])],
-              [posix | Posix | POSIX], [subsystem=posix],
-              [rtai | Rtai | RTAI], [subsystem=rtai],
+              ["" | y | ye | yes | n | no], [AC_MSG_ERROR([Missing argument to --with-back-end.  See --help])],
+              [posix | Posix | POSIX], [backend=posix],
+              [rtai | Rtai | RTAI], [backend=rtai],
               [xenomai | Xenomai | XENOMAI], [AC_MSG_ERROR([Sorry, XENOMAI is not yet supported])],
               [rtlinux | Rtlinux | RTlinux | RTLinux | RTLINUX], [AC_MSG_ERROR([Sorry, RTLINUX is not yet supported])],
-              [*], [AC_MSG_ERROR([Unknown real-time subsystem $witval.  See --help])]
+              [*], [AC_MSG_ERROR([Unknown real-time back-end $witval.  See --help])]
             )])
-AC_MSG_RESULT([$subsystem])
+AC_MSG_RESULT([$backend])
 
-# Check for subsystem specific requirements
+# Check for back-end specific requirements
 headers_to_check="stddef.h stdlib.h string.h ctype.h signal.h stdint.h stdbool.h"
 headers_to_check="$headers_to_check unistd.h fcntl.h sys/stat.h sys/types.h sys/mman.h semaphore.h pthread.h"
 rtai_config_tool=rtai-config
 build_user_lib=y
 build_kernel_module=n
-AS_CASE(["$subsystem"],
+AS_CASE(["$backend"],
   [posix], [],
   [rtai], [AC_MSG_CHECKING([for working rtai-config])
-           SH_GET_CONFIG_STR(rtai-config, rtai_config_tool, [Path to rtai-config (only if subsystem=rtai)], [rtai-config])
+           SH_GET_CONFIG_STR(rtai-config, rtai_config_tool, [Path to rtai-config (only if back-end=rtai)], [rtai-config])
            # Make sure the given rtai-config actually works
            AS_IF([$rtai_config_tool --version > /dev/null 2>&1],
              [AC_MSG_RESULT([$rtai_config_tool])],
@@ -61,13 +61,13 @@ AS_CASE(["$subsystem"],
 AS_IF([test x"$headers_to_check" != x""],
   [AC_CHECK_HEADERS([$headers_to_check], [], [AC_MSG_ERROR(Required header missing)])])
 
-# Check for subsystem specific flags
+# Check for back-end specific flags
 extra_cflags_user=
 extra_ldflags_user=
 extra_cflags_kernel=
 extra_symbols_kernel=
 tests_need_urt_ko=n
-AS_CASE(["$subsystem"],
+AS_CASE(["$backend"],
   [posix], [AS_CASE(["$host_os"],
              [*linux*], [AC_CHECK_LIB([rt], [clock_gettime])
                          extra_cflags_user="-pthread"
@@ -93,7 +93,7 @@ AS_IF([test x"$build_user_lib" = xy],
 # Checks for library functions
 AS_IF([test x"$build_user_lib" = xy],
   [functions_to_check="malloc"
-   AS_CASE(["$subsystem"],
+   AS_CASE(["$backend"],
      [posix], [AS_VAR_APPEND(functions_to_check, " realloc mmap munmap ftruncate memset strchr strerror")],
      [rtai], []
    )])
@@ -119,7 +119,7 @@ SH_GET_CONFIG_NUM(lock-stop-max-delay, lock_stop_max_delay, [Maximum delay for l
 SH_GET_CONFIG_NUM(default-stack-size, default_stack_size, [Default stack size to request when not specified], 4096)
 
 # Check for valgrind
-AS_IF([test x"$build_user_lib" = xy && test x"$subsystem" != xrtai],
+AS_IF([test x"$build_user_lib" = xy && test x"$backend" != xrtai],
   [AC_CHECK_PROG(VALGRIND, valgrind, y)])
 
 # Check for DocThis!
@@ -130,7 +130,7 @@ AC_CHECK_PROG(PDFLATEX, pdflatex, y)
 
 # Configuration
 bi_space=0
-AS_CASE(["$subsystem"],
+AS_CASE(["$backend"],
   [posix], [],
   [rtai], [bi_space=1]
 )
@@ -141,8 +141,8 @@ AC_DEFINE_UNQUOTED(URT_SUFFIX, ["$suffix"], [the suffix used to build URT with])
 AC_DEFINE_UNQUOTED(URT_BI_SPACE, [$bi_space], [whether URT is runnable on both user and kernel spaces])
 
 # Build
-AC_SUBST(URT_SYS, [$subsystem])
-AS_IF([test x"$subsystem" = xrtai],
+AC_SUBST(URT_SYS, [$backend])
+AS_IF([test x"$backend" = xrtai],
   [AC_SUBST(URT_RTAI_CONFIG, [$rtai_config_tool])])
 AC_SUBST(URT_BUILD_USER, [$build_user_lib])
 AC_SUBST(URT_BUILD_KERNEL, [$build_kernel_module])
@@ -162,9 +162,9 @@ AM_CONDITIONAL(HAVE_TOOLS, [test x"$build_user_lib" = xy])
 AM_CONDITIONAL(HAVE_VALGRIND, [test x"$VALGRIND" = xy])
 AM_CONDITIONAL(HAVE_DOCTHIS, [test x"$DOCTHIS" = xy])
 AM_CONDITIONAL(HAVE_PDFLATEX, [test x"$PDFLATEX" = xy])
-AM_CONDITIONAL(HAVE_SYS_POSIX, [test x"$subsystem" = xposix])
-AM_CONDITIONAL(HAVE_SYS_RTAI, [test x"$subsystem" = xrtai])
-AM_CONDITIONAL(NEED_ROOT, [test x"$subsystem" = xrtai])
+AM_CONDITIONAL(HAVE_SYS_POSIX, [test x"$backend" = xposix])
+AM_CONDITIONAL(HAVE_SYS_RTAI, [test x"$backend" = xrtai])
+AM_CONDITIONAL(NEED_ROOT, [test x"$backend" = xrtai])
 
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
