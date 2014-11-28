@@ -40,16 +40,9 @@
 #ifdef __cplusplus
 # define URT_DECL_BEGIN extern "C" {
 # define URT_DECL_END }
-# define URT_CPP
 #else
 # define URT_DECL_BEGIN
 # define URT_DECL_END
-#endif
-
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-# define URT_RESTRICT restrict
-#else
-# define URT_RESTRICT
 #endif
 
 #endif

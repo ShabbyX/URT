@@ -24,7 +24,7 @@ Usage urt-config OPTIONS
 Options :
     --help              print this help message
     --version           print URT version
-    --sys               Subsystem being used by URT
+    --sys               Back-end being used by URT
     --user-cflags       C flags for user-space applications$msg_help_build_user
     --user-ldflags      link flags for user-space applications $msg_help_build_user
     --kernel-cflags     C flags for kernel modules$msg_help_build_kernel

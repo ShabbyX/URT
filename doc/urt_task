@@ -68,7 +68,7 @@ FUNCTION urt_task_start: (task: urt_task *): int
 		- `ENOMEM` if out of memory,
 		- `EAGAIN` if operation failed but there is a chance of success on retry,
 		- `EINVAL` if **`task`** is invalid,
-		- Possibly others based on subsystem.
+		- Possibly others based on back-end.
 
 FUNCTION urt_task_wait_period: (task: urt_task *): void
 NOTICE RT
@@ -85,7 +85,7 @@ NOTICE RT
 	Return the absolute time of the next period of the task in nanoseconds
 
 	This function returns the absolute time of the next period of the function in nanoseconds.
-	Similar to `[#urt_task_wait_period]`, if a deadline is missed, the time of the next period could be in the past, but some subsystems such
+	Similar to `[#urt_task_wait_period]`, if a deadline is missed, the time of the next period could be in the past, but some back-ends such
 	as RTAI may still report the next period as if there were no deadline misses.
 
 	INPUT task
