@@ -89,6 +89,10 @@ urt_sem *urt_sys_shsem_attach(const char *name, int *error)
 	urt_sem *sem = urt_mem_new(sizeof *sem, error);
 	if (sem == NULL)
 		goto exit_no_mem;
+	/*
+	 * note: usage count is not done by RTAI (rt_get_adr_cnt doesn't exist in user-space)
+	 * This is valid for all lock types.
+	 */
 	sem->sem_ptr = rt_get_adr(nam2num(name));
 	if (sem->sem_ptr == NULL)
 		goto exit_no_obj;
@@ -106,14 +110,25 @@ exit_fail:
 	return NULL;
 }
 
+static void _shsem_detach(struct urt_registered_object *ro, void *address, void *user_data)
+{
+	urt_sem *sem = address;
+	if (ro->count == 0)
+		rt_named_sem_delete(sem->sem_ptr);
+	urt_mem_delete(sem);
+}
+
 void urt_shsem_detach(urt_sem *sem)
 {
 	urt_registered_object *ro;
+
 	if (sem == NULL)
 		return;
+
 	ro = urt_get_object_by_id(sem->id);
-	rt_named_sem_delete(sem->sem_ptr);
-	urt_deregister(ro, NULL, NULL, NULL);
+	if (ro == NULL)
+		return;
+	urt_deregister(ro, _shsem_detach, sem, NULL);
 }
 URT_EXPORT_SYMBOL(urt_shsem_detach);
 
@@ -277,14 +292,25 @@ exit_fail:
 	return NULL;
 }
 
+static void _shrwlock_detach(struct urt_registered_object *ro, void *address, void *user_data)
+{
+	urt_rwlock *rwl = address;
+	if (ro->count == 0)
+		rt_named_rwl_delete(rwl->rwl_ptr);
+	urt_mem_delete(rwl);
+}
+
 void urt_shrwlock_detach(urt_rwlock *rwl)
 {
 	urt_registered_object *ro;
+
 	if (rwl == NULL)
 		return;
+
 	ro = urt_get_object_by_id(rwl->id);
-	rt_named_rwl_delete(rwl->rwl_ptr);
-	urt_deregister(ro, NULL, NULL, NULL);
+	if (ro == NULL)
+		return;
+	urt_deregister(ro, _shrwlock_detach, rwl, NULL);
 }
 URT_EXPORT_SYMBOL(urt_shrwlock_detach);
 
@@ -430,15 +456,26 @@ exit_fail:
 	return NULL;
 }
 
+static void _shcond_detach(struct urt_registered_object *ro, void *address, void *user_data)
+{
+	urt_cond *cond = address;
+	if (ro->count == 0)
+		/* see note in urt_shcond_new */
+		rt_named_sem_delete(cond->cond_ptr);
+	urt_mem_delete(cond);
+}
+
 void urt_shcond_detach(urt_cond *cond)
 {
 	urt_registered_object *ro;
+
 	if (cond == NULL)
 		return;
+
 	ro = urt_get_object_by_id(cond->id);
-	/* see note in urt_shcond_new */
-	rt_named_sem_delete(cond->cond_ptr);
-	urt_deregister(ro, NULL, NULL, NULL);
+	if (ro == NULL)
+		return;
+	urt_deregister(ro, _shcond_detach, cond, NULL);
 }
 URT_EXPORT_SYMBOL(urt_shcond_detach);
 
