@@ -129,21 +129,3 @@ void urt_task_wait_period(urt_task *task)
 	rt_task_wait_period();
 }
 URT_EXPORT_SYMBOL(urt_task_wait_period);
-
-#ifndef __KERNEL__
-urt_time urt_task_next_period(urt_task *task)
-{
-	urt_time cur;
-	urt_task_attr *attr = &task->attr;
-
-	/* make sure task is periodic */
-	if (URT_UNLIKELY(attr->period <= 0))
-		return 0;
-
-	cur = urt_get_time();
-	if (cur > attr->start_time)
-		attr->start_time += (cur - attr->start_time + attr->period - 1) / attr->period * attr->period;
-
-	return attr->start_time;
-}
-#endif

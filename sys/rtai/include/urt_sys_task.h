@@ -54,18 +54,10 @@ static inline bool urt_priority_is_higher(int a, int b)
 	return a < b;
 }
 
-#ifdef __KERNEL__
 static inline urt_time urt_task_next_period(urt_task *task)
 {
-	return count2nano(next_period());
+	return count2nano(rt_task_next_period());
 }
-#else
-/*
- * Note: RTAI doesn't have next_period for user space. This function simulates the behavior
- * and may be imprecise. TODO: test the amount of imprecision.
- */
-urt_time urt_task_next_period(urt_task *task);
-#endif
 
 static inline urt_time urt_task_period_time_left(urt_task *task) { return urt_task_next_period(task) - urt_get_time(); }
 
