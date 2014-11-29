@@ -85,11 +85,13 @@ if [ x"$needs_ko" = xy ]; then
 	fi
 	sudo insmod "$urt_ko" || true
 fi
+echo "Start:         $(date '+%s.%N')"
 if $kernel_module; then
 	sudo insmod "$test_main" "${main_options[@]}"
 else
 	($pre_command "$test_main" "${main_options[@]}" 2>&1 | grep --color=never "$grep_pattern"; ret=${PIPESTATUS[0]}) &
 fi
+echo "Main loaded:   $(date '+%s.%N')"
 # if side processes, spawn them too
 if $has_side; then
 	# give a small delay, so the main process can allocate shared memories and locks, if any
@@ -101,6 +103,7 @@ if $has_side; then
 			($pre_command "$test_side" "${side_options[@]}" 2>&1 | grep --color=never "$grep_pattern"; ret2[$i]=${PIPESTATUS[0]}) &
 		fi
 	done
+	echo "Slaves loaded: $(date '+%s.%N')"
 fi
 
 if $kernel_module; then
@@ -111,6 +114,7 @@ if $kernel_module; then
 else
 	wait
 fi
+echo "Stop:          $(date '+%s.%N')"
 # check for output of side processes.  If they were bad, the whole return value becomes bad.
 # In kernel tests, unload the modules and ask the user to check dmesg
 if $has_side; then
