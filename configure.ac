@@ -171,6 +171,7 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  include/Makefile
                  tests/Makefile
+                 tests/cond/Makefile
                  tests/mem/Makefile
                  tests/mutex/Makefile
                  tests/rwlock/Makefile
@@ -188,6 +189,7 @@ AS_IF([test x"$build_user_lib" = xy],
 
 AS_IF([test x"$build_kernel_module" = xy],
   [AC_CONFIG_FILES([src/Kbuild
+                    tests/cond/Kbuild
                     tests/mem/Kbuild
                     tests/mutex/Kbuild
                     tests/rwlock/Kbuild

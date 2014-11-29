@@ -117,7 +117,7 @@ static void test_body(int *unused)
 	test_task = urt_task_new(_test);
 	if (test_task == NULL)
 	{
-		urt_out("wait: failed to create task\n");
+		urt_out("read: failed to create task\n");
 		goto exit_no_task;
 	}
 	urt_task_start(test_task);
