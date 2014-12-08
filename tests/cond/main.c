@@ -50,11 +50,13 @@ static urt_task *check_task = NULL;
 static void _check(urt_task *task, void *data)
 {
 	int i;
+	int ret;
 	for (i = 0; i < 1000; ++i)
 	{
 		urt_mutex_lock(mutex);
 		while (mem[11] == 10)
-			urt_cond_wait(write_cnd, mutex);
+			if ((ret = urt_cond_wait(write_cnd, mutex)))
+				urt_err("main: cond_wait returned %d\n", ret);
 		if (mem[11] < 0 || mem[11] >= 10)
 			urt_err("main: count is invalid (%d)\n", mem[11]);
 		mem[(mem[10] + mem[11]) % 10] = i;
