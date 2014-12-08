@@ -177,7 +177,7 @@ URT_EXPORT_SYMBOL(urt_mutex_new);
 
 urt_mutex *urt_sys_shmutex_new(const char *name, int *error)
 {
-	return urt_sys_shsem_new(name, 1, error);
+	return _shsem_common(name, 1, RES_SEM, error);
 }
 
 void urt_mutex_delete(urt_mutex *mutex)
