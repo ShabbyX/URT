@@ -171,7 +171,7 @@ URT_EXPORT_SYMBOL(urt_sem_post);
 
 urt_mutex *(urt_mutex_new)(int *error, ...)
 {
-	return _sem_new_common(1, BIN_SEM, error);
+	return _sem_new_common(1, RES_SEM, error);
 }
 URT_EXPORT_SYMBOL(urt_mutex_new);
 
