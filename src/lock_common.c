@@ -24,6 +24,8 @@
 #ifdef __KERNEL__
 # include <linux/semaphore.h>
 #else
+# include <errno.h>
+# include <string.h>
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
@@ -65,7 +67,8 @@ void urt_global_sem_wait(void)
 		urt_err("error: global sem wait interrupted\n");
 #else
 	char command = URT_GLOBAL_SEM_WAIT;
-	write(urt_global_sem, &command, 1);
+	if (write(urt_global_sem, &command, 1) < 0)
+		urt_err("error: global sem wait command error %d: '%s'\n", errno, strerror(errno));
 #endif
 }
 
@@ -75,7 +78,8 @@ void urt_global_sem_try_wait(void)
 	down_trylock(&urt_global_sem);
 #else
 	char command = URT_GLOBAL_SEM_TRY_WAIT;
-	write(urt_global_sem, &command, 1);
+	if (write(urt_global_sem, &command, 1) < 0)
+		urt_err("error: global sem try wait command error %d: '%s'\n", errno, strerror(errno));
 #endif
 }
 
@@ -85,7 +89,8 @@ void urt_global_sem_post(void)
 	up(&urt_global_sem);
 #else
 	char command = URT_GLOBAL_SEM_POST;
-	write(urt_global_sem, &command, 1);
+	if (write(urt_global_sem, &command, 1) < 0)
+		urt_err("error: global sem post command error %d: '%s'\n", errno, strerror(errno));
 #endif
 }
 
