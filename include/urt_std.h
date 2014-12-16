@@ -24,6 +24,7 @@
 # include <linux/string.h>
 # include <linux/ctype.h>
 # include <linux/stddef.h>
+# include <linux/bsearch.h>
 #else
 # include <string.h>
 # include <ctype.h>
