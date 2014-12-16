@@ -1,0 +1,13 @@
+obj-m += master.o slave_0.o slave_1.o slave_2.o slave_3.o slave_4.o
+obj-m += slave_5.o slave_6.o slave_7.o slave_8.o slave_9.o
+master-y := @srcdir@/main.o
+slave_0-y := @srcdir@/other.o
+slave_1-y := @srcdir@/other.o
+slave_2-y := @srcdir@/other.o
+slave_3-y := @srcdir@/other.o
+slave_4-y := @srcdir@/other.o
+slave_5-y := @srcdir@/other.o
+slave_6-y := @srcdir@/other.o
+slave_7-y := @srcdir@/other.o
+slave_8-y := @srcdir@/other.o
+slave_9-y := @srcdir@/other.o

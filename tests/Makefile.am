@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = mem mutex rwlock sem setup task
+SUBDIRS = setup task mutex sem mem cond rwlock
 
 check_SCRIPTS = execute_test.sh

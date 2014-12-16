@@ -55,6 +55,7 @@ void urt_sys_force_clear_name(urt_registered_object *ro)
 		break;
 	case URT_TYPE_SEM:
 	case URT_TYPE_MUTEX:
+	case URT_TYPE_COND:
 		while ((adr = rt_get_adr(nam2num(ro->name))))
 			rt_named_sem_delete(adr);
 		break;

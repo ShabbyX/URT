@@ -23,7 +23,11 @@
 #include "urt_sys_log.h"
 
 #ifndef URT_LOG_PREFIX
-# define URT_LOG_PREFIX "URT: "
+# ifdef __KERNEL__
+#  define URT_LOG_PREFIX "URT[k]: "
+# else
+#  define URT_LOG_PREFIX "URT: "
+# endif
 #endif
 
 #ifndef NDEBUG
