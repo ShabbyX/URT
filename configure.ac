@@ -152,6 +152,7 @@ AC_SUBST(URT_CFLAGS_KERNEL, [$extra_cflags_kernel])
 AC_SUBST(URT_SYMBOLS_KERNEL, [$extra_symbols_kernel])
 AC_SUBST(URT_VERSION, [$PACKAGE_VERSION])
 AC_SUBST(URT_SUFFIX, [$suffix])
+AC_SUBST(URT_SUFFIX_NOWS, [${suffix//@<:@@<:@:space:@:>@@:>@/}])
 AC_SUBST(URT_KERNEL_INVOKE, [$kernel_invoke])
 AC_SUBST(URT_TESTS_NEED_URT_KO, [$tests_need_urt_ko])
 

@@ -1,4 +1,4 @@
-_urt_config()
+_urt@URT_SUFFIX_NOWS@_config()
 {
 	local cur opts
 	COMPREPLY=()
@@ -13,4 +13,4 @@ _urt_config()
 	fi
 	return 0
 }
-complete -F _urt_config urt"@URT_SUFFIX@"-config > /dev/null 2>&1
+complete -F _urt@URT_SUFFIX_NOWS@_config urt"@URT_SUFFIX@"-config > /dev/null 2>&1
