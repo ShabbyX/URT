@@ -53,6 +53,7 @@ all-local:
 	$(URT_KERNEL_INVOKE) modules
 clean-local:
 	$(URT_KERNEL_INVOKE) clean
+	rm -f "$(srcdir)"/*.o "$(srcdir)"/.*.cmd
 install-exec-local:
 	$(URT_KERNEL_INVOKE) modules_install
 	cp Module.symvers $(URT_KERNEL_MODULE_PATH)

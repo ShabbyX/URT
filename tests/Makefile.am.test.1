@@ -39,6 +39,7 @@ all-local:
 	$(URT_KERNEL_INVOKE) modules
 clean-local:
 	$(URT_KERNEL_INVOKE) clean
+	rm -f "$(srcdir)"/*.o "$(srcdir)"/.*.cmd
 endif
 
 check_SCRIPTS = $(TESTS)
