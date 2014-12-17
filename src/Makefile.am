@@ -55,5 +55,5 @@ clean-local:
 	$(URT_KERNEL_INVOKE) clean
 install-exec-local:
 	$(URT_KERNEL_INVOKE) modules_install
-# TODO: do I need to install Module.symvers manually?
+	cp Module.symvers $(URT_KERNEL_MODULE_PATH)
 endif

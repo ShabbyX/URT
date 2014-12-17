@@ -79,12 +79,6 @@ AS_CASE(["$backend"],
            tests_need_urt_ko=y]
 )
 
-AS_IF([test x"$build_kernel_module" = xy],
-  [kernel_build_path=/lib/modules/$(uname -r)/build
-   kernel_invoke="\$(MAKE) -C '$kernel_build_path' M='\$(abs_builddir)' V=\$(V) \
-EXTRA_CFLAGS='-I\$(abs_top_srcdir)/include -I\$(abs_top_srcdir)/sys/\$(URT_SYS)/include $extra_cflags_kernel \$(KBUILD_EXTRA_CFLAGS)' \
-KBUILD_EXTRA_SYMBOLS='$extra_symbols_kernel \$(KBUILD_EXTRA_SYMBOLS)'"])
-
 # Checks for typedefs, structures, and compiler characteristics
 AS_IF([test x"$build_user_lib" = xy],
   [AC_C_INLINE
@@ -106,6 +100,16 @@ AS_IF([test x"$functions_to_check" != x""],
 # urt in it, it becomes urt$suffix
 suffix=
 SH_GET_CONFIG_STR(suffix, suffix, [A suffix to append to urt in every file name], "")
+
+# Set up a short way of invoking kernel Makefile for module builds
+AS_IF([test x"$build_kernel_module" = xy],
+  [kernel_path=/lib/modules/$(uname -r)
+   kernel_build_path=$kernel_path/build
+   kernel_module_path=$kernel_path/urt"$suffix"
+   kernel_invoke="\$(MAKE) -C '$kernel_build_path' M='\$(abs_builddir)' V=\$(V) \
+EXTRA_CFLAGS='-I\$(abs_top_srcdir)/include -I\$(abs_top_srcdir)/sys/\$(URT_SYS)/include $extra_cflags_kernel \$(KBUILD_EXTRA_CFLAGS)' \
+KBUILD_EXTRA_SYMBOLS='$extra_symbols_kernel \$(KBUILD_EXTRA_SYMBOLS)' \
+INSTALL_MOD_DIR=urt'$suffix'"])
 
 # Check for URT parameters
 max_shared_objects=4096
@@ -154,6 +158,7 @@ AC_SUBST(URT_VERSION, [$PACKAGE_VERSION])
 AC_SUBST(URT_SUFFIX, [$suffix])
 AC_SUBST(URT_SUFFIX_NOWS, [${suffix//@<:@@<:@:space:@:>@@:>@/}])
 AC_SUBST(URT_KERNEL_INVOKE, [$kernel_invoke])
+AC_SUBST(URT_KERNEL_MODULE_PATH, [$kernel_module_path])
 AC_SUBST(URT_TESTS_NEED_URT_KO, [$tests_need_urt_ko])
 
 # Optional build
