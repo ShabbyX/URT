@@ -49,12 +49,17 @@ KBUILD_EXTRA_CFLAGS = \
                       -I$(abs_top_srcdir)/sys/$(URT_SYS)/src
 KBUILD_EXTRA_SYMBOLS =
 
+V_KERN_INVOKE = $(V_KERN_INVOKE_@AM_V@)
+V_KERN_INVOKE_ = $(V_KERN_INVOKE_@AM_DEFAULT_V@)
+V_KERN_INVOKE_0 = @
+V_KERN_INVOKE_1 =
+
 all-local:
-	$(URT_KERNEL_INVOKE) modules
+	$(V_KERN_INVOKE)$(URT_KERNEL_INVOKE) modules
 clean-local:
-	$(URT_KERNEL_INVOKE) clean
+	$(V_KERN_INVOKE)$(URT_KERNEL_INVOKE) clean
 	rm -f "$(srcdir)"/*.o "$(srcdir)"/.*.cmd
 install-exec-local:
-	$(URT_KERNEL_INVOKE) modules_install
+	$(V_KERN_INVOKE)$(URT_KERNEL_INVOKE) modules_install
 	cp Module.symvers $(URT_KERNEL_MODULE_PATH)
 endif
