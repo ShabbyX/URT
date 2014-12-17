@@ -45,4 +45,10 @@
 # define URT_DECL_END
 #endif
 
+#ifdef __KERNEL__
+# define URT_EXPORT_SYMBOL(s) EXPORT_SYMBOL_GPL(s)
+#else
+# define URT_EXPORT_SYMBOL(s)
+#endif
+
 #endif

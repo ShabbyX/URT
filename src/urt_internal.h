@@ -126,10 +126,4 @@ urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error);
 urt_cond *urt_sys_shcond_new(const char *name, int *error);
 urt_cond *urt_sys_shcond_attach(const char *name, int *error);
 
-#ifdef __KERNEL__
-# define URT_EXPORT_SYMBOL(s) EXPORT_SYMBOL_GPL(s)
-#else
-# define URT_EXPORT_SYMBOL(s)
-#endif
-
 #endif
