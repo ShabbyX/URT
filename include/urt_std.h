@@ -20,11 +20,19 @@
 #ifndef URT_STD_H
 #define URT_STD_H
 
+/*
+ * this file should bring in as much as the standard C functions that are
+ * available both in user and kernel spaces.  This way, less effort is
+ * required trying to compile the same code in both spaces.
+ */
+
 #ifdef __KERNEL__
 # include <linux/string.h>
 # include <linux/ctype.h>
 # include <linux/stddef.h>
 # include <linux/bsearch.h>
+# include <linux/sort.h>
+# define qsort(b, n, s, c) sort(b, n, s, c, NULL)
 #else
 # include <string.h>
 # include <ctype.h>

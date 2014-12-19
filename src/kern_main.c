@@ -30,6 +30,7 @@
 
 URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
+URT_MODULE_DESCRIPTION("Unified Real-Time Interface");
 
 #if URT_BI_SPACE
 /* setup sysfs for user-space global sem wait/post and time calibration */
