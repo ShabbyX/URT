@@ -40,7 +40,8 @@ CONST_GROUP Limits
 
 		If this value is added to a [valid](urt_task_attr#urt_priority_is_valid) priority and if the result is still a valid priority,
 		then the result would have a higher priority than the original one, unless no higher priority is possible. Similarly, subtracting
-		this value from a priority results in lower priority, unless no lower priority is possible.
+		this value from a priority results in lower priority, unless no lower priority is possible. The `[#urt_priority](urt_task)`
+		is a convenience function to get the nth highest priority.
 
 CONST_GROUP Meta
 	Constants providing information about the API
