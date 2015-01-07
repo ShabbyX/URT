@@ -40,7 +40,7 @@ typedef struct urt_task
 	void *data;
 } urt_task;
 
-#define URT_MAX_PRIORITY RT_SCHED_HIGHEST_PRIORITY
+#define URT_MAX_PRIORITY (RT_SCHED_HIGHEST_PRIORITY + 1)	/* highest could be reserved for watchdog */
 #define URT_MIN_PRIORITY RT_SCHED_LOWEST_PRIORITY
 #define URT_MORE_PRIORITY -1
 
