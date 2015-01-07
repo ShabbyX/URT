@@ -48,6 +48,15 @@ void urt_task_wait_period(urt_task *task);
 /* urt_time urt_task_next_period(urt_task *task); */
 /* urt_time urt_task_period_time_left(urt_task *task); */
 
+/* bool urt_priority_is_valid(int p); */
+/* bool urt_priority_is_higher(int a, int b) */
+
+/* urt_priority gives the nth highest priority */
+static inline int urt_priority(unsigned int n)
+{
+	return URT_MAX_PRIORITY - URT_MORE_PRIORITY * n;
+}
+
 URT_DECL_END
 
 #endif

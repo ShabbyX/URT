@@ -74,3 +74,14 @@ FUNCTION urt_priority_is_higher: (a: int, b: int): bool
 		A valid priority.
 	OUTPUT
 		Whether priority with value **`a`** is higher than priority with value **`b`** in the system.
+
+FUNCTION urt_priority: (n: unsigned int): int
+	Get the nth highest priority
+
+	For a given **`n`**, this function returns the **`n`**th highest priority.  In other words, `urt_priority(0)`
+	is the highest priority and increasing **`n`** decreases priority.
+
+	INPUT n
+		Priority to be generated, with 0 as maximum priority.
+	OUTPUT
+		The actual priority value that the underlying back-end understands.
