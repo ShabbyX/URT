@@ -30,6 +30,7 @@ Module.symvers
 modules.order
 .deps
 .libs
+build*/
 
 # executables
 test_master

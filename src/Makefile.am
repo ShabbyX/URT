@@ -61,5 +61,5 @@ clean-local:
 	rm -f "$(srcdir)"/*.o "$(srcdir)"/.*.cmd
 install-exec-local:
 	$(V_KERN_INVOKE)$(URT_KERNEL_INVOKE) modules_install
-	cp Module.symvers $(URT_KERNEL_MODULE_PATH)
+	cp Module.symvers $(DESTDIR)$(URT_KERNEL_MODULE_PATH)
 endif
