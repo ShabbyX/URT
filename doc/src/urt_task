@@ -27,6 +27,8 @@ FUNCTION urt_task_new: (func: (urt_task *, void *): void, data: void * = NULL, a
 	argument which is the optional **`data`** argument. If the task is periodic, or has attributes other than default, **`attr`** should
 	be provided. See the definition of `[urt_task_attr]` structure for possible attributes.
 
+	Make sure to call `[#urt_task_start]` for the task to actually start running.
+
 	INPUT func
 		The function to be called by a new thread. The first argument to this function is the task pointer, which is the same as the
 		output of this function.
@@ -57,7 +59,7 @@ FUNCTION urt_task_start: (task: urt_task *): int
 
 	This function starts a task created by `[#urt_task_new]`. If the task's `[#start_time](urt_task_attr)` is specified and is in the future,
 	the task will not be called until such time arrives. Note that it is unknown whether an actual thread is created and paused, or no thread
-	is created until the start time. Nonetheless, this function is unaffected by the task's `start_time` attributed.
+	is created until the start time. Nonetheless, this function is unaffected by the task's `start_time` attribute.
 
 	INPUT task
 		Task to be started.
