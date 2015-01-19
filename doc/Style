@@ -57,7 +57,7 @@ and they exist for symmetry. Both of these functions either detach from or delet
 ## Error Reporting
 The functions of URT either create something, such as `[#urt_mem_new](urt_mem)`, or do something such as `[#urt_sem_post](urt_lock)`.
 The functions that do something, if it is possible for them to fail for any reason, will have an `int` return value that can indicate
-possible [errors](constants#Return Values).
+possible errors.
 
 The functions that create something, on the other hand, will return what was created. If these functions fail, they will return `NULL`.
 To return the error code to the interested user, these functions will take an optional `int *` parameter as the last argument where,

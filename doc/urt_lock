@@ -717,7 +717,7 @@ NOTICE RT
 	Wait on a condition variable
 
 	This function waits on a condition variable **`cond`**. If the lock is not available, it will stay blocked until either it is
-	[unlocked](#urt_cond_write_unlock), there is an error, or the optional argument **`stop`** becomes `true`. **`mutex`** is automatically locked and
+	[signalled](#urt_cond_signal), there is an error, or the optional argument **`stop`** becomes `true`. **`mutex`** is automatically locked and
 	unlocked by this function.  The usage of `urt_cond_wait` is as such:
 
 	```
