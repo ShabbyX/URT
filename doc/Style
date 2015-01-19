@@ -23,7 +23,7 @@ limited to real-time context, but it is not possible to use a real-time lock to 
 context, then you cannot use the locks, and if you are in a real-time context, you couldn't have allocated that shared memory or other
 resources.
 
-Therefore, you may need to allocate non-real-time locks.
+Therefore, you may need to allocate shared non-real-time locks.
 
 - If URT is configured for user-space only (such as with POSIX), then you could allocate shared memory with `[#urt_shmem_new](urt_mem)`
   and initialize it, e.g., with `pthread_mutex_init` or other functions.

@@ -21,6 +21,7 @@ TYPE urt_task: opaque
 	This opaque type contains system specific information of a real-time task.
 
 FUNCTION urt_task_new: (func: (urt_task *, void *): void, data: void * = NULL, attr: urt_task_attr * = NULL, error: int * = NULL): urt_task *
+NOTICE NON-RT
 	Create a new task in paused state
 
 	This function creates a new task, but doesn't run it. The task function **`func`** takes the created task as argument and a second
@@ -43,6 +44,7 @@ FUNCTION urt_task_new: (func: (urt_task *, void *): void, data: void * = NULL, a
 		Returns a new task, or `NULL` if failed.
 
 FUNCTION urt_task_delete: (task: urt_task *): void
+NOTICE NON-RT
 	Cleanup a task
 
 	This function cleans up and removes a task. Note that this function may not terminate the thread calling the task, but wait for it
@@ -53,6 +55,7 @@ FUNCTION urt_task_delete: (task: urt_task *): void
 		The task to be cleaned up.
 
 FUNCTION urt_task_start: (task: urt_task *): int
+NOTICE NON-RT
 	Start a task
 
 	This function starts a task created by `[#urt_task_new]`. If the task's `[#start_time](urt_task_attr)` is specified and is in the future,

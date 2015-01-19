@@ -14,6 +14,7 @@ next functions urt_lock
 Functions of this module handle private and shared memory allocation, deallocation and access.
 
 FUNCTION urt_mem_new: (size: size_t, error: int * = NULL): void *
+NOTICE NON-RT
 	Allocate memory of given size
 
 	This function allocates memory of a given **`size`**, similar to `malloc`.
@@ -28,6 +29,7 @@ FUNCTION urt_mem_new: (size: size_t, error: int * = NULL): void *
 		Similar to `malloc`, returns a pointer to the allocated memory, or `NULL` if failed.
 
 FUNCTION urt_mem_resize: (old_mem: void *, old_size: size_t, size: size_t, error: int * = NULL): void *
+NOTICE NON-RT
 	Enlarge memory to a given size
 
 	This function enlarges mempory previously allocated with `[#urt_mem_new]` with size **`old_size`** to size **`size`**
@@ -50,6 +52,7 @@ FUNCTION urt_mem_resize: (old_mem: void *, old_size: size_t, size: size_t, error
 		Similar to `realloc`, returns a pointer to the allocated memory, or `NULL` if failed.
 
 FUNCTION urt_mem_delete: (mem: void *): void
+NOTICE NON-RT
 	Free memory allocated with `urt_mem_new`
 
 	This function frees memory allocated with `[#urt_mem_new]`. If **`mem`** is `NULL`, the function silently returns.
@@ -58,6 +61,7 @@ FUNCTION urt_mem_delete: (mem: void *): void
 		Memory to be freed.
 
 FUNCTION urt_shmem_new: (name: const char *, size: size_t, error: int * = NULL): void *
+NOTICE NON-RT
 	Allocate shared memory of given size
 
 	This function allocates memory of a given **`size`**, similar to `malloc`. This memory will be shared
@@ -79,6 +83,7 @@ FUNCTION urt_shmem_new: (name: const char *, size: size_t, error: int * = NULL):
 		A pointer to the allocated shared memory region, or `NULL` if failed.
 
 FUNCTION urt_shmem_delete: (mem: void *): void
+NOTICE NON-RT
 	Free or detach from shared memory
 
 	This function detaches from shared memory, attached to by `[#urt_shmem_attach]`, or created by `[#urt_shmem_new]`.
@@ -91,6 +96,7 @@ FUNCTION urt_shmem_delete: (mem: void *): void
 		Memory to be detached from or freed.
 
 FUNCTION urt_shmem_attach: (name: const char *, error: int * = NULL): void *
+NOTICE NON-RT
 	Attach to shared memory
 
 	This function attaches to the shared memory created under **`name`**. If no memory with that name exists, the function
@@ -109,6 +115,7 @@ FUNCTION urt_shmem_attach: (name: const char *, error: int * = NULL): void *
 		A pointer to the shared memory region, or `NULL` if failed.
 
 FUNCTION urt_shmem_detach: (mem: void *): void
+NOTICE NON-RT
 	Free or detach from shared memory
 
 	The same as `[#urt_shmem_delete]`.

@@ -35,6 +35,7 @@ TYPE urt_cond: opaque
 	A system-dependent type representing a condition variable.
 
 FUNCTION urt_sem_new: (init_value: unsigned int, error: int * = NULL): urt_sem *
+NOTICE NON-RT
 	Create a new semaphore
 
 	This function creates and returns a new semaphore. This semaphore is unnamed and cannot be shared with other processes.
@@ -51,6 +52,7 @@ FUNCTION urt_sem_new: (init_value: unsigned int, error: int * = NULL): urt_sem *
 		A new semaphore, or `NULL` if not possible.
 
 FUNCTION urt_sem_delete: (sem: urt_sem *): void
+NOTICE NON-RT
 	Free a semaphore created by `urt_sem_new`
 
 	This function frees a semaphore created by `[#urt_sem_new]`. If **`sem`** is `NULL`, the function silently returns.
@@ -59,6 +61,7 @@ FUNCTION urt_sem_delete: (sem: urt_sem *): void
 		The semaphore to be freed.
 
 FUNCTION urt_shsem_new: (name: const char *, init_value: unsigned int, error: int * = NULL): urt_sem *
+NOTICE NON-RT
 	Create a new shared semaphore
 
 	This function creates and returns a new shared semaphore. This semaphore will be shared
@@ -80,6 +83,7 @@ FUNCTION urt_shsem_new: (name: const char *, init_value: unsigned int, error: in
 		A new semaphore, or `NULL` if not possible.
 
 FUNCTION urt_shsem_delete: (sem: urt_sem *): void
+NOTICE NON-RT
 	Free or detach from shared semaphore
 
 	This function detaches from shared semaphore, attached to by `[#urt_shsem_attach]`, or created by `[#urt_shsem_new]`.
@@ -92,6 +96,7 @@ FUNCTION urt_shsem_delete: (sem: urt_sem *): void
 		The semaphore to be detached from or freed.
 
 FUNCTION urt_shsem_attach: (name: const char *, error: int * = NULL): urt_sem *
+NOTICE NON-RT
 	Attach to shared semaphore
 
 	This function attaches to the shared semaphore created under **`name`**. If no semaphore with that name exists, the function
@@ -110,6 +115,7 @@ FUNCTION urt_shsem_attach: (name: const char *, error: int * = NULL): urt_sem *
 		A pointer to the shared semaphore, or `NULL` if failed.
 
 FUNCTION urt_shsem_detach: (sem: urt_sem *): void
+NOTICE NON-RT
 	Free or detach from shared semaphore
 
 	The same as `[#urt_shsem_delete]`.
@@ -198,6 +204,7 @@ NOTICE RT
 		- Possibly others based on back-end.
 
 FUNCTION urt_mutex_new: (error: int * = NULL): urt_mutex *
+NOTICE NON-RT
 	Create a new mutex
 
 	This function creates and returns a new mutex. This mutex is unnamed and cannot be shared with other processes.
@@ -212,6 +219,7 @@ FUNCTION urt_mutex_new: (error: int * = NULL): urt_mutex *
 		A new mutex, or `NULL` if not possible.
 
 FUNCTION urt_mutex_delete: (mutex: urt_mutex *): void
+NOTICE NON-RT
 	Free a mutex created by `urt_mutex_new`
 
 	This function frees a mutex created by `[#urt_mutex_new]`. If **`mutex`** is `NULL`, the function silently returns.
@@ -220,6 +228,7 @@ FUNCTION urt_mutex_delete: (mutex: urt_mutex *): void
 		The mutex to be freed.
 
 FUNCTION urt_shmutex_new: (name: const char *, error: int * = NULL): urt_mutex *
+NOTICE NON-RT
 	Create a new shared mutex
 
 	This function creates and returns a new shared mutex. This mutex will be shared
@@ -240,6 +249,7 @@ FUNCTION urt_shmutex_new: (name: const char *, error: int * = NULL): urt_mutex *
 		A new mutex, or `NULL` if not possible.
 
 FUNCTION urt_shmutex_delete: (mutex: urt_mutex *): void
+NOTICE NON-RT
 	Free or detach from shared mutex
 
 	This function detaches from shared mutex, attached to by `[#urt_shmutex_attach]`, or created by `[#urt_shmutex_new]`.
@@ -252,6 +262,7 @@ FUNCTION urt_shmutex_delete: (mutex: urt_mutex *): void
 		The mutex to be detached from or freed.
 
 FUNCTION urt_shmutex_attach: (name: const char *, error: int * = NULL): urt_mutex *
+NOTICE NON-RT
 	Attach to shared mutex
 
 	This function attaches to the shared mutex created under **`name`**. If no mutex with that name exists, the function
@@ -270,6 +281,7 @@ FUNCTION urt_shmutex_attach: (name: const char *, error: int * = NULL): urt_mute
 		A pointer to the shared mutex, or `NULL` if failed.
 
 FUNCTION urt_shmutex_detach: (mutex: urt_mutex *): void
+NOTICE NON-RT
 	Free or detach from shared mutex
 
 	The same as `[#urt_shmutex_delete]`.
@@ -359,6 +371,7 @@ NOTICE RT
 		- Possibly others based on back-end.
 
 FUNCTION urt_rwlock_new: (error: int * = NULL): urt_rwlock *
+NOTICE NON-RT
 	Create a new readers-writers lock
 
 	This function creates and returns a new readers-writers lock. This lock is unnamed and cannot be shared with other processes.
@@ -373,6 +386,7 @@ FUNCTION urt_rwlock_new: (error: int * = NULL): urt_rwlock *
 		A new readers-writers lock, or `NULL` if not possible.
 
 FUNCTION urt_rwlock_delete: (rwlock: urt_rwlock *): void
+NOTICE NON-RT
 	Free a readers-writers lock created by `urt_rwlock_new`
 
 	This function frees a readers-writers lock created by `[#urt_rwlock_new]`. If **`rwlock`** is `NULL`, the function silently returns.
@@ -381,6 +395,7 @@ FUNCTION urt_rwlock_delete: (rwlock: urt_rwlock *): void
 		The readers-writers lock to be freed.
 
 FUNCTION urt_shrwlock_new: (name: const char *, error: int * = NULL): urt_rwlock *
+NOTICE NON-RT
 	Create a new shared readers-writers lock
 
 	This function creates and returns a new shared readers-writers lock. This lock will be shared
@@ -402,6 +417,7 @@ FUNCTION urt_shrwlock_new: (name: const char *, error: int * = NULL): urt_rwlock
 		A new readers-writers lock, or `NULL` if not possible.
 
 FUNCTION urt_shrwlock_delete: (rwlock: urt_rwlock *): void
+NOTICE NON-RT
 	Free or detach from shared readers-writers lock
 
 	This function detaches from shared readers-writers lock, attached to by `[#urt_shrwlock_attach]`, or created by `[#urt_shrwlock_new]`.
@@ -414,6 +430,7 @@ FUNCTION urt_shrwlock_delete: (rwlock: urt_rwlock *): void
 		The readers-writers lock to be detached from or freed.
 
 FUNCTION urt_shrwlock_attach: (name: const char *, error: int * = NULL): urt_rwlock *
+NOTICE NON-RT
 	Attach to shared readers-writers lock
 
 	This function attaches to the shared readers-writers lock created under **`name`**. If no lock with that name exists, the function
@@ -432,6 +449,7 @@ FUNCTION urt_shrwlock_attach: (name: const char *, error: int * = NULL): urt_rwl
 		A pointer to the shared readers-writers lock, or `NULL` if failed.
 
 FUNCTION urt_shrwlock_detach: (rwlock: urt_rwlock *): void
+NOTICE NON-RT
 	Free or detach from shared readers-writers lock
 
 	The same as `[#urt_shrwlock_delete]`.
@@ -608,6 +626,7 @@ NOTICE RT
 		- Possibly others based on back-end.
 
 FUNCTION urt_cond_new: (error: int * = NULL): urt_cond *
+NOTICE NON-RT
 	Create a new condition variable
 
 	This function creates and returns a new condition variable. This lock is unnamed and cannot be shared with other processes.
@@ -622,6 +641,7 @@ FUNCTION urt_cond_new: (error: int * = NULL): urt_cond *
 		A new condition variable, or `NULL` if not possible.
 
 FUNCTION urt_cond_delete: (cond: urt_cond *): void
+NOTICE NON-RT
 	Free a condition variable created by `urt_cond_new`
 
 	This function frees a condition variable created by `[#urt_cond_new]`. If **`cond`** is `NULL`, the function silently returns.
@@ -630,6 +650,7 @@ FUNCTION urt_cond_delete: (cond: urt_cond *): void
 		The condition variable to be freed.
 
 FUNCTION urt_shcond_new: (name: const char *, error: int * = NULL): urt_cond *
+NOTICE NON-RT
 	Create a new shared condition variable
 
 	This function creates and returns a new shared condition variable. This lock will be shared
@@ -651,6 +672,7 @@ FUNCTION urt_shcond_new: (name: const char *, error: int * = NULL): urt_cond *
 		A new condition variable, or `NULL` if not possible.
 
 FUNCTION urt_shcond_delete: (cond: urt_cond *): void
+NOTICE NON-RT
 	Free or detach from shared condition variable
 
 	This function detaches from shared condition variable, attached to by `[#urt_shcond_attach]`, or created by `[#urt_shcond_new]`.
@@ -663,6 +685,7 @@ FUNCTION urt_shcond_delete: (cond: urt_cond *): void
 		The condition variable to be detached from or freed.
 
 FUNCTION urt_shcond_attach: (name: const char *, error: int * = NULL): urt_cond *
+NOTICE NON-RT
 	Attach to shared condition variable
 
 	This function attaches to the shared condition variable created under **`name`**. If no lock with that name exists, the function
@@ -681,6 +704,7 @@ FUNCTION urt_shcond_attach: (name: const char *, error: int * = NULL): urt_cond 
 		A pointer to the shared condition variable, or `NULL` if failed.
 
 FUNCTION urt_shcond_detach: (cond: urt_cond *): void
+NOTICE NON-RT
 	Free or detach from shared condition variable
 
 	The same as `[#urt_shcond_delete]`.

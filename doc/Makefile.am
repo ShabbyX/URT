@@ -51,7 +51,7 @@ files: $(FILES)
 # Note: I can't find a way around the repetition without using GNU extensions
 DT_CMD = $(V_DOCTHIS)$(DT) $< +html +tex +notices $(DOCDIR)/notices
 generated/html/index.html: $(DOCDIR)/index $(DOCDIR)/notices
-	$(DT_CMD)
+	$(DT_CMD) +css
 generated/html/constants.html: $(DOCDIR)/constants $(DOCDIR)/notices
 	$(DT_CMD)
 generated/html/Style.html: $(DOCDIR)/Style $(DOCDIR)/notices
