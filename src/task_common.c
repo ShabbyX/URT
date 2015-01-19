@@ -25,6 +25,8 @@ urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data, const urt
 {
 	urt_task *task;
 
+	URT_CHECK_NONRT_CONTEXT();
+
 	task = urt_mem_new(sizeof *task, error);
 	if (task == NULL)
 		goto exit_fail;

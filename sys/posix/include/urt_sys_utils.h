@@ -25,6 +25,7 @@
 URT_DECL_BEGIN
 
 static inline bool urt_is_rt_context(void) { return true; }
+static inline bool urt_is_nonrt_context(void) { return true; }
 static inline int urt_make_rt_context(int *prev) { return 0; }
 static inline void urt_unmake_rt_context(int prev) {}
 

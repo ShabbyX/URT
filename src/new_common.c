@@ -25,18 +25,24 @@
 do {								\
 	typ obj = NULL;						\
 	urt_registered_object *ro = NULL;			\
+								\
+	URT_CHECK_NONRT_CONTEXT();					\
+								\
 	ro = urt_reserve_name(name, error);			\
 	if (ro == NULL)						\
 		goto exit_fail;					\
+								\
 	obj = call;						\
 	if (obj == NULL)					\
 		goto exit_fail;					\
+								\
 	ro->has_bookkeeping = false; /* set in proc, if any */	\
 	obj = proc(obj, ro - urt_global_mem->objects, ro);	\
 	ro->type = URT_TYPE_##TYPE;				\
 	ro->size = sz;						\
 	if (ro->has_bookkeeping)				\
 		ro->size += 16;					\
+								\
 	urt_inc_name_count(ro);					\
 	return obj;						\
 exit_fail:							\
@@ -49,12 +55,17 @@ exit_fail:							\
 do {								\
 	typ obj = NULL;						\
 	urt_registered_object *ro = NULL;			\
+								\
+	URT_CHECK_NONRT_CONTEXT();					\
+								\
 	ro = urt_get_object_by_name_and_inc_count(name);	\
 	if (ro == NULL)						\
 		goto exit_no_obj;				\
+								\
 	obj = call;						\
 	if (obj == NULL)					\
 		goto exit_fail;					\
+								\
 	obj = proc(obj, ro - urt_global_mem->objects, ro);	\
 	return obj;						\
 exit_no_obj:							\

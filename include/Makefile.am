@@ -14,7 +14,8 @@ include_HEADERS = \
                   urt_setup.h \
                   urt_std.h \
                   urt_time.h \
-                  urt_param.h
+                  urt_param.h \
+                  urt_debug.h
 
 include_HEADERS += \
                    ../sys/$(URT_SYS)/include/urt_sys_lock.h \

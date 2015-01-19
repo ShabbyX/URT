@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014  Shahbaz Youssefi <ShabbyX@gmail.com>
+ * Copyright (C) 2015  Shahbaz Youssefi <ShabbyX@gmail.com>
  *
  * This file is part of URT, Unified Real-Time Interface.
  *
@@ -17,20 +17,26 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URT_SYS_MEM_H
-#define URT_SYS_MEM_H
+#ifndef URT_DEBUG_H
+#define URT_DEBUG_H
 
-#include <stdlib.h>
-#include <urt_debug.h>
+#include "urt_utils.h"
+#include "urt_log.h"
 
-URT_DECL_BEGIN
-
-static inline void urt_mem_delete(void *mem)
-{
-	URT_CHECK_NONRT_CONTEXT();
-	free(mem);
-}
-
-URT_DECL_END
+#ifndef NDEBUG
+# define URT_CHECK_RT_CONTEXT()							\
+do {										\
+	if (!urt_is_rt_context())						\
+		urt_err("'%s' called from non-real-time context\n", __func__);	\
+} while (0)
+# define URT_CHECK_NONRT_CONTEXT()						\
+do {										\
+	if (!urt_is_nonrt_context())						\
+		urt_err("'%s' called from real-time context\n", __func__);	\
+} while (0)
+#else
+# define URT_CHECK_RT_CONTEXT() ((void)0)
+# define URT_CHECK_NONRT_CONTEXT() ((void)0)
+#endif
 
 #endif

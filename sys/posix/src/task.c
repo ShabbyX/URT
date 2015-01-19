@@ -23,6 +23,8 @@
 
 void urt_task_delete(urt_task *task)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (task != NULL)
 		pthread_join(task->tid, NULL);
 	urt_mem_delete(task);
@@ -47,6 +49,8 @@ int urt_task_start(urt_task *task)
 {
 	pthread_attr_t attr;
 	int ret;
+
+	URT_CHECK_NONRT_CONTEXT();
 
 	if (task == NULL)
 		return EINVAL;
@@ -88,6 +92,8 @@ static void _update_start_time(urt_task *task)
 
 void urt_task_wait_period(urt_task *task)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	_update_start_time(task);
 	urt_sleep(task->attr.start_time - urt_get_time());
 	task->next_period_calculated = false;
@@ -95,6 +101,8 @@ void urt_task_wait_period(urt_task *task)
 
 urt_time urt_task_next_period(urt_task *task)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	_update_start_time(task);
 	return task->attr.start_time;
 }

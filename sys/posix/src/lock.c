@@ -37,7 +37,11 @@ static urt_sem *urt_global_sem;
 
 urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...)
 {
-	urt_sem *sem = urt_mem_new(sizeof *sem, error);
+	urt_sem *sem;
+
+	URT_CHECK_NONRT_CONTEXT();
+
+	sem = urt_mem_new(sizeof *sem, error);
 	if (sem == NULL)
 		goto exit_fail;
 
@@ -57,6 +61,8 @@ exit_fail:
 
 void urt_sem_delete(urt_sem *sem)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (sem != NULL)
 		sem_destroy(&sem->sem);
 	urt_mem_delete(sem);
@@ -145,6 +151,8 @@ void urt_shsem_detach(urt_sem *sem)
 {
 	urt_registered_object *ro;
 
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (sem == NULL)
 		return;
 
@@ -157,6 +165,9 @@ void urt_shsem_detach(urt_sem *sem)
 int (urt_sem_waitf)(urt_sem *sem, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
 	if (stop)
 	{
 		struct timespec tp;
@@ -183,6 +194,9 @@ int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 {
 	int res;
 	struct timespec tp;
+
+	URT_CHECK_RT_CONTEXT();
+
 	urt_time t = urt_get_time_epoch();
 
 	t += max_wait;
@@ -196,12 +210,16 @@ int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 
 int urt_sem_try_wait(urt_sem *sem)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	/* note: sem_trywait sets errno to EAGAIN if not locked, unlike EBUSY as with pthread_*_*lock */
 	return sem_trywait(sem->sem_ptr) == 0?0:errno == EAGAIN?EBUSY:errno;
 }
 
 int urt_sem_post(urt_sem *sem)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return sem_post(sem->sem_ptr);
 }
 
@@ -301,11 +319,15 @@ static void _shmutex_destroy(void *mutex, unsigned int count)
 
 urt_mutex *(urt_mutex_new)(int *error, ...)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	return _pthread_lock_new(_shmutex_init, sizeof(urt_mutex), error);
 }
 
 void urt_mutex_delete(urt_mutex *mutex)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	_pthread_lock_delete(_shmutex_destroy, mutex);
 }
 
@@ -321,12 +343,17 @@ urt_mutex *urt_sys_shmutex_attach(const char *name, int *error)
 
 void urt_shmutex_detach(urt_mutex *mutex)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	_pthread_shlock_detach(_shmutex_destroy, mutex);
 }
 
 int (urt_mutex_lockf)(urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
 	if (stop)
 	{
 		struct timespec tp;
@@ -353,6 +380,8 @@ int urt_mutex_timed_lock(urt_mutex *mutex, urt_time max_wait)
 	struct timespec tp;
 	urt_time t = urt_get_time_epoch();
 
+	URT_CHECK_RT_CONTEXT();
+
 	t += max_wait;
 	tp.tv_sec = t / 1000000000ll;
 	tp.tv_nsec = t % 1000000000ll;
@@ -362,11 +391,15 @@ int urt_mutex_timed_lock(urt_mutex *mutex, urt_time max_wait)
 
 int urt_mutex_try_lock(urt_mutex *mutex)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return pthread_mutex_trylock(mutex);
 }
 
 int urt_mutex_unlock(urt_mutex *mutex)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return pthread_mutex_unlock(mutex);
 }
 
@@ -402,11 +435,15 @@ static void _shrwlock_destroy(void *rwl, unsigned int count)
 
 urt_rwlock *(urt_rwlock_new)(int *error, ...)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	return _pthread_lock_new(_shrwlock_init, sizeof(urt_rwlock), error);
 }
 
 void urt_rwlock_delete(urt_rwlock *rwl)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	_pthread_lock_delete(_shrwlock_destroy, rwl);
 }
 
@@ -422,12 +459,17 @@ urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error)
 
 void urt_shrwlock_detach(urt_rwlock *rwl)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	_pthread_shlock_detach(_shrwlock_destroy, rwl);
 }
 
 int (urt_rwlock_read_lockf)(urt_rwlock *rwl, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
 	if (stop)
 	{
 		struct timespec tp;
@@ -452,6 +494,9 @@ int (urt_rwlock_read_lockf)(urt_rwlock *rwl, bool (*stop)(volatile void *), vola
 int (urt_rwlock_write_lockf)(urt_rwlock *rwl, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
 	if (stop)
 	{
 		struct timespec tp;
@@ -478,6 +523,8 @@ int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)
 	struct timespec tp;
 	urt_time t = urt_get_time_epoch();
 
+	URT_CHECK_RT_CONTEXT();
+
 	t += max_wait;
 	tp.tv_sec = t / 1000000000ll;
 	tp.tv_nsec = t % 1000000000ll;
@@ -490,6 +537,8 @@ int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 	struct timespec tp;
 	urt_time t = urt_get_time_epoch();
 
+	URT_CHECK_RT_CONTEXT();
+
 	t += max_wait;
 	tp.tv_sec = t / 1000000000ll;
 	tp.tv_nsec = t % 1000000000ll;
@@ -499,21 +548,29 @@ int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 
 int urt_rwlock_try_read_lock(urt_rwlock *rwl)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return pthread_rwlock_tryrdlock(rwl);
 }
 
 int urt_rwlock_try_write_lock(urt_rwlock *rwl)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return pthread_rwlock_trywrlock(rwl);
 }
 
 int urt_rwlock_read_unlock(urt_rwlock *rwl)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return pthread_rwlock_unlock(rwl);
 }
 
 int urt_rwlock_write_unlock(urt_rwlock *rwl)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return pthread_rwlock_unlock(rwl);
 }
 
@@ -549,11 +606,15 @@ static void _shcond_destroy(void *cond, unsigned int count)
 
 urt_cond *(urt_cond_new)(int *error, ...)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	return _pthread_lock_new(_shcond_init, sizeof(urt_cond), error);
 }
 
 void urt_cond_delete(urt_cond *cond)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	_pthread_lock_delete(_shcond_destroy, cond);
 }
 
@@ -569,12 +630,17 @@ urt_cond *urt_sys_shcond_attach(const char *name, int *error)
 
 void urt_shcond_detach(urt_cond *cond)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	_pthread_shlock_detach(_shcond_destroy, cond);
 }
 
 int (urt_cond_waitf)(urt_cond *cond, urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
 	if (stop)
 	{
 		struct timespec tp;
@@ -601,6 +667,8 @@ int urt_cond_timed_wait(urt_cond *cond, urt_mutex *mutex, urt_time max_wait)
 	struct timespec tp;
 	urt_time t = urt_get_time_epoch();
 
+	URT_CHECK_RT_CONTEXT();
+
 	t += max_wait;
 	tp.tv_sec = t / 1000000000ll;
 	tp.tv_nsec = t % 1000000000ll;
@@ -610,10 +678,14 @@ int urt_cond_timed_wait(urt_cond *cond, urt_mutex *mutex, urt_time max_wait)
 
 int urt_cond_signal(urt_cond *cond)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return pthread_cond_signal(cond);
 }
 
 int urt_cond_broadcast(urt_cond *cond)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return pthread_cond_broadcast(cond);
 }

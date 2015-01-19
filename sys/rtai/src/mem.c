@@ -65,6 +65,8 @@ void urt_shmem_detach(void *mem)
 {
 	urt_registered_object *ro;
 
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (mem == NULL)
 		return;
 

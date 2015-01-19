@@ -39,6 +39,18 @@ static inline bool urt_is_rt_context(void)
 #endif
 }
 
+static inline bool urt_is_nonrt_context(void)
+{
+#ifdef __KERNEL__
+	RT_TASK *task = rt_whoami();
+	if (task == NULL)
+		return true;
+	return task->is_hard <= 0;
+#else
+	return rt_buddy() == NULL;
+#endif
+}
+
 int urt_make_rt_context(int *prev);
 void urt_unmake_rt_context(int prev);
 

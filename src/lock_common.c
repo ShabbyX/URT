@@ -105,30 +105,35 @@ static bool _lock_stop(volatile void *stop)
 
 int (urt_sem_wait)(urt_sem *sem, volatile sig_atomic_t *stop, ...)
 {
+	URT_CHECK_RT_CONTEXT();
 	return urt_sem_waitf(sem, stop?_lock_stop:NULL, stop);
 }
 URT_EXPORT_SYMBOL(urt_sem_wait);
 
 int (urt_mutex_lock)(urt_mutex *mutex, volatile sig_atomic_t *stop, ...)
 {
+	URT_CHECK_RT_CONTEXT();
 	return urt_mutex_lockf(mutex, stop?_lock_stop:NULL, stop);
 }
 URT_EXPORT_SYMBOL(urt_mutex_lock);
 
 int (urt_rwlock_read_lock)(urt_rwlock *rwl, volatile sig_atomic_t *stop, ...)
 {
+	URT_CHECK_RT_CONTEXT();
 	return urt_rwlock_read_lockf(rwl, stop?_lock_stop:NULL, stop);
 }
 URT_EXPORT_SYMBOL(urt_rwlock_read_lock);
 
 int (urt_rwlock_write_lock)(urt_rwlock *rwl, volatile sig_atomic_t *stop, ...)
 {
+	URT_CHECK_RT_CONTEXT();
 	return urt_rwlock_write_lockf(rwl, stop?_lock_stop:NULL, stop);
 }
 URT_EXPORT_SYMBOL(urt_rwlock_write_lock);
 
 int (urt_cond_wait)(urt_cond *cond, urt_mutex *mutex, volatile sig_atomic_t *stop, ...)
 {
+	URT_CHECK_RT_CONTEXT();
 	return urt_cond_waitf(cond, mutex, stop?_lock_stop:NULL, stop);
 }
 URT_EXPORT_SYMBOL(urt_cond_wait);

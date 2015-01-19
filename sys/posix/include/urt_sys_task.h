@@ -21,6 +21,7 @@
 #define URT_SYS_TASK_H
 
 #include <pthread.h>
+#include <urt_debug.h>
 
 URT_DECL_BEGIN
 
@@ -48,7 +49,11 @@ static inline bool urt_priority_is_higher(int a, int b)
 }
 
 urt_time urt_task_next_period(urt_task *task);
-static inline urt_time urt_task_period_time_left(urt_task *task) { return urt_task_next_period(task) - urt_get_time(); }
+static inline urt_time urt_task_period_time_left(urt_task *task)
+{
+	URT_CHECK_RT_CONTEXT();
+	return urt_task_next_period(task) - urt_get_time();
+}
 
 URT_DECL_END
 

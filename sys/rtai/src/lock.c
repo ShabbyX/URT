@@ -51,12 +51,16 @@ urt_sem *_sem_new_common(unsigned int init_value, int type, int *error)
 
 urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	return _sem_new_common(init_value, CNT_SEM, error);
 }
 URT_EXPORT_SYMBOL(urt_sem_new);
 
 void urt_sem_delete(urt_sem *sem)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (sem != NULL)
 		rt_sem_delete(sem->sem_ptr);
 	urt_mem_delete(sem);
@@ -122,6 +126,8 @@ void urt_shsem_detach(urt_sem *sem)
 {
 	urt_registered_object *ro;
 
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (sem == NULL)
 		return;
 
@@ -135,6 +141,9 @@ URT_EXPORT_SYMBOL(urt_shsem_detach);
 int (urt_sem_waitf)(urt_sem *sem, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
 	if (stop)
 	{
 		while ((res = rt_sem_wait_timed(sem->sem_ptr, nano2count(URT_LOCK_STOP_MAX_DELAY))) == RTE_TIMOUT)
@@ -150,27 +159,41 @@ URT_EXPORT_SYMBOL(urt_sem_waitf);
 
 int urt_sem_timed_wait(urt_sem *sem, urt_time max_wait)
 {
-	int res = rt_sem_wait_timed(sem->sem_ptr, nano2count(max_wait));
+	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
+	res = rt_sem_wait_timed(sem->sem_ptr, nano2count(max_wait));
 	return res == RTE_TIMOUT?ETIMEDOUT:res >= RTE_BASE?EINVAL:0;
 }
 URT_EXPORT_SYMBOL(urt_sem_timed_wait);
 
 int urt_sem_try_wait(urt_sem *sem)
 {
-	int res = rt_sem_wait_if(sem->sem_ptr);
+	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
+	res = rt_sem_wait_if(sem->sem_ptr);
 	return res <= 0?EBUSY:res >= RTE_BASE?EINVAL:0;
 }
 URT_EXPORT_SYMBOL(urt_sem_try_wait);
 
 int urt_sem_post(urt_sem *sem)
 {
-	int res = rt_sem_signal(sem->sem_ptr);
+	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
+	res = rt_sem_signal(sem->sem_ptr);
 	return res >= RTE_BASE?EINVAL:0;
 }
 URT_EXPORT_SYMBOL(urt_sem_post);
 
 urt_mutex *(urt_mutex_new)(int *error, ...)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	return _sem_new_common(1, RES_SEM, error);
 }
 URT_EXPORT_SYMBOL(urt_mutex_new);
@@ -182,6 +205,8 @@ urt_mutex *urt_sys_shmutex_new(const char *name, int *error)
 
 void urt_mutex_delete(urt_mutex *mutex)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	urt_sem_delete(mutex);
 }
 URT_EXPORT_SYMBOL(urt_mutex_delete);
@@ -193,37 +218,51 @@ urt_mutex *urt_sys_shmutex_attach(const char *name, int *error)
 
 void urt_shmutex_detach(urt_mutex *mutex)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	urt_shsem_detach(mutex);
 }
 URT_EXPORT_SYMBOL(urt_shmutex_detach);
 
 int (urt_mutex_lockf)(urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return (urt_sem_waitf)(mutex, stop, data);
 }
 URT_EXPORT_SYMBOL(urt_mutex_lockf);
 
 int urt_mutex_timed_lock(urt_mutex *mutex, urt_time max_wait)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return urt_sem_timed_wait(mutex, max_wait);
 }
 URT_EXPORT_SYMBOL(urt_mutex_timed_lock);
 
 int urt_mutex_try_lock(urt_mutex *mutex)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return urt_sem_try_wait(mutex);
 }
 URT_EXPORT_SYMBOL(urt_mutex_try_lock);
 
 int urt_mutex_unlock(urt_mutex *mutex)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return urt_sem_post(mutex);
 }
 URT_EXPORT_SYMBOL(urt_mutex_unlock);
 
 urt_rwlock *(urt_rwlock_new)(int *error, ...)
 {
-	urt_rwlock *rwl = urt_mem_new(sizeof *rwl, error);
+	urt_rwlock *rwl;
+
+	URT_CHECK_NONRT_CONTEXT();
+
+	rwl = urt_mem_new(sizeof *rwl, error);
 	if (rwl == NULL)
 	{
 		if (error)
@@ -248,6 +287,8 @@ URT_EXPORT_SYMBOL(urt_rwlock_new);
 
 void urt_rwlock_delete(urt_rwlock *rwl)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (rwl != NULL)
 		rt_rwl_delete(rwl->rwl_ptr);
 	urt_mem_delete(rwl);
@@ -304,6 +345,8 @@ void urt_shrwlock_detach(urt_rwlock *rwl)
 {
 	urt_registered_object *ro;
 
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (rwl == NULL)
 		return;
 
@@ -317,6 +360,9 @@ URT_EXPORT_SYMBOL(urt_shrwlock_detach);
 int (urt_rwlock_read_lockf)(urt_rwlock *rwl, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
 	if (stop)
 	{
 		while ((res = rt_rwl_rdlock_timed(rwl->rwl_ptr, nano2count(URT_LOCK_STOP_MAX_DELAY))) == RTE_TIMOUT)
@@ -333,6 +379,9 @@ URT_EXPORT_SYMBOL(urt_rwlock_read_lockf);
 int (urt_rwlock_write_lockf)(urt_rwlock *rwl, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
 	if (stop)
 	{
 		while ((res = rt_rwl_wrlock_timed(rwl->rwl_ptr, nano2count(URT_LOCK_STOP_MAX_DELAY))) == RTE_TIMOUT)
@@ -348,45 +397,65 @@ URT_EXPORT_SYMBOL(urt_rwlock_write_lockf);
 
 int urt_rwlock_timed_read_lock(urt_rwlock *rwl, urt_time max_wait)
 {
-	int res = rt_rwl_rdlock_timed(rwl->rwl_ptr, nano2count(max_wait));
+	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
+	res = rt_rwl_rdlock_timed(rwl->rwl_ptr, nano2count(max_wait));
 	return res == RTE_TIMOUT?ETIMEDOUT:res == 0?0:EINVAL;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_timed_read_lock);
 
 int urt_rwlock_timed_write_lock(urt_rwlock *rwl, urt_time max_wait)
 {
-	int res = rt_rwl_wrlock_timed(rwl->rwl_ptr, nano2count(max_wait));
+	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
+	res = rt_rwl_wrlock_timed(rwl->rwl_ptr, nano2count(max_wait));
 	return res == RTE_TIMOUT?ETIMEDOUT:res == 0?0:EINVAL;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_timed_write_lock);
 
 int urt_rwlock_try_read_lock(urt_rwlock *rwl)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return rt_rwl_rdlock_if(rwl->rwl_ptr) == 0?0:EBUSY;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_try_read_lock);
 
 int urt_rwlock_try_write_lock(urt_rwlock *rwl)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return rt_rwl_wrlock_if(rwl->rwl_ptr) == 0?0:EBUSY;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_try_write_lock);
 
 int urt_rwlock_read_unlock(urt_rwlock *rwl)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return rt_rwl_unlock(rwl->rwl_ptr) == 0?0:EINVAL;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_read_unlock);
 
 int urt_rwlock_write_unlock(urt_rwlock *rwl)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	return rt_rwl_unlock(rwl->rwl_ptr) == 0?0:EINVAL;
 }
 URT_EXPORT_SYMBOL(urt_rwlock_write_unlock);
 
 urt_cond *(urt_cond_new)(int *error, ...)
 {
-	urt_cond *cond = urt_mem_new(sizeof *cond, error);
+	urt_cond *cond;
+
+	URT_CHECK_NONRT_CONTEXT();
+
+	cond = urt_mem_new(sizeof *cond, error);
 	if (cond == NULL)
 	{
 		if (error)
@@ -411,6 +480,8 @@ URT_EXPORT_SYMBOL(urt_cond_new);
 
 void urt_cond_delete(urt_cond *cond)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (cond != NULL)
 		rt_cond_delete(cond->cond_ptr);
 	urt_mem_delete(cond);
@@ -469,6 +540,8 @@ void urt_shcond_detach(urt_cond *cond)
 {
 	urt_registered_object *ro;
 
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (cond == NULL)
 		return;
 
@@ -482,6 +555,9 @@ URT_EXPORT_SYMBOL(urt_shcond_detach);
 int (urt_cond_waitf)(urt_cond *cond, urt_mutex *mutex, bool (*stop)(volatile void *), volatile void *data, ...)
 {
 	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
 	if (stop)
 	{
 		while ((res = rt_cond_wait_timed(cond->cond_ptr, mutex->sem_ptr, nano2count(URT_LOCK_STOP_MAX_DELAY))) == RTE_TIMOUT)
@@ -497,21 +573,33 @@ URT_EXPORT_SYMBOL(urt_cond_waitf);
 
 int urt_cond_timed_wait(urt_cond *cond, urt_mutex *mutex, urt_time max_wait)
 {
-	int res = rt_cond_wait_timed(cond->cond_ptr, mutex->sem_ptr, nano2count(max_wait));
+	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
+	res = rt_cond_wait_timed(cond->cond_ptr, mutex->sem_ptr, nano2count(max_wait));
 	return res == RTE_TIMOUT?ETIMEDOUT:res == 0?0:EINVAL;
 }
 URT_EXPORT_SYMBOL(urt_cond_timed_wait);
 
 int urt_cond_signal(urt_cond *cond)
 {
-	int res = rt_cond_signal(cond->cond_ptr);
+	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
+	res = rt_cond_signal(cond->cond_ptr);
 	return res >= RTE_BASE?EINVAL:0;
 }
 URT_EXPORT_SYMBOL(urt_cond_signal);
 
 int urt_cond_broadcast(urt_cond *cond)
 {
-	int res = rt_cond_broadcast(cond->cond_ptr);
+	int res;
+
+	URT_CHECK_RT_CONTEXT();
+
+	res = rt_cond_broadcast(cond->cond_ptr);
 	return res >= RTE_BASE?EINVAL:0;
 }
 URT_EXPORT_SYMBOL(urt_cond_broadcast);

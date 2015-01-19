@@ -120,6 +120,8 @@ static void _shmem_detach(struct urt_registered_object *ro, void *address, void 
 
 void urt_shmem_detach(void *mem)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	urt_shmem_detach_with_callback(mem, NULL);
 }
 

@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <urt_stdtypes.h>
 #include <urt_compiler.h>
+#include <urt_debug.h>
 
 URT_DECL_BEGIN
 
@@ -61,6 +62,11 @@ static inline urt_time urt_get_exec_time(void)
 {
 #ifdef CLOCK_THREAD_CPUTIME_ID
 	struct timespec t;
+#endif
+
+	URT_CHECK_RT_CONTEXT();
+
+#ifdef CLOCK_THREAD_CPUTIME_ID
 	/* Note: task migration may result in bad exec-time calculation by glibc */
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &t);
 	return t.tv_sec * 1000000000ll + t.tv_nsec;

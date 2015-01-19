@@ -25,6 +25,8 @@
 
 void urt_task_delete(urt_task *task)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (task != NULL)
 	{
 #ifdef __KERNEL__
@@ -99,6 +101,8 @@ int urt_task_start(urt_task *task)
 	int ret;
 #endif
 
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (task == NULL)
 		return EINVAL;
 
@@ -126,6 +130,8 @@ URT_EXPORT_SYMBOL(urt_task_start);
 
 void urt_task_wait_period(urt_task *task)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	rt_task_wait_period();
 }
 URT_EXPORT_SYMBOL(urt_task_wait_period);

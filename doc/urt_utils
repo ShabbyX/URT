@@ -33,10 +33,26 @@ FUNCTION urt_get_free_name: (name: char[URT_NAME_LEN]): int
 FUNCTION urt_is_rt_context: (): bool
 	Whether calling thread is in real-time context
 
-	A call to this function determines whether the calling thread is in real-time context, and therefore can call URT functions or not.
+	A call to this function determines whether the calling thread is in real-time context, and therefore can call real-time-only functions.
+
+	**Note:** On some back-ends, there is no distinction between real-time and non-real-time context.  Therefore, to check whether
+	non-real-time-only functions can be called, do not check for this function returning `false`, but rather `[#urt_is_nonrt_context]`
+	returning `true`.
 
 	OUTPUT
 		Returns `true` if the calling thread is in real-time context.
+
+FUNCTION urt_is_nonrt_context: (): bool
+	Whether calling thread is in non-real-time context
+
+	A call to this function determines whether the calling thread is in non-real-time context, and therefore can call non-real-time-only functions.
+
+	**Note:** On some back-ends, there is no distinction between real-time and non-real-time context.  Therefore, to check whether
+	real-time-only functions can be called, do not check for this function returning `false`, but rather `[#urt_is_rt_context]`
+	returning `true`.
+
+	OUTPUT
+		Returns `true` if the calling thread is in non-real-time context.
 
 FUNCTION urt_make_rt_context: (prev: int *): int
 	Make the current context a real-time one if not already
