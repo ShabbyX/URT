@@ -16,6 +16,24 @@ access a resource (for example `[#urt_sem_wait](urt_lock)`) or request a real-ti
 can only be called from real-time context.  Throughout the documentation, functions that can only be called from real-time context are marked with
 `RT` as well as a notice.  Other functions (for example `[#urt_log](urt_log)` or `[#urt_sleep](urt_time)`) are callable from both contexts.
 
+This is particularly important regarding what can be done in the [`init`, `body` and `exit` functions](urt#URT_GLUE).  For example, if
+one needs to allocate resources and keep track of them in shared memory, one cannot use real-time locks to protect that memory.  It is possible
+to allocate book-keeping shared memory with `[#urt_shmem_new](urt_mem)` for example and access it, because accessing the shared memory is not
+limited to real-time context, but it is not possible to use a real-time lock to protect it.  That is because if you are in a non-real-time
+context, then you cannot use the locks, and if you are in a real-time context, you couldn't have allocated that shared memory or other
+resources.
+
+Therefore, you may need to allocate non-real-time locks.
+
+- If URT is configured for user-space only (such as with POSIX), then you could allocate shared memory with `[#urt_shmem_new](urt_mem)`
+  and initialize it, e.g., with `pthread_mutex_init` or other functions.
+- If URT is configured for kernel-space only, then you could do the same as with user-space (using the appropriate kernel functions, such
+  as `sema_init`).  Alternatively, if you have a static number of such locks, you could have a main kernel module that allocates and
+  `EXPORT_SYMBOL`s the locks and the other kernel modules would simply link to the locks.
+- If URT is configured to run on both spaces (such as with RTAI), then you could use a main kernel module that exposes a `/sys` interface.
+  This main kernel module would contain the locks (as in the previous item) which it can share with the other kernel modules.  User-space
+  applications would be able to use the lock through writes to the `/sys` file with predefined values.
+
 ## Shared Resources
 Shared resources in URT are identified by at-most-`[#URT_NAME_LEN](constants)`-character names, comprising of capital letters (`'A'-'Z'`), digits (`'0'-'9'`)
 and underscore (`'\_'`). At most `URT_NAME_LEN` characters are read from the name string. Therefore, a `URT_NAME_LEN`-character name doesn't need to be

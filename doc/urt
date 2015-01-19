@@ -115,6 +115,8 @@ MACRO URT_GLUE: (init, body, exit, data_type, interrupted, done)
 	}
 	```
 
+	See also the note on [function call context](Style#Function Call Context).
+
 	INPUT init
 		A small function to be called on program start.  In kernel space, this is
 		the `\_\_init` function.
