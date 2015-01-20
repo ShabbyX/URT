@@ -29,6 +29,7 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
+# include <pthread.h>
 #endif
 
 #include <urt_log.h>
@@ -36,6 +37,15 @@
 /* global semaphore is a native semaphore in kernel space (already exported).  It is accessed through a sysfs file from user-space */
 #ifndef __KERNEL__
 static int urt_global_sem = -1;
+/*
+ * It turned out that if multiple threads of the same process try to `down` the kernel
+ * semaphore through the sysfs interface at the same time, the kernel blocks the whole
+ * process instead of just the thread.  I have yet to identify the reason or the proper
+ * solution (http://stackoverflow.com/q/28052643/912144), but a workaround is to have
+ * accesses to the sysfs file within the threads of the same process to be mutually
+ * exclusive.
+ */
+static pthread_mutex_t sysfs_lock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 int urt_global_sem_get(const char *name)
@@ -67,6 +77,7 @@ void urt_global_sem_wait(void)
 		urt_err("error: global sem wait interrupted\n");
 #else
 	char command = URT_GLOBAL_SEM_WAIT;
+	pthread_mutex_lock(&sysfs_lock);
 	if (write(urt_global_sem, &command, 1) < 0)
 		urt_err("error: global sem wait command error %d: '%s'\n", errno, strerror(errno));
 #endif
@@ -91,6 +102,7 @@ void urt_global_sem_post(void)
 	char command = URT_GLOBAL_SEM_POST;
 	if (write(urt_global_sem, &command, 1) < 0)
 		urt_err("error: global sem post command error %d: '%s'\n", errno, strerror(errno));
+	pthread_mutex_unlock(&sysfs_lock);
 #endif
 }
 
