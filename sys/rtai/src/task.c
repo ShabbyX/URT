@@ -69,17 +69,17 @@ static void *_task_wrapper(void *t)
 	if (!task->attr.soft)
 		rt_make_hard_real_time();
 
-	/* if periodic, make it periodic */
-	if (task->attr.period > 0)
-		if (rt_task_make_periodic(task->rt_task, nano2count(task->attr.start_time),
-				nano2count(task->attr.period)))
-			goto exit_no_periodic;
-
 	/* align to start time, or set it if not set */
 	if (task->attr.start_time == 0)
 		task->attr.start_time = urt_get_time();
 	else
 		urt_sleep(task->attr.start_time - urt_get_time());
+
+	/* if periodic, make it periodic */
+	if (task->attr.period > 0)
+		if (rt_task_make_periodic(task->rt_task, nano2count(task->attr.start_time),
+				nano2count(task->attr.period)))
+			goto exit_no_periodic;
 
 	/* finally, call the user function */
 	task->func(task, task->data);

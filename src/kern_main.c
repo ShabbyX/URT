@@ -89,8 +89,6 @@ static int __init _urt_main_init(void)
 
 #if URT_BI_SPACE
 	/* create sysfs file */
-	if (_kobj)
-		kobject_put(_kobj);
 	_kobj = kobject_create_and_add("urt"URT_SUFFIX, NULL);	/* TODO: anyway to get a reference to /sys/module/urt? */
 	if (!_kobj)
 	{
