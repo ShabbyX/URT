@@ -39,14 +39,14 @@ endif
 if HAVE_USER
 lib_LTLIBRARIES = liburt@URT_SUFFIX@.la
 liburt@URT_SUFFIX@_la_SOURCES = $(SOURCE_FILES) $(HEADER_FILES)
-liburt@URT_SUFFIX@_la_CFLAGS = $(URT_CFLAGS_USER) -I$(top_srcdir)/include -I$(top_srcdir)/sys/$(URT_SYS)/include
+liburt@URT_SUFFIX@_la_CFLAGS = $(URT_CFLAGS_USER) -I"$(top_srcdir)/include" -I"$(top_srcdir)/sys/$(URT_SYS)/include"
 liburt@URT_SUFFIX@_la_LDFLAGS = -version-info 0:0:0
 endif
 
 if HAVE_KERNEL
 KBUILD_EXTRA_CFLAGS = \
-                      -I$(abs_top_srcdir)/src \
-                      -I$(abs_top_srcdir)/sys/$(URT_SYS)/src
+                      -I"$(abs_top_srcdir)/src" \
+		      -I"$(abs_top_srcdir)/sys/$(URT_SYS)/src"
 KBUILD_EXTRA_SYMBOLS =
 
 V_KERN_INVOKE = $(V_KERN_INVOKE_@AM_V@)

@@ -107,7 +107,7 @@ AS_IF([test x"$build_kernel_module" = xy],
    kernel_build_path=$kernel_path/build
    kernel_module_path=$kernel_path/urt"$suffix"
    kernel_invoke="\$(MAKE) -C '$kernel_build_path' M='\$(abs_builddir)' V=\$(V) \
-EXTRA_CFLAGS='-I\$(abs_top_srcdir)/include -I\$(abs_top_srcdir)/sys/\$(URT_SYS)/include $extra_cflags_kernel \$(KBUILD_EXTRA_CFLAGS)' \
+EXTRA_CFLAGS='-I\"\$(abs_top_srcdir)/include\" -I\"\$(abs_top_srcdir)/sys/\$(URT_SYS)/include\" $extra_cflags_kernel \$(KBUILD_EXTRA_CFLAGS)' \
 KBUILD_EXTRA_SYMBOLS='$extra_symbols_kernel \$(KBUILD_EXTRA_SYMBOLS)' \
 INSTALL_MOD_DIR=urt'$suffix' INSTALL_MOD_PATH=\$(DESTDIR)"])
 
