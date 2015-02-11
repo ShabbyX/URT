@@ -20,6 +20,7 @@
 #ifdef __KERNEL__
 
 #include <linux/module.h>
+#include <linux/semaphore.h>
 #include <linux/sysfs.h>
 #include <linux/kobject.h>
 #include <urt.h>
@@ -29,6 +30,7 @@
 
 URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
+URT_MODULE_DESCRIPTION("Unified Real-Time Interface");
 
 #if URT_BI_SPACE
 /* setup sysfs for user-space global sem wait/post and time calibration */
@@ -87,8 +89,6 @@ static int __init _urt_main_init(void)
 
 #if URT_BI_SPACE
 	/* create sysfs file */
-	if (_kobj)
-		kobject_put(_kobj);
 	_kobj = kobject_create_and_add("urt"URT_SUFFIX, NULL);	/* TODO: anyway to get a reference to /sys/module/urt? */
 	if (!_kobj)
 	{

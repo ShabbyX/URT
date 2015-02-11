@@ -41,6 +41,12 @@ typedef struct urt_rwlock
 	RWL *rwl_ptr;		/* urt_sem */
 	unsigned int id;
 } urt_rwlock;
+typedef struct urt_cond
+{
+	CND cond;		/* similar to */
+	CND *cond_ptr;		/* urt_sem */
+	unsigned int id;
+} urt_cond;
 
 URT_DECL_END
 

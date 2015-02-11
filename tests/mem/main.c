@@ -23,7 +23,14 @@ URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
 URT_MODULE_DESCRIPTION("mem test: main");
 
+char *req_sem_name = NULL;
+char *res_sem_name = NULL;
+char *mem_name = NULL;
+
 URT_MODULE_PARAM_START()
+URT_MODULE_PARAM(req_sem_name, charp, "request sem name")
+URT_MODULE_PARAM(res_sem_name, charp, "result sem name")
+URT_MODULE_PARAM(mem_name, charp, "memory name")
 URT_MODULE_PARAM_END()
 
 static int test_start(int *unused);
@@ -59,6 +66,13 @@ static void _cleanup(void)
 static int test_start(int *unused)
 {
 	int ret;
+
+	if (req_sem_name == NULL || res_sem_name == NULL || mem_name == NULL)
+	{
+		urt_out("Missing obligatory arguments <req_sem_name=name> <res_sem_name=name> <mem_name=name>\n");
+		return EXIT_FAILURE;
+	}
+
 	urt_out("main: starting test...\n");
 	ret = urt_init();
 	if (ret)
@@ -66,15 +80,15 @@ static int test_start(int *unused)
 		urt_out("main: init returned %d\n", ret);
 		goto exit_no_init;
 	}
-	req = urt_shsem_new("TSTREQ", 0);
-	res = urt_shsem_new("TSTRES", 0);
+	req = urt_shsem_new(req_sem_name, 0);
+	res = urt_shsem_new(res_sem_name, 0);
 	if (req == NULL || res == NULL)
 	{
 		urt_out("main: no shared sem\n");
 		goto exit_no_sem;
 	}
 	urt_out("main: sem allocated\n");
-	mem = urt_shmem_new("TSTMEM", 4 * sizeof *mem);
+	mem = urt_shmem_new(mem_name, 4 * sizeof *mem);
 	if (mem == NULL)
 	{
 		urt_out("main: no shared mem\n");
@@ -106,8 +120,9 @@ exit_no_task:
 
 static void test_end(int *unused)
 {
-	if (!(mem[0] == 20 && mem[1] == 40 && mem[2] == 60 && mem[3] == -20))
-		urt_out("main: bad synchronization (wrong results)\n");
+	if (mem)
+		if (!(mem[0] == 20 && mem[1] == 40 && mem[2] == 60 && mem[3] == -20))
+			urt_out("main: bad synchronization (wrong results)\n");
 	_cleanup();
 	urt_out("main: test done\n");
 }

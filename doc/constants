@@ -1,0 +1,102 @@
+constants
+# URT - Unified Real-Time Interface
+version version 0.4.1
+author Shahbaz Youssefi
+keyword real-time
+keyword middleware
+keyword interface
+shortcut index
+shortcut globals
+
+Constants in URT are divided in 2 groups:
+- Limits
+- Meta
+
+CONST_GROUP Limits
+	Limits to certain sizes or other values
+
+	These constants are limits to various features of URT.
+
+	CONSTANT URT_NAME_LEN: 6
+		Maximum length of a name
+
+		This is the maximum length of a name used for sharing objects. URT never reads or writes more than this many characters on names.
+		This means that the name does not need to be NUL-terminated. It also means that URT does not NUL-terminate the name.
+
+	CONSTANT URT_MIN_PRIORITY
+		Minimum possible priority in the system
+
+		This is the minimum possible priority in the system. Note that the integer value of this priority may in fact be higher than
+		`[#URT_MAX_PRIORITY]`. Use `[#urt_priority_is_higher](urt_task_attr)` to compare priorities.
+
+	CONSTANT URT_MAX_PRIORITY
+		Maximum possible priority in the system
+
+		This is the maximum possible priority in the system. Note that the integer value of this priority may in fact be lower than
+		`[#URT_MIN_PRIORITY]`. Use `[#urt_priority_is_higher](urt_task_attr)` to compare priorities.
+
+	CONSTANT URT_MORE_PRIORITY
+		Value to be added to priority to increase it
+
+		If this value is added to a [valid](urt_task_attr#urt_priority_is_valid) priority and if the result is still a valid priority,
+		then the result would have a higher priority than the original one, unless no higher priority is possible. Similarly, subtracting
+		this value from a priority results in lower priority, unless no lower priority is possible. The `[#urt_priority](urt_task_attr)`
+		is a convenience function to get the nth highest priority.
+
+CONST_GROUP Meta
+	Constants providing information about the API
+
+	These are constants that give information about the API itself.
+
+	CONSTANT URT_SYS_POSIX
+		Indicates POSIX back-end
+
+		If defined, POSIX is the back-end of the API
+
+	CONSTANT URT_SYS_RTAI_KERNEL
+		Indicates RTAI (kernel space) back-end
+
+		If defined, RTAI is the back-end of the API (in kernel space)
+
+	CONSTANT URT_SYS_RTAI_USER
+		Indicates RTAI (user space) back-end
+
+		If defined, RTAI is the back-end of the API (in user space)
+
+	CONSTANT URT_SYS_QNX
+		Indicates QNX back-end
+
+		If defined, QNX is the back-end of the API
+
+	CONSTANT URT_SYS_VXWORKS
+		Indicates VxWorks back-end
+
+		If defined, VxWorks is the back-end of the API
+
+	CONSTANT URT_VERSION_MAJOR: 0
+		The major number of the version of the API
+
+		The major number in the version. This number changes only in case of fundamental changes in the API.
+
+	CONSTANT URT_VERSION_MINOR: 4
+		The minor number of the version of the API
+
+		The minor number in the version. This number increases with added functionality or partial changes in the library.
+
+	CONSTANT URT_VERSION_REVISION: 0
+		The revision number of the version of the API
+
+		The revision number in the version. This number increases only when minor changes to the API take place while the
+		overall functionality is the same. This includes bug-fixing, renaming functions and variables, added error-checking
+		and such.
+
+	CONSTANT URT_VERSION_BUILD: 292
+		The build number of the version of the API
+
+		This number shows how many times the API files have been all successfully compiled.
+
+	CONSTANT URT_VERSION: "0.4.0.292"
+		The complete version of the API as a string
+
+		This number is merely a string concatenation of the previous four values in the following format:
+		```URT_VERSION_MAJOR.URT_VERSION_MINOR.URT_VERSION_REVISION.URT_VERSION_BUILD```

@@ -28,10 +28,14 @@
 
 void *(urt_mem_new)(size_t size, int *error, ...)
 {
+	void *mem = NULL;
+
+	URT_CHECK_NONRT_CONTEXT();
+
 #ifdef __KERNEL__
-	void *mem = vmalloc(size);
+	mem = vmalloc(size);
 #else
-	void *mem = malloc(size);
+	mem = malloc(size);
 #endif
 	if (URT_UNLIKELY(mem == NULL))
 		if (error)
@@ -43,6 +47,8 @@ URT_EXPORT_SYMBOL(urt_mem_new);
 void *(urt_mem_resize)(void *old_mem, size_t old_size, size_t size, int *error, ...)
 {
 	void *mem = NULL;
+
+	URT_CHECK_NONRT_CONTEXT();
 
 	/* size == 0 is invalid.  size < old_size is useless */
 	if (size == 0 || size < old_size)
@@ -56,7 +62,7 @@ void *(urt_mem_resize)(void *old_mem, size_t old_size, size_t size, int *error, 
 	if (URT_UNLIKELY(mem == NULL))
 	{
 		if (error)
-			*error = errno;
+			*error = ENOMEM;
 	}
 
 #ifdef __KERNEL__

@@ -24,6 +24,7 @@
 # include <linux/kernel.h>
 #endif
 #include <rtai_lxrt.h>
+#include <urt_debug.h>
 
 URT_DECL_BEGIN
 
@@ -40,7 +41,7 @@ typedef struct urt_task
 	void *data;
 } urt_task;
 
-#define URT_MAX_PRIORITY RT_SCHED_HIGHEST_PRIORITY
+#define URT_MAX_PRIORITY (RT_SCHED_HIGHEST_PRIORITY + 1)	/* highest could be reserved for watchdog */
 #define URT_MIN_PRIORITY RT_SCHED_LOWEST_PRIORITY
 #define URT_MORE_PRIORITY -1
 
@@ -54,20 +55,17 @@ static inline bool urt_priority_is_higher(int a, int b)
 	return a < b;
 }
 
-#ifdef __KERNEL__
 static inline urt_time urt_task_next_period(urt_task *task)
 {
-	return count2nano(next_period());
+	return count2nano(rt_task_next_period());
 }
-#else
-/*
- * Note: RTAI doesn't have next_period for user space. This function simulates the behavior
- * and may be imprecise. TODO: test the amount of imprecision.
- */
-urt_time urt_task_next_period(urt_task *task);
-#endif
 
-static inline urt_time urt_task_period_time_left(urt_task *task) { return urt_task_next_period(task) - urt_get_time(); }
+static inline urt_time urt_task_period_time_left(urt_task *task)
+{
+	URT_CHECK_RT_CONTEXT();
+
+	return urt_task_next_period(task) - urt_get_time();
+}
 
 URT_DECL_END
 

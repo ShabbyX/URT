@@ -25,14 +25,20 @@
 #else
 # include <stdlib.h>
 #endif
+#include <urt_debug.h>
 
 URT_DECL_BEGIN
 
+static inline void urt_mem_delete(void *mem)
+{
+	URT_CHECK_NONRT_CONTEXT();
+
 #ifdef __KERNEL__
-# define urt_mem_delete(mem) vfree(mem)
+	vfree(mem);
 #else
-# define urt_mem_delete(mem) free(mem)
+	free(mem);
 #endif
+}
 
 URT_DECL_END
 

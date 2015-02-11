@@ -1,0 +1,2 @@
+obj-m += master.o
+master-y := @srcdir@/main.o

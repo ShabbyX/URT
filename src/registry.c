@@ -52,20 +52,25 @@ static void _name_cpy(char *to, const char *from)
 	to[i] = '\0';
 }
 
-void urt_registry_init(void)
+int urt_registry_init(void)
 {
+	int i;
+
 	if (urt_global_mem->initialized)
-		return;
+		return urt_global_mem->sizeof_urt_internal == sizeof(struct urt_internal)
+			&& urt_global_mem->sizeof_urt_registered_object == sizeof(struct urt_registered_object)?0:-1;
+
 	*urt_global_mem = (urt_internal){
-		.initialized = true
+		.sizeof_urt_internal = sizeof(struct urt_internal),
+		.sizeof_urt_registered_object = sizeof(struct urt_registered_object),
+		.initialized = true,
 	};
 
-	urt_global_mem->next_free_name[0] = '_';
-	urt_global_mem->next_free_name[1] = '_';
-	urt_global_mem->next_free_name[2] = '_';
-	urt_global_mem->next_free_name[3] = '_';
-	urt_global_mem->next_free_name[4] = '_';
-	urt_global_mem->next_free_name[5] = '$';
+	for (i = 0; i < URT_NAME_LEN - 1; ++i)
+		urt_global_mem->next_free_name[i] = '_';
+	urt_global_mem->next_free_name[URT_NAME_LEN - 1] = '$';
+
+	return 0;
 }
 
 static urt_registered_object *_find_by_name(const char *name)
@@ -264,24 +269,18 @@ static int _increment_name(char *name)
 
 	if (URT_UNLIKELY(i < 0))
 	{
-		name[0] = '_';
-		name[1] = '_';
-		name[2] = '_';
-		name[3] = '_';
-		name[4] = '_';
-		name[5] = '$';
+		for (i = 0; i < URT_NAME_LEN - 1; ++i)
+			name[i] = '_';
+		name[URT_NAME_LEN - 1] = '$';
 		return 1;
 	}
 
 	return 0;
 exit_internal:
 	urt_err("internal error: next_free_name contains invalid character '%c' (%d)\n", digit, digit);
-	name[0] = '_';
-	name[1] = '_';
-	name[2] = '_';
-	name[3] = '_';
-	name[4] = '_';
-	name[5] = '$';
+	for (i = 0; i < URT_NAME_LEN - 1; ++i)
+		name[i] = '_';
+	name[URT_NAME_LEN - 1] = '$';
 	return -1;
 }
 
@@ -374,7 +373,7 @@ void urt_print_names(void)
 void urt_dump_memory(const char *name, size_t start, size_t end)
 {
 	urt_registered_object *ro = NULL;
-	int8_t type;
+	char type;
 	size_t size;
 	void *obj;
 	int error;

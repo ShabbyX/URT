@@ -23,13 +23,14 @@
 #include "urt_stdtypes.h"
 #include "urt_compiler.h"
 #include "urt_consts.h"
-#include <urt_sys_utils.h>
+#include "urt_sys_utils.h"
 
 URT_DECL_BEGIN
 
 /* fills `name` with an available name and reserves it so others can't take it */
 int urt_get_free_name(char *name);
 /* bool urt_is_rt_context(void); */
+/* bool urt_is_nonrt_context(void); */
 /* int urt_make_rt_context(int *prev); */
 /* void urt_unmake_rt_context(int prev); */
 

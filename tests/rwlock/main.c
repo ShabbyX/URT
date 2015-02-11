@@ -23,7 +23,10 @@ URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
 URT_MODULE_DESCRIPTION("rwlock test: main");
 
+char *rwlock_name = NULL;
+
 URT_MODULE_PARAM_START()
+URT_MODULE_PARAM(rwlock_name, charp, "rwlock name")
 URT_MODULE_PARAM_END()
 
 static int test_start(int *unused);
@@ -60,6 +63,13 @@ static void _cleanup(void)
 static int test_start(int *unused)
 {
 	int ret;
+
+	if (rwlock_name == NULL)
+	{
+		urt_out("Missing obligatory argument <rwlock_name=name>\n");
+		return EXIT_FAILURE;
+	}
+
 	urt_out("main: starting test...\n");
 	ret = urt_init();
 	if (ret)
@@ -67,7 +77,7 @@ static int test_start(int *unused)
 		urt_out("main: init returned %d\n", ret);
 		goto exit_no_init;
 	}
-	rwl = urt_shrwlock_new("TSTRWL");
+	rwl = urt_shrwlock_new(rwlock_name);
 	if (rwl == NULL)
 	{
 		urt_out("main: no shared rwl\n");

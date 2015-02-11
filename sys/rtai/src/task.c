@@ -25,6 +25,8 @@
 
 void urt_task_delete(urt_task *task)
 {
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (task != NULL)
 	{
 #ifdef __KERNEL__
@@ -67,17 +69,17 @@ static void *_task_wrapper(void *t)
 	if (!task->attr.soft)
 		rt_make_hard_real_time();
 
-	/* if periodic, make it periodic */
-	if (task->attr.period > 0)
-		if (rt_task_make_periodic(task->rt_task, nano2count(task->attr.start_time),
-				nano2count(task->attr.period)))
-			goto exit_no_periodic;
-
 	/* align to start time, or set it if not set */
 	if (task->attr.start_time == 0)
 		task->attr.start_time = urt_get_time();
 	else
 		urt_sleep(task->attr.start_time - urt_get_time());
+
+	/* if periodic, make it periodic */
+	if (task->attr.period > 0)
+		if (rt_task_make_periodic(task->rt_task, nano2count(task->attr.start_time),
+				nano2count(task->attr.period)))
+			goto exit_no_periodic;
 
 	/* finally, call the user function */
 	task->func(task, task->data);
@@ -95,11 +97,17 @@ exit_no_periodic:
 
 int urt_task_start(urt_task *task)
 {
+#ifdef __KERNEL__
+	int ret;
+#endif
+
+	URT_CHECK_NONRT_CONTEXT();
+
 	if (task == NULL)
 		return EINVAL;
 
 #ifdef __KERNEL__
-	int ret = rt_task_init(&task->rt_task, _task_wrapper, (long)task, task->attr.stack_size, task->attr.priority, task->attr.uses_fpu, NULL);
+	ret = rt_task_init(&task->rt_task, _task_wrapper, (long)task, task->attr.stack_size, task->attr.priority, task->attr.uses_fpu, NULL);
 	if (ret)
 		goto exit_bad_init;
 
@@ -122,24 +130,8 @@ URT_EXPORT_SYMBOL(urt_task_start);
 
 void urt_task_wait_period(urt_task *task)
 {
+	URT_CHECK_RT_CONTEXT();
+
 	rt_task_wait_period();
 }
 URT_EXPORT_SYMBOL(urt_task_wait_period);
-
-#ifndef __KERNEL__
-urt_time urt_task_next_period(urt_task *task)
-{
-	urt_time cur;
-	urt_task_attr *attr = &task->attr;
-
-	/* make sure task is periodic */
-	if (URT_UNLIKELY(attr->period <= 0))
-		return 0;
-
-	cur = urt_get_time();
-	if (cur > attr->start_time)
-		attr->start_time += (cur - attr->start_time + attr->period - 1) / attr->period * attr->period;
-
-	return attr->start_time;
-}
-#endif

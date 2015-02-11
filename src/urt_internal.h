@@ -23,7 +23,7 @@
 #include <urt_consts.h>
 #include <urt_stdtypes.h>
 #include <urt_lock.h>
-#include "urt_internal_config.h"
+#include "config.h"
 
 #ifdef __KERNEL__
 # include <linux/version.h>
@@ -60,16 +60,18 @@ typedef struct urt_registered_object
 						 * before the object so it is transparent to the user.
 						 * bookkeeping is always 16 bytes.
 						 */
-	int8_t type;				/* type of object, one of URT_TYPE_* */
+	char type;				/* type of object, one of URT_TYPE_* */
 	unsigned int count;			/* usage count */
 	size_t size;				/* size of memory, if object is shared memory */
 } urt_registered_object;
 
 typedef struct urt_internal
 {
+	size_t sizeof_urt_internal;		/* size of this structure, for error checking */
+	size_t sizeof_urt_registered_object;	/* size of the object structure, for error checking */
 	urt_registered_object objects[URT_MAX_OBJECTS];
 	unsigned int objects_max_index;		/* maximum index of `objects` that is used */
-	char next_free_name[URT_NAME_LEN];	/* see implementation of urt_get_free_name */
+	char next_free_name[URT_NAME_LEN + 1];	/* see implementation of urt_get_free_name */
 	bool names_exhausted;			/* whether free names are exhausted */
 	bool initialized;			/* whether registry is already initialized */
 } urt_internal;
@@ -77,7 +79,7 @@ typedef struct urt_internal
 extern urt_internal *urt_global_mem;
 
 /* registry manipulation */
-void urt_registry_init(void);
+int urt_registry_init(void);
 urt_registered_object *urt_reserve_name(const char *name, int *error);
 void urt_inc_name_count(urt_registered_object *ro);
 /*
@@ -123,11 +125,5 @@ urt_rwlock *urt_sys_shrwlock_new(const char *name, int *error);
 urt_rwlock *urt_sys_shrwlock_attach(const char *name, int *error);
 urt_cond *urt_sys_shcond_new(const char *name, int *error);
 urt_cond *urt_sys_shcond_attach(const char *name, int *error);
-
-#ifdef __KERNEL__
-# define URT_EXPORT_SYMBOL(s) EXPORT_SYMBOL_GPL(s)
-#else
-# define URT_EXPORT_SYMBOL(s)
-#endif
 
 #endif

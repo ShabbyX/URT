@@ -29,6 +29,7 @@
 #endif
 #include <rtai_lxrt.h>
 #include "urt_sys_utils.h"
+#include <urt_debug.h>
 
 URT_DECL_BEGIN
 
@@ -86,13 +87,18 @@ static inline void urt_sleep(urt_time t)
 static inline urt_time urt_get_exec_time(void)
 {
 	RT_TASK *task;
+#ifndef __KERNEL__
+	RTIME exectime[3];
+#endif
+
+	URT_CHECK_RT_CONTEXT();
+
 #ifdef __KERNEL__
 	task = rt_whoami();
 	if (task == NULL)
 		return 0;
 	return count2nano(task->exectime[0]);
 #else
-	RTIME exectime[3];
 	task = rt_buddy();
 	if (task == NULL)
 		return 0;

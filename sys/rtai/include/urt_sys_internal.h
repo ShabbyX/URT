@@ -49,4 +49,10 @@ static inline urt_rwlock *urt_sys_add_rwlock_book_keeping(urt_rwlock *rwl, unsig
 	return rwl;
 }
 
+static inline urt_cond *urt_sys_add_cond_book_keeping(urt_cond *cond, unsigned int id, urt_registered_object *ro)
+{
+	cond->id = id;
+	return cond;
+}
+
 #endif

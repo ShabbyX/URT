@@ -23,7 +23,10 @@ URT_MODULE_LICENSE("GPL");
 URT_MODULE_AUTHOR("Shahbaz Youssefi");
 URT_MODULE_DESCRIPTION("setup test: main");
 
+char *sem_name = NULL;
+
 URT_MODULE_PARAM_START()
+URT_MODULE_PARAM(sem_name, charp, "sem name")
 URT_MODULE_PARAM_END()
 
 static int test_start(int *unused);
@@ -40,6 +43,12 @@ static int test_start(int *unused)
 	int ret;
 	int exit_status = 0;
 
+	if (sem_name == NULL)
+	{
+		urt_out("Missing obligatory argument <sem_name=name>\n");
+		return EXIT_FAILURE;
+	}
+
 	urt_out("starting test...\n");
 	ret = urt_init();
 	if (ret)
@@ -48,7 +57,7 @@ static int test_start(int *unused)
 		exit_status = EXIT_FAILURE;
 		goto exit_no_init;
 	}
-	sem = urt_shsem_new("TSTSEM", 1);
+	sem = urt_shsem_new(sem_name, 1);
 	if (sem == NULL)
 	{
 		urt_out("no shared sem\n");
@@ -65,9 +74,9 @@ exit_no_sem:
 
 static void test_body(int *unused)
 {
-	urt_out("Sleeping for 5 seconds...\n");
+	urt_out("Sleeping for 2 seconds...\n");
 	urt_out("Time before sleep: %lld\n", urt_get_time());
-	urt_sleep(5000000000ll);
+	urt_sleep(2000000000ll);
 	urt_out("Time after sleep:  %lld\n", urt_get_time());
 	done = 1;
 }

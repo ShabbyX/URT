@@ -32,7 +32,7 @@
 #include "urt_compiler.h"
 #include "urt_consts.h"
 #include "urt_param.h"
-#include <urt_sys_setup.h>
+#include "urt_sys_setup.h"
 
 URT_DECL_BEGIN
 

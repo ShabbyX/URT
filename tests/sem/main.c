@@ -27,10 +27,13 @@ int test_arg = 0;			/* must be set to 123456 */
 bool test_arg2 = 2;			/* must be set to 1 */
 char *test_arg3[3] = {NULL};		/* must be set to "abc def", "ghi" */
 unsigned int test_arg3_count = 0;	/* must be set to 2 */
+char *sem_name = NULL;
+
 URT_MODULE_PARAM_START()
 URT_MODULE_PARAM(test_arg, int, "test argument")
 URT_MODULE_PARAM(test_arg2, bool, "another argument")
 URT_MODULE_PARAM_ARRAY(test_arg3, charp, &test_arg3_count, "last argument")
+URT_MODULE_PARAM(sem_name, charp, "sem name")
 URT_MODULE_PARAM_END()
 
 static int test_start(int *unused);
@@ -62,6 +65,13 @@ static void _cleanup(void)
 static int test_start(int *unused)
 {
 	int ret;
+
+	if (sem_name == NULL)
+	{
+		urt_out("Missing obligatory argument <sem_name=name>\n");
+		return EXIT_FAILURE;
+	}
+
 	urt_out("main: starting test...\n");
 	if (test_arg != 123456 || test_arg2 != 1 || test_arg3_count != 2 || test_arg3[0] == NULL || test_arg3[1] == NULL
 			|| strcmp(test_arg3[0], "abc def") != 0 || strcmp(test_arg3[1], "ghi") != 0)
@@ -76,7 +86,7 @@ static int test_start(int *unused)
 		urt_out("main: init returned %d\n", ret);
 		goto exit_no_init;
 	}
-	sem = urt_shsem_new("TSTSEM", 5);
+	sem = urt_shsem_new(sem_name, 5);
 	if (sem == NULL)
 	{
 		urt_out("main: no shared sem\n");

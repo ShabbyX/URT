@@ -141,7 +141,7 @@ static int parse_arg(struct urt_module_param *param, char *arg)
 {
 	const char *value;
 	int err;
-	int index;
+	unsigned int index;
 	int (*convert)(struct urt_module_param *, const char *, size_t) = NULL;
 
 	/* get a pointer to the value of the argument specified after = */

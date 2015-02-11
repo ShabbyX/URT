@@ -1,2 +1,0 @@
-LIB_HDR += urt_compiler.h urt_consts.h urt_lock.h urt_mem.h urt_stdtypes.h urt_task.h urt_utils.h \
-	   urt_defaults.h urt.h urt_log.h urt_setup.h urt_std.h urt_time.h urt_param.h

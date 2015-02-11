@@ -20,8 +20,6 @@
 #ifndef URT_STDTYPES_H
 #define URT_STDTYPES_H
 
-#include "urt_config.h"
-
 /* bring in fixed size integers, such as [u]int*_t */
 #ifdef __KERNEL__
 # include <linux/kernel.h>

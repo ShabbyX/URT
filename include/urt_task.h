@@ -35,18 +35,27 @@ typedef struct urt_task_attr
 	bool soft;		/* whether task is soft real-time */
 } urt_task_attr;
 
-#include <urt_sys_task.h>
+#include "urt_sys_task.h"
 
 URT_DECL_BEGIN
 
 URT_ATTR_WARN_UNUSED urt_task *(urt_task_new)(void (*func)(urt_task *, void *), void *data,
-		urt_task_attr *attr, int *error, ...);
+		const urt_task_attr *attr, int *error, ...);
 void urt_task_delete(urt_task *task);
 
 int urt_task_start(urt_task *task);
 void urt_task_wait_period(urt_task *task);
 /* urt_time urt_task_next_period(urt_task *task); */
 /* urt_time urt_task_period_time_left(urt_task *task); */
+
+/* bool urt_priority_is_valid(int p); */
+/* bool urt_priority_is_higher(int a, int b) */
+
+/* urt_priority gives the nth highest priority */
+static inline int urt_priority(unsigned int n)
+{
+	return URT_MAX_PRIORITY - URT_MORE_PRIORITY * n;
+}
 
 URT_DECL_END
 
