@@ -35,7 +35,7 @@
  */
 
 /* Thread module */
-#define urt_task_new(...) urt_task_new(__VA_ARGS__, NULL, NULL, NULL);
+#define urt_task_new(...) urt_task_new(__VA_ARGS__, NULL, NULL, NULL)
 
 /* Memory module */
 #define urt_mem_new(...) urt_mem_new(__VA_ARGS__, NULL)
