@@ -160,6 +160,8 @@ AC_SUBST(URT_SUFFIX_NOWS, [${suffix//@<:@@<:@:space:@:>@@:>@/}])
 AC_SUBST(URT_KERNEL_INVOKE, [$kernel_invoke])
 AC_SUBST(URT_KERNEL_MODULE_PATH, [$kernel_module_path])
 AC_SUBST(URT_TESTS_NEED_URT_KO, [$tests_need_urt_ko])
+AC_SUBST(KBUILD_CFLAGS, [$KBUILD_CFLAGS])
+AC_SUBST(KBUILD_SYMBOLS, [$KBUILD_SYMBOLS])
 
 # Optional build
 AM_CONDITIONAL(HAVE_USER, [test x"$build_user_lib" = xy])

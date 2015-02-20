@@ -46,8 +46,9 @@ endif
 if HAVE_KERNEL
 KBUILD_EXTRA_CFLAGS = \
                       -I"$(abs_top_srcdir)/src" \
-		      -I"$(abs_top_srcdir)/sys/$(URT_SYS)/src"
-KBUILD_EXTRA_SYMBOLS =
+		      -I"$(abs_top_srcdir)/sys/$(URT_SYS)/src" \
+		      $(KBUILD_CFLAGS)
+KBUILD_EXTRA_SYMBOLS = $(KBUILD_SYMBOLS)
 
 V_KERN_INVOKE = $(V_KERN_INVOKE_@AM_V@)
 V_KERN_INVOKE_ = $(V_KERN_INVOKE_@AM_DEFAULT_V@)

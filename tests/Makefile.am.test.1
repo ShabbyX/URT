@@ -28,9 +28,10 @@ endif
 if HAVE_KERNEL
 EXTRA_DIST = Kbuild
 
-KBUILD_EXTRA_CFLAGS =
+KBUILD_EXTRA_CFLAGS = $(KBUILD_CFLAGS)
 KBUILD_EXTRA_SYMBOLS = \
-                       $(abs_top_builddir)/src/Module.symvers
+                       $(abs_top_builddir)/src/Module.symvers \
+                       $(KBUILD_SYMBOLS)
 
 TESTS += run_kernel.sh
 
