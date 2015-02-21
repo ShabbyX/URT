@@ -68,10 +68,10 @@ extra_cflags_kernel=
 extra_symbols_kernel=
 tests_need_urt_ko=n
 AS_CASE(["$backend"],
-  [posix], [AS_CASE(["$host_os"],
-             [*linux*], [AC_CHECK_LIB([rt], [clock_gettime])
-                         extra_cflags_user="-pthread"
-                         extra_ldflags_user="-lpthread"])],
+  [posix], [extra_cflags_user="-pthread"
+            AC_CHECK_LIB([pthread], [pthread_create])
+            AS_CASE(["$host_os"],
+              [*linux*], [AC_CHECK_LIB([rt], [clock_gettime])])],
   [rtai], [extra_cflags_user=$($rtai_config_tool --lxrt-cflags)
            extra_ldflags_user=$($rtai_config_tool --lxrt-ldflags)
            extra_cflags_kernel=$($rtai_config_tool --module-cflags)

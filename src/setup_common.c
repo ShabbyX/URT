@@ -25,6 +25,9 @@
 urt_internal *urt_global_mem = NULL;
 urt_time urt_time_offset = 0;
 URT_EXPORT_SYMBOL(urt_time_offset);
+#ifdef __MACH__
+mach_timebase_info_data_t urt_time_mach_timebase = {0};
+#endif
 
 int urt_init(void)
 {
@@ -120,7 +123,10 @@ void urt_calibrate(void)
 	urt_time_offset = offset;
 # endif
 #else
-	/* no calibration required in mono-space environments */
+/* no calibration required in mono-space environments.  However, in mach we need an initialization of clocks */
+# ifdef __MACH__
+	mach_timebase_info(&urt_time_mach_timebase);
+# endif
 #endif
 }
 URT_EXPORT_SYMBOL(urt_calibrate);

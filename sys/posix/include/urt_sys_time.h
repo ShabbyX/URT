@@ -22,6 +22,12 @@
 
 #include <time.h>
 #include <unistd.h>
+#ifdef __MACH__
+# include <mach/mach_time.h>
+# include <mach/mach_init.h>
+# include <mach/thread_act.h>
+# include <mach/mach_port.h>
+#endif
 #include <urt_stdtypes.h>
 #include <urt_compiler.h>
 #include <urt_debug.h>
@@ -30,16 +36,23 @@ URT_DECL_BEGIN
 
 typedef long long urt_time;
 extern urt_time urt_time_offset;
+#ifdef __MACH__
+extern mach_timebase_info_data_t urt_time_mach_timebase;
+#endif
 
 static inline urt_time urt_get_time(void)
 {
-	struct timespec t;
-#ifdef CLOCK_MONOTONIC_RAW
-	clock_gettime(CLOCK_MONOTONIC_RAW, &t);
+#ifdef __MACH__
+	return mach_absolute_time() * urt_time_mach_timebase.numer / urt_time_mach_timebase.denom;
 #else
+	struct timespec t;
+# ifdef CLOCK_MONOTONIC_RAW
+	clock_gettime(CLOCK_MONOTONIC_RAW, &t);
+# else
 	clock_gettime(CLOCK_MONOTONIC, &t);
-#endif
+# endif
 	return t.tv_sec * 1000000000ll + t.tv_nsec + urt_time_offset;
+#endif
 }
 
 static inline void urt_sleep(urt_time t)
@@ -60,18 +73,32 @@ static inline void urt_sleep(urt_time t)
 
 static inline urt_time urt_get_exec_time(void)
 {
-#ifdef CLOCK_THREAD_CPUTIME_ID
+#ifdef __MACH__
+	thread_port_t thread = mach_thread_self();
+	thread_basic_info_data_t info;
+	mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;
+
+	if (thread_info(thread, THREAD_BASIC_INFO, (thread_info_t)&info, &count) != 0)
+		return urt_get_time();
+
+	mach_port_deallocate(mach_task_self(), thread);
+
+	return (info.user_time.seconds + info.system_time.seconds) * 1000000000llu
+		+ (info.user_time.microseconds + info.system_time.microseconds) * 1000llu;
+#else
+# ifdef CLOCK_THREAD_CPUTIME_ID
 	struct timespec t;
-#endif
+# endif
 
 	URT_CHECK_RT_CONTEXT();
 
-#ifdef CLOCK_THREAD_CPUTIME_ID
+# ifdef CLOCK_THREAD_CPUTIME_ID
 	/* Note: task migration may result in bad exec-time calculation by glibc */
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &t);
 	return t.tv_sec * 1000000000ll + t.tv_nsec;
-#else
+# else
 	return urt_get_time();
+# endif
 #endif
 }
 

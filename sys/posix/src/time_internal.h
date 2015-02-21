@@ -22,7 +22,9 @@
 
 #include <urt_time.h>
 #ifndef CLOCK_REALTIME
-# warning CLOCK_REALTIME is not implemented
+# ifndef __MACH__		/* we know mach doesn't have clock_gettime */
+#  warning CLOCK_REALTIME is not implemented
+# endif
 # include <sys/time.h>
 #endif
 
