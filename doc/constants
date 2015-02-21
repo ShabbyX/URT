@@ -8,6 +8,9 @@ keyword interface
 shortcut index
 shortcut globals
 
+Certain constants used within URT are values set during configuration and build.  The following constants are the limits to what the user can give
+to URT functions.
+
 CONST_GROUP Limits
 	Limits to certain sizes or other values
 
