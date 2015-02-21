@@ -35,6 +35,38 @@
 /* in POSIX systems, the native semaphore type is the urt_sem type */
 static urt_sem *urt_global_sem;
 
+/* in some implementations, timed functions are missing */
+#define SIMULATE_TIMEDLOCK_WITH_TRYLOCK(func, type, trylock, again_errno)		\
+int func(type * restrict lock, const struct timespec * restrict abs_timeout)		\
+{											\
+	urt_time timeout = abs_timeout->tv_sec * 1000000000ll + abs_timeout->tv_nsec;	\
+	int ret = -1;									\
+	do										\
+	{										\
+		ret = trylock(lock);							\
+		/* if error, fail immediately */					\
+		if (ret && errno != again_errno)					\
+			return ret;							\
+		/*									\
+		 * if lock not taken, sleep "a little".  Since mach is not		\
+		 * realtime anyway, it doesn't matter much that this value		\
+		 * is chosen arbitrarily as it is					\
+		 */									\
+		if (ret)								\
+			urt_sleep(10000);						\
+	} while (ret && urt_get_time_epoch() < timeout);				\
+	if (ret)									\
+		errno = ETIMEDOUT;							\
+	return ret;									\
+}
+
+#ifdef __MACH__
+SIMULATE_TIMEDLOCK_WITH_TRYLOCK(sem_timedwait, sem_t, sem_trywait, EAGAIN)
+SIMULATE_TIMEDLOCK_WITH_TRYLOCK(pthread_mutex_timedlock, pthread_mutex_t, pthread_mutex_trylock, EBUSY)
+SIMULATE_TIMEDLOCK_WITH_TRYLOCK(pthread_rwlock_timedrdlock, pthread_rwlock_t, pthread_rwlock_tryrdlock, EBUSY)
+SIMULATE_TIMEDLOCK_WITH_TRYLOCK(pthread_rwlock_timedwrlock, pthread_rwlock_t, pthread_rwlock_trywrlock, EBUSY)
+#endif
+
 urt_sem *(urt_sem_new)(unsigned int init_value, int *error, ...)
 {
 	urt_sem *sem;
