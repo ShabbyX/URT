@@ -23,7 +23,7 @@
 #ifdef __KERNEL__
 # include <linux/kernel.h>
 #endif
-#include <rtai_lxrt.h>
+#include "urt_sys_rtai.h"
 
 #ifdef __KERNEL__
 # define urt_log_cont(f, ...) rt_printk(__VA_ARGS__)

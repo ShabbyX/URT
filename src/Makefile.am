@@ -10,13 +10,15 @@ SOURCE_FILES = \
                param.c \
                registry.c \
                setup_common.c \
-               task_common.c
+               task_common.c \
+               inline_common.c
 
 SOURCE_FILES += \
                ../sys/@URT_SYS@/src/lock.c \
                ../sys/@URT_SYS@/src/mem.c \
                ../sys/@URT_SYS@/src/setup.c \
-               ../sys/@URT_SYS@/src/task.c
+               ../sys/@URT_SYS@/src/task.c \
+               ../sys/@URT_SYS@/src/inline.c
 
 HEADER_FILES = \
                urt_internal.h \
@@ -34,6 +36,8 @@ endif
 if HAVE_SYS_RTAI
   SOURCE_FILES += \
                   ../sys/@URT_SYS@/src/utils.c
+  HEADER_FILES += \
+                  ../sys/@URT_SYS@/include/urt_sys_rtai.h
 endif
 
 if HAVE_USER

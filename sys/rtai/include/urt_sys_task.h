@@ -23,7 +23,7 @@
 #ifdef __KERNEL__
 # include <linux/kernel.h>
 #endif
-#include <rtai_lxrt.h>
+#include "urt_sys_rtai.h"
 #include <urt_debug.h>
 
 URT_DECL_BEGIN
@@ -45,22 +45,22 @@ typedef struct urt_task
 #define URT_MIN_PRIORITY RT_SCHED_LOWEST_PRIORITY
 #define URT_MORE_PRIORITY -1
 
-static inline bool urt_priority_is_valid(int p)
+URT_INLINE bool urt_priority_is_valid(int p)
 {
 	return (p <= RT_SCHED_LOWEST_PRIORITY && p >= RT_SCHED_HIGHEST_PRIORITY);
 }
 
-static inline bool urt_priority_is_higher(int a, int b)
+URT_INLINE bool urt_priority_is_higher(int a, int b)
 {
 	return a < b;
 }
 
-static inline urt_time urt_task_next_period(urt_task *task)
+URT_INLINE urt_time urt_task_next_period(urt_task *task)
 {
 	return count2nano(rt_task_next_period());
 }
 
-static inline urt_time urt_task_period_time_left(urt_task *task)
+URT_INLINE urt_time urt_task_period_time_left(urt_task *task)
 {
 	URT_CHECK_RT_CONTEXT();
 

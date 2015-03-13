@@ -23,6 +23,7 @@
 #ifdef __KERNEL__
 # include <linux/kernel.h>
 #endif
+#include "urt_sys_rtai.h"
 #include <rtai_sem.h>
 #include <rtai_rwl.h>
 

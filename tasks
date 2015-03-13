@@ -1,8 +1,6 @@
 TODO
 - See if there's a way to store URT_MODULE_* in user-space so that when printing help, they would be mentioned.
 - See if RTAI's exectime is correct
-- Change the macro definition of functions to static inline!  Otherwise it would not be possible to take them as a function pointer,
-  which could come as a surprise if somebody needs it.
 
 Known issues
 - with all

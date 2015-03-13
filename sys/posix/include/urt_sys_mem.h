@@ -25,7 +25,7 @@
 
 URT_DECL_BEGIN
 
-static inline void urt_mem_delete(void *mem)
+URT_INLINE void urt_mem_delete(void *mem)
 {
 	URT_CHECK_NONRT_CONTEXT();
 	free(mem);

@@ -51,4 +51,20 @@
 # define URT_EXPORT_SYMBOL(s)
 #endif
 
+/*
+ * in user-space, we are interested in having external linkage for inline functions, e.g., for python
+ * bindings.  In user-space, one can define header functions as `inline` and have an `extern inline`
+ * definition in a single .c file.  The linker would then do the right thing.  That approach however,
+ * doesn't work in kernel space.  First, the inline semantics of gnu89 and gnu99/C99 differ, so in the
+ * least, -std=gnu99 needs to be added to the kernel flags, which is not a problem.  Second, the
+ * compiler uses __ilog2_u64, __ilog2_u32 and is_power_of_2 to perform do_div() which are defined as
+ * static and therefore cannot be used in an inline function.  As a result, inline functions in
+ * kernel space are simply made `static inline`.
+ */
+#ifdef __KERNEL__
+# define URT_INLINE static inline
+#else
+# define URT_INLINE inline
+#endif
+
 #endif

@@ -38,18 +38,18 @@ typedef struct urt_task
 #define URT_MIN_PRIORITY 0
 #define URT_MORE_PRIORITY 0
 
-static inline bool urt_priority_is_valid(int p)
+URT_INLINE bool urt_priority_is_valid(int p)
 {
 	return p == 0;
 }
 
-static inline bool urt_priority_is_higher(int a, int b)
+URT_INLINE bool urt_priority_is_higher(int a, int b)
 {
 	return a > b;
 }
 
 urt_time urt_task_next_period(urt_task *task);
-static inline urt_time urt_task_period_time_left(urt_task *task)
+URT_INLINE urt_time urt_task_period_time_left(urt_task *task)
 {
 	URT_CHECK_RT_CONTEXT();
 	return urt_task_next_period(task) - urt_get_time();

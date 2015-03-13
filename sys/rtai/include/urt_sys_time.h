@@ -27,7 +27,7 @@
 #else
 # include <unistd.h>
 #endif
-#include <rtai_lxrt.h>
+#include "urt_sys_rtai.h"
 #include "urt_sys_utils.h"
 #include <urt_debug.h>
 
@@ -36,12 +36,12 @@ URT_DECL_BEGIN
 typedef long long urt_time;
 extern urt_time urt_time_offset;
 
-static inline urt_time urt_get_time(void)
+URT_INLINE urt_time urt_get_time(void)
 {
 	return rt_get_time_ns() + urt_time_offset;
 }
 
-static inline void urt_sleep(urt_time t)
+URT_INLINE void urt_sleep(urt_time t)
 {
 	if (urt_is_rt_context())
 		rt_sleep(nano2count(t));
@@ -84,7 +84,7 @@ static inline void urt_sleep(urt_time t)
 	}
 }
 
-static inline urt_time urt_get_exec_time(void)
+URT_INLINE urt_time urt_get_exec_time(void)
 {
 	RT_TASK *task;
 #ifndef __KERNEL__

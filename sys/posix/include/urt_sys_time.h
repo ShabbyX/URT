@@ -40,7 +40,7 @@ extern urt_time urt_time_offset;
 extern mach_timebase_info_data_t urt_time_mach_timebase;
 #endif
 
-static inline urt_time urt_get_time(void)
+URT_INLINE urt_time urt_get_time(void)
 {
 #ifdef __MACH__
 	return mach_absolute_time() * urt_time_mach_timebase.numer / urt_time_mach_timebase.denom;
@@ -55,7 +55,7 @@ static inline urt_time urt_get_time(void)
 #endif
 }
 
-static inline void urt_sleep(urt_time t)
+URT_INLINE void urt_sleep(urt_time t)
 {
 	urt_time ts, tu;
 	if (t <= 0)
@@ -71,7 +71,7 @@ static inline void urt_sleep(urt_time t)
 	usleep(tu);
 }
 
-static inline urt_time urt_get_exec_time(void)
+URT_INLINE urt_time urt_get_exec_time(void)
 {
 #ifdef __MACH__
 	thread_port_t thread = mach_thread_self();

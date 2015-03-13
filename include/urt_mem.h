@@ -36,7 +36,7 @@ URT_ATTR_WARN_UNUSED void *(urt_mem_resize)(void *old_mem, size_t old_size, size
 URT_ATTR_MALLOC URT_ATTR_WARN_UNUSED void *(urt_shmem_new)(const char *name, size_t size, int *error, ...);
 URT_ATTR_WARN_UNUSED void *(urt_shmem_attach)(const char *name, int *error, ...);
 void urt_shmem_detach(void *mem);
-static inline void urt_shmem_delete(void *mem) { urt_shmem_detach(mem); }
+URT_INLINE void urt_shmem_delete(void *mem) { urt_shmem_detach(mem); }
 
 URT_DECL_END
 

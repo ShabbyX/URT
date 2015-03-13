@@ -23,11 +23,11 @@
 #ifdef __KERNEL__
 # include <linux/kernel.h>
 #endif
-#include <rtai_lxrt.h>
+#include "urt_sys_rtai.h"
 
 URT_DECL_BEGIN
 
-static inline bool urt_is_rt_context(void)
+URT_INLINE bool urt_is_rt_context(void)
 {
 #ifdef __KERNEL__
 	RT_TASK *task = rt_whoami();
@@ -39,7 +39,7 @@ static inline bool urt_is_rt_context(void)
 #endif
 }
 
-static inline bool urt_is_nonrt_context(void)
+URT_INLINE bool urt_is_nonrt_context(void)
 {
 #ifdef __KERNEL__
 	RT_TASK *task = rt_whoami();

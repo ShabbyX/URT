@@ -17,7 +17,7 @@
  * along with URT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <rtai_lxrt.h>
+#include <urt_sys_rtai.h>
 #include <rtai_shm.h>
 #include <rtai_registry.h>
 #include <urt_sys_internal.h>
