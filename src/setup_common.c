@@ -29,8 +29,55 @@ URT_EXPORT_SYMBOL(urt_time_offset);
 mach_timebase_info_data_t urt_time_mach_timebase = {0};
 #endif
 
+static void _calibrate(void)
+{
+#if URT_BI_SPACE
+# ifdef __KERNEL__
+	/* reference space is kernel space, so no calibration here */
+# else
+	int i;
+	bool first = true;
+	urt_time offset = 0;
+
+	/* read the current time from kernel space and get the minimum difference in its offset for 10 tries */
+	for (i = 0; i < 10; ++i)
+	{
+		urt_time user, kernel;
+		FILE *tin = fopen("/sys/urt"URT_SUFFIX"/current_time", "r");
+		if (!tin)
+			break;
+
+		if (fscanf(tin, "%lld", &kernel) == 1)
+		{
+			urt_time diff;
+
+			user = urt_get_time();
+			diff = kernel - user;
+
+			if (first || diff < offset)
+				offset = diff;
+
+			first = false;
+		}
+
+		fclose(tin);
+	}
+
+	urt_time_offset = offset;
+# endif
+#else
+/* no calibration required in mono-space environments.  However, in mach we need an initialization of clocks */
+# ifdef __MACH__
+	mach_timebase_info(&urt_time_mach_timebase);
+# endif
+#endif
+}
+
 int urt_init(void)
 {
+	/* first of all, calibrate time-related variables */
+	_calibrate();
+
 	int error = urt_sys_init();
 	if (error)
 		return error;
@@ -85,51 +132,6 @@ void urt_exit(void)
 	urt_sys_exit();
 }
 URT_EXPORT_SYMBOL(urt_exit);
-
-void urt_calibrate(void)
-{
-#if URT_BI_SPACE
-# ifdef __KERNEL__
-	/* reference space is kernel space, so no calibration here */
-# else
-	int i;
-	bool first = true;
-	urt_time offset = 0;
-
-	/* read the current time from kernel space and get the minimum difference in its offset for 10 tries */
-	for (i = 0; i < 10; ++i)
-	{
-		urt_time user, kernel;
-		FILE *tin = fopen("/sys/urt"URT_SUFFIX"/current_time", "r");
-		if (!tin)
-			break;
-
-		if (fscanf(tin, "%lld", &kernel) == 1)
-		{
-			urt_time diff;
-
-			user = urt_get_time();
-			diff = kernel - user;
-
-			if (first || diff < offset)
-				offset = diff;
-
-			first = false;
-		}
-
-		fclose(tin);
-	}
-
-	urt_time_offset = offset;
-# endif
-#else
-/* no calibration required in mono-space environments.  However, in mach we need an initialization of clocks */
-# ifdef __MACH__
-	mach_timebase_info(&urt_time_mach_timebase);
-# endif
-#endif
-}
-URT_EXPORT_SYMBOL(urt_calibrate);
 
 void urt_recover(void)
 {

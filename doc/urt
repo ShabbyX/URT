@@ -26,16 +26,6 @@ FUNCTION urt_init: (): int
 		- `ENOMEM` if out of memory,
 		- Possibly others based on back-end.
 
-FUNCTION urt_calibrate: (): void
-	Calibrate URT
-
-	This function tries to calibrate the time values as returned by `[#urt_get_time](urt_time)` so that the time instance in
-	both kernel and user spaces, if URT is configured to run on both spaces (such as with RTAI), would be as close as possible.
-	The reference space is always kernel space. If URT is configured on a mono-space environment (such as with POSIX), this
-	function doesn't do anything.
-
-	`[#URT_GLUE]` takes care of calling this function.
-
 FUNCTION urt_exit: (): void
 	Free URT
 
