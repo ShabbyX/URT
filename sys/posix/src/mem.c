@@ -99,6 +99,7 @@ void urt_global_mem_free(const char *name)
 {
 	munmap(urt_global_mem, sizeof *urt_global_mem);
 	/* Note: it's easier if urt_global_mem is never `shm_unlink`ed */
+	urt_global_mem = NULL;
 }
 
 #include <urt_log.h>
