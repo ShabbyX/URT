@@ -51,9 +51,6 @@ URT_INLINE bool urt_is_nonrt_context(void)
 #endif
 }
 
-int urt_make_rt_context(int *prev);
-void urt_unmake_rt_context(int prev);
-
 URT_DECL_END
 
 #endif

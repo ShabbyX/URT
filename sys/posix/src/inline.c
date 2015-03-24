@@ -43,7 +43,3 @@ extern inline bool urt_is_rt_context(void);
 URT_EXPORT_SYMBOL(urt_is_rt_context);
 extern inline bool urt_is_nonrt_context(void);
 URT_EXPORT_SYMBOL(urt_is_nonrt_context);
-extern inline int urt_make_rt_context(int *prev);
-URT_EXPORT_SYMBOL(urt_make_rt_context);
-extern inline void urt_unmake_rt_context(int prev);
-URT_EXPORT_SYMBOL(urt_unmake_rt_context);

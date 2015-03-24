@@ -34,8 +34,6 @@ if HAVE_SYS_POSIX
 endif
 
 if HAVE_SYS_RTAI
-  SOURCE_FILES += \
-                  ../sys/@URT_SYS@/src/utils.c
   HEADER_FILES += \
                   ../sys/@URT_SYS@/include/urt_sys_rtai.h
 endif

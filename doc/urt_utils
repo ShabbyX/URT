@@ -53,27 +53,3 @@ FUNCTION urt_is_nonrt_context: (): bool
 
 	OUTPUT
 		Returns `true` if the calling thread is in non-real-time context.
-
-FUNCTION urt_make_rt_context: (prev: int *): int
-	Make the current context a real-time one if not already
-
-	This function tries to make the current context real-time if not already. The **`prev`** parameter is used to restore the context
-	to the previous one in the call to `[#urt_unmake_rt_context]` and therefore shall not be `NULL`.
-
-	INPUT prev
-		A variable used to store the current context.
-	OUTPUT
-		Returns one of the following:
-
-		- `0` on success,
-		- `ENOSUP` if operation is not possible given the underlying host system,
-		- Possibly others based on back-end.
-
-FUNCTION urt_unmake_rt_context: (prev: int): void
-	Restore previous context after a call to `urt_make_rt_context`.
-
-	If a call to `[#urt_make_rt_context]` is successful, then the `prev` argument of that function should be provided to this function
-	to restore the previous, possibly non-realtime, context.
-
-	INPUT prev
-		Previous context before a successful call to `[#urt_make_rt_context]`.

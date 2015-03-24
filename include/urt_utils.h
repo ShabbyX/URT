@@ -31,8 +31,6 @@ URT_DECL_BEGIN
 int urt_get_free_name(char *name);
 /* bool urt_is_rt_context(void); */
 /* bool urt_is_nonrt_context(void); */
-/* int urt_make_rt_context(int *prev); */
-/* void urt_unmake_rt_context(int prev); */
 
 URT_DECL_END
 

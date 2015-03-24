@@ -75,10 +75,12 @@ static void _calibrate(void)
 
 int urt_init(void)
 {
+	int error;
+
 	/* first of all, calibrate time-related variables */
 	_calibrate();
 
-	int error = urt_sys_init();
+	error = urt_sys_init();
 	if (error)
 		return error;
 

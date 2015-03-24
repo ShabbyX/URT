@@ -19,7 +19,6 @@ endif
 
 ifeq (@URT_SYS@, rtai)
   SOURCE_FILES += \
-                  @srcdir@/../sys/@URT_SYS@/src/utils.c \
                   @srcdir@/inline_common.c \
                   @srcdir@/../sys/@URT_SYS@/src/inline.c
 endif
