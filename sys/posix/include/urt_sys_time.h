@@ -34,8 +34,6 @@
 
 URT_DECL_BEGIN
 
-typedef long long urt_time;
-extern urt_time urt_time_offset;
 #ifdef __MACH__
 extern mach_timebase_info_data_t urt_time_mach_timebase;
 #endif

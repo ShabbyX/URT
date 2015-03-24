@@ -22,6 +22,10 @@
 
 #include "urt_stdtypes.h"
 #include "urt_compiler.h"
+
+typedef long long urt_time;
+extern urt_time urt_time_offset;
+
 #include "urt_sys_time.h"
 
 /* urt_time urt_get_time(void); */

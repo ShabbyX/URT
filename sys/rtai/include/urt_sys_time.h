@@ -33,9 +33,6 @@
 
 URT_DECL_BEGIN
 
-typedef long long urt_time;
-extern urt_time urt_time_offset;
-
 URT_INLINE urt_time urt_get_time(void)
 {
 	return rt_get_time_ns() + urt_time_offset;
