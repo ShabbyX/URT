@@ -83,6 +83,11 @@ dnl the override of eager inlining configuration of RTAI (which removes -llxrt f
 dnl This solution is probably not the best (since -lpthread now comes before -llxrt), but until the
 dnl issue is addressed in RTAI, it works.
 
+# Check for python if building user lib
+AS_IF([test x"$build_user_lib" = xy],
+  [AM_PATH_PYTHON([2.7], , [:])],
+  [PYTHON=:])
+
 # Checks for typedefs, structures, and compiler characteristics
 AS_IF([test x"$build_user_lib" = xy],
   [AC_C_INLINE
@@ -104,6 +109,13 @@ AS_IF([test x"$functions_to_check" != x""],
 # urt in it, it becomes urt$suffix
 suffix=
 SH_GET_CONFIG_STR(suffix, suffix, [A suffix to append to urt in every file name], "")
+
+# Sanitize the suffix for use with a python module name
+python_suffix=
+AS_IF([test x"$PYTHON" != x:],
+  [AC_MSG_CHECKING([suffix suitable for a python module name])
+   python_suffix=$(sed -e 's/.*/\L&/' -e 's/@<:@^a-z0-9@:>@/_/g' <<< "$suffix")
+   AC_MSG_RESULT(["$python_suffix"])])
 
 # Set up a short way of invoking kernel Makefile for module builds
 AS_IF([test x"$build_kernel_module" = xy],
@@ -161,6 +173,7 @@ AC_SUBST(URT_SYMBOLS_KERNEL, [$extra_symbols_kernel])
 AC_SUBST(URT_VERSION, [$PACKAGE_VERSION])
 AC_SUBST(URT_SUFFIX, [$suffix])
 AC_SUBST(URT_SUFFIX_NOWS, [${suffix//@<:@@<:@:space:@:>@@:>@/}])
+AC_SUBST(URT_SUFFIX_PYTHON, [$python_suffix])
 AC_SUBST(URT_KERNEL_INVOKE, [$kernel_invoke])
 AC_SUBST(URT_KERNEL_MODULE_PATH, [$kernel_module_path])
 AC_SUBST(URT_TESTS_NEED_URT_KO, [$tests_need_urt_ko])
@@ -171,6 +184,7 @@ AC_SUBST(KBUILD_SYMBOLS, [$KBUILD_SYMBOLS])
 AM_CONDITIONAL(HAVE_USER, [test x"$build_user_lib" = xy])
 AM_CONDITIONAL(HAVE_KERNEL, [test x"$build_kernel_module" = xy])
 AM_CONDITIONAL(HAVE_TOOLS, [test x"$build_user_lib" = xy])
+AM_CONDITIONAL(HAVE_PYTHON, [test x"$PYTHON" != x:])
 AM_CONDITIONAL(HAVE_VALGRIND, [test x"$VALGRIND" = xy])
 AM_CONDITIONAL(HAVE_DOCTHIS, [test x"$DOCTHIS" = xy])
 AM_CONDITIONAL(HAVE_PDFLATEX, [test x"$PDFLATEX" = xy])
@@ -208,6 +222,12 @@ AS_IF([test x"$build_kernel_module" = xy],
                     tests/sem/Kbuild
                     tests/setup/Kbuild
                     tests/task/Kbuild])])
+
+AS_IF([test x"$PYTHON" != x:],
+  [AC_CONFIG_FILES([urt-py/Makefile
+                    urt-py/urt${python_suffix}.py:urt-py/urt.py.in
+                    tests/python/Makefile
+                    tests/python/test.py])])
 
 AC_CONFIG_FILES([scripts/urt${suffix}-config:scripts/urt-config.in],
                 [chmod +x scripts/urt${suffix}-config])

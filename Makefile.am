@@ -8,6 +8,10 @@ if HAVE_TOOLS
   SUBDIRS += tools
 endif
 
+if HAVE_PYTHON
+  SUBDIRS += urt-py
+endif
+
 if HAVE_DOCTHIS
   SUBDIRS += doc
 endif

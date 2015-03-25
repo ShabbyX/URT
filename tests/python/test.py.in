@@ -1,0 +1,7 @@
+import urt@URT_SUFFIX_PYTHON@ as urt
+
+ret = urt.init()
+
+print('Init returned ', ret)
+
+urt.exit()

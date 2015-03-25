@@ -1,0 +1,3 @@
+ACLOCAL_AMFLAGS = -I m4
+
+python_PYTHON = urt@URT_SUFFIX_PYTHON@.py
