@@ -14,11 +14,12 @@ if [ x"$needs_ko" = xy ]; then
 fi
 
 echo "Start: $(date '+%s.%N')"
+echo "Executing: LD_LIBRARY_PATH='$top_builddir'/src/.libs PYTHONPATH='$top_builddir'/urt-py '$python' test.py"
 if [ x"$needs_root" = xy ]; then
-  sudo LD_LIBRARY_PATH=$top_builddir/src/.libs PYTHONPATH=$top_builddir/urt-py "$python" test.py
+  sudo LD_LIBRARY_PATH="$top_builddir"/src/.libs PYTHONPATH="$top_builddir"/urt-py "$python" test.py
   ret=$?
 else
-  LD_LIBRARY_PATH=$top_builddir/src/.libs PYTHONPATH=$top_builddir/urt-py "$python" test.py
+  LD_LIBRARY_PATH="$top_builddir"/src/.libs PYTHONPATH="$top_builddir"/urt-py "$python" test.py
   ret=$?
 fi
 

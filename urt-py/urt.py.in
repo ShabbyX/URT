@@ -7,7 +7,7 @@ _urt = CDLL("liburt@URT_SUFFIX@.so")
 
 _urt_time = c_longlong
 
-class _urt_task_attr(Structure):
+class task_attr(Structure):
     _fields_ = [("period", _urt_time),
                 ("start_time", _urt_time),
                 ("stack_size", c_size_t),
@@ -89,12 +89,21 @@ get_exec_time = _urt.urt_get_exec_time
 
 # urt_task
 
-_urt.urt_task_new.argtypes = [CFUNCTYPE(None, _urt_task, c_void_p), c_void_p, POINTER(_urt_task_attr), POINTER(c_int)]
+_urt.urt_task_new.argtypes = [CFUNCTYPE(None, _urt_task, c_void_p), c_void_p, POINTER(task_attr), POINTER(c_int)]
 _urt.urt_task_new.restype = _urt_task
 def task_new(func, data, attr):
+    """Create a real-time task
+
+    Note:
+    When giving a function to be created as a thread, urt-py automatically creates a CFUNCTYPE
+    out of it so it can be safely called from C.  ctypes doesn't keep a reference to this object,
+    and therefore the callback risks getting garbage-collected during execution.  To avoid this,
+    urt.task_new returns the reference to the callback object as the last element of the return value
+    tuple.  It is important that you keep a reference to this object until the task exits."""
     error = c_int(0)
-    task = _urt.urt_task_new(func, data, byref(attr), byref(error))
-    return task, error
+    callback = CFUNCTYPE(None, _urt_task, c_void_p)(func)
+    task = _urt.urt_task_new(callback, data, byref(attr), byref(error))
+    return task, error, callback
 
 _urt.urt_task_delete.argtypes = [_urt_task]
 task_delete = _urt.urt_task_delete
@@ -134,6 +143,9 @@ def mem_new(size):
     error = c_int(0)
     mem = _urt.urt_mem_new(size, byref(error))
     return mem, error
+
+_urt.urt_mem_delete.argtypes = [c_void_p]
+mem_delete = _urt.urt_mem_delete
 
 _urt.urt_mem_resize.argtypes = [c_void_p, c_size_t, c_size_t, POINTER(c_int)]
 _urt.urt_mem_resize.restype = c_void_p
@@ -198,11 +210,14 @@ shsem_delete = _urt.urt_shsem_delete
 
 _urt.urt_sem_wait.argtypes = [_urt_sem, _sig_atomic_t]
 _urt.urt_sem_wait.restype = c_int
-sem_wait = _urt.urt_sem_wait
+def sem_wait(sem, stop = None):
+    return _urt.urt_sem_wait(sem, stop)
 
 _urt.urt_sem_waitf.argtypes = [_urt_sem, CFUNCTYPE(c_bool, c_void_p), c_void_p]
 _urt.urt_sem_waitf.restype = c_int
-sem_waitf = _urt.urt_sem_waitf
+def sem_waitf(sem, func, data):
+    callback = CFUNCTYPE(c_bool, c_void_p)(func)
+    return _urt.urt_sem_waitf(sem, callback, data)
 
 _urt.urt_sem_timed_wait.argtypes = [_urt_sem, _urt_time]
 _urt.urt_sem_timed_wait.restype = c_int
@@ -250,11 +265,14 @@ shmutex_delete = _urt.urt_shmutex_delete
 
 _urt.urt_mutex_lock.argtypes = [_urt_mutex, _sig_atomic_t]
 _urt.urt_mutex_lock.restype = c_int
-mutex_lock = _urt.urt_mutex_lock
+def mutex_lock(mutex, stop = None):
+    return _urt.urt_mutex_lock(mutex, stop)
 
 _urt.urt_mutex_lockf.argtypes = [_urt_mutex, CFUNCTYPE(c_bool, c_void_p), c_void_p]
 _urt.urt_mutex_lockf.restype = c_int
-mutex_lockf = _urt.urt_mutex_lockf
+def mutex_lockf(mutex, func, data):
+    callback = CFUNCTYPE(c_bool, c_void_p)(func)
+    return _urt.urt_mutex_lockf(mutex, callback, data)
 
 _urt.urt_mutex_timed_lock.argtypes = [_urt_mutex, _urt_time]
 _urt.urt_mutex_timed_lock.restype = c_int
@@ -302,11 +320,14 @@ shrwlock_delete = _urt.urt_shrwlock_delete
 
 _urt.urt_rwlock_read_lock.argtypes = [_urt_rwlock, _sig_atomic_t]
 _urt.urt_rwlock_read_lock.restype = c_int
-rwlock_read_lock = _urt.urt_rwlock_read_lock
+def rwlock_read_lock(rwlock, stop = None):
+    return _urt.urt_rwlock_read_lock(rwlock, stop)
 
 _urt.urt_rwlock_read_lockf.argtypes = [_urt_rwlock, CFUNCTYPE(c_bool, c_void_p), c_void_p]
 _urt.urt_rwlock_read_lockf.restype = c_int
-rwlock_read_lockf = _urt.urt_rwlock_read_lockf
+def rwlock_read_lockf(rwlock, func, data):
+    callback = CFUNCTYPE(c_bool, c_void_p)(func)
+    return _urt.urt_rwlock_read_lockf(rwlock, callback, data)
 
 _urt.urt_rwlock_timed_read_lock.argtypes = [_urt_rwlock, _urt_time]
 _urt.urt_rwlock_timed_read_lock.restype = c_int
@@ -322,11 +343,14 @@ rwlock_read_unlock = _urt.urt_rwlock_read_unlock
 
 _urt.urt_rwlock_write_lock.argtypes = [_urt_rwlock, _sig_atomic_t]
 _urt.urt_rwlock_write_lock.restype = c_int
-rwlock_write_lock = _urt.urt_rwlock_write_lock
+def rwlock_write_lock(rwlock, stop = None):
+    return _urt.urt_rwlock_write_lock(rwlock, stop)
 
 _urt.urt_rwlock_write_lockf.argtypes = [_urt_rwlock, CFUNCTYPE(c_bool, c_void_p), c_void_p]
 _urt.urt_rwlock_write_lockf.restype = c_int
-rwlock_write_lockf = _urt.urt_rwlock_write_lockf
+def rwlock_write_lockf(rwlock, func, data):
+    callback = CFUNCTYPE(c_bool, c_void_p)(func)
+    return _urt.urt_rwlock_write_lockf(rwlock, callback, data)
 
 _urt.urt_rwlock_timed_write_lock.argtypes = [_urt_rwlock, _urt_time]
 _urt.urt_rwlock_timed_write_lock.restype = c_int
@@ -372,15 +396,18 @@ shcond_detach = _urt.urt_shcond_detach
 _urt.urt_shcond_delete.argtypes = [_urt_cond]
 shcond_delete = _urt.urt_shcond_delete
 
-_urt.urt_cond_wait.argtypes = [_urt_cond, _sig_atomic_t]
+_urt.urt_cond_wait.argtypes = [_urt_cond, _urt_mutex, _sig_atomic_t]
 _urt.urt_cond_wait.restype = c_int
-cond_wait = _urt.urt_cond_wait
+def cond_wait(cond, mutex, stop = None):
+    return _urt.urt_cond_wait(cond, mutex, stop)
 
-_urt.urt_cond_waitf.argtypes = [_urt_cond, CFUNCTYPE(c_bool, c_void_p), c_void_p]
+_urt.urt_cond_waitf.argtypes = [_urt_cond, _urt_mutex, CFUNCTYPE(c_bool, c_void_p), c_void_p]
 _urt.urt_cond_waitf.restype = c_int
-cond_waitf = _urt.urt_cond_waitf
+def cond_waitf(cond, mutex, func, data):
+    callback = CFUNCTYPE(c_bool, c_void_p)(func)
+    return _urt.urt_cond_waitf(cond, mutex, callback, data)
 
-_urt.urt_cond_timed_wait.argtypes = [_urt_cond, _urt_time]
+_urt.urt_cond_timed_wait.argtypes = [_urt_cond, _urt_mutex, _urt_time]
 _urt.urt_cond_timed_wait.restype = c_int
 cond_timed_wait = _urt.urt_cond_timed_wait
 

@@ -1,7 +1,277 @@
 import urt@URT_SUFFIX_PYTHON@ as urt
+import ctypes
+import sys
 
+# TODO: the lock functions should be given a sig_atomic_t "interrupted"
+# as received from urt_glue, so that the test could be cleanly interrupted
+# if it takes too long
+
+mem = None
+shmem = None
+sem = None
+mutex = None
+shmutex = None
+shrwlock = None
+shcond = None
+
+def periodic_function(task, data):
+    print('in periodic function')
+    must_stop = ctypes.cast(data, ctypes.POINTER(ctypes.c_int))
+
+    while must_stop[0] == 0:
+        print('periodic tick')
+        urt.task_wait_period(task)
+
+    print('periodic function return')
+    must_stop[0] = 2
+
+def lock_test_function1(task, data):
+    retval = ctypes.cast(data, ctypes.POINTER(ctypes.c_int))
+
+    # test mutex
+    print('func1: locking available mutex')
+    ret = urt.mutex_lock(mutex)
+    if ret != 0:
+        print('func1: failed:', ret)
+        retval[1] = ret
+    else:
+        print('func1: unlocking mutex')
+        ret = urt.mutex_unlock(mutex)
+        if ret != 0:
+            print('func1: failed:', ret)
+            retval[1] = ret
+        else:
+            print('func1: successful')
+
+    # test semaphore and condition variable
+    # wake up by second task, to signal cond while it's waiting for it
+    print('func1: waiting for semaphore')
+    ret = urt.sem_wait(sem)
+    if ret != 0:
+        print('func1: failed:', ret)
+        retval[1] = ret
+    else:
+        print('func1: success')
+
+    print('func1: signaling condition variable')
+    ret = urt.mutex_lock(shmutex)
+    if ret != 0:
+        print('func1: failed to lock mutex:', ret)
+        error = ret
+    ret = urt.cond_signal(shcond)
+    if ret != 0:
+        print('func1: failed to signal condition variable:', ret)
+        error = ret
+    ret = urt.mutex_unlock(shmutex)
+    if ret != 0:
+        print('func1: failed to unlock mutex:', ret)
+        error = ret
+    print('func1: signaled')
+
+    retval[0] = 1
+
+def lock_test_function2(task, data):
+    retval = ctypes.cast(data, ctypes.POINTER(ctypes.c_int))
+
+    # test rwlock
+    print('func2: write locking available rwlock')
+    ret = urt.rwlock_write_lock(shrwlock)
+    if ret != 0:
+        print('func2: failed:', ret)
+        retval[1] = ret
+    else:
+        print('func2: write unlocking rwlock')
+        ret = urt.rwlock_write_unlock(shrwlock)
+        if ret != 0:
+            print('func2: failed:', ret)
+            retval[1] = ret
+        else:
+            print('func2: successful')
+
+    print('func2: read locking available rwlock')
+    ret = urt.rwlock_read_lock(shrwlock)
+    if ret != 0:
+        print('func2: failed:', ret)
+        retval[1] = ret
+    else:
+        print('func2: read unlocking rwlock')
+        ret = urt.rwlock_read_unlock(shrwlock)
+        if ret != 0:
+            print('func2: failed:', ret)
+            retval[1] = ret
+        else:
+            print('func2: successful')
+
+    # test semaphore and condition variable
+    ret = urt.mutex_lock(shmutex)
+    if ret != 0:
+        print('func2: failed to lock cond mutex:', ret)
+        retval[1] = ret
+
+    # wake up the first task, so it can signal me while I'm waiting on condition variable
+    print('func2: signaling semaphore')
+    ret2 = urt.sem_post(sem)
+    if ret2 != 0:
+        print('func2: failed:', ret2)
+        retval[1] = ret2
+    else:
+        print('func2: success')
+
+    if ret == 0:
+        print('func2: waiting on condition variable')
+        ret = urt.cond_wait(shcond, shmutex)
+        if ret != 0:
+            print('func2: failed to wait on condition variable:', ret)
+            retval[1] = ret
+        else:
+            print('func2: success')
+
+        ret = urt.mutex_unlock(shmutex)
+        if ret != 0:
+            print('func2: failed to unlock cond mutex:', ret)
+            error = ret
+
+    retval[0] = 1
+
+def get_locks():
+    global mem, shmem, sem, mutex, shrwlock, shmutex, shcond
+
+    error = 0
+    mem, ret = urt.mem_new(16)
+    if mem == None:
+        print('could not get memory:', ret)
+        error = ret
+
+    shmem, ret = urt.shmem_new('PYSHM', 16)
+    if shmem == None:
+        print('could not get shared memory:', ret)
+        error = ret
+
+    sem, ret = urt.sem_new(0)
+    if sem == None:
+        print('could not get semaphore:', ret)
+        error = ret
+
+    mutex, ret = urt.mutex_new()
+    if mutex == None:
+        print('could not get mutex:', ret)
+        error = ret
+
+    shrwlock, ret = urt.shrwlock_new('PYRWL')
+    if shrwlock == None:
+        print('could not get shared rwlock:', ret)
+        error = ret
+
+    shmutex, ret = urt.shmutex_new('PYMTX')
+    if shmutex == None:
+        print('could not get shared mutex:', ret)
+        error = ret
+
+    shcond, ret = urt.shcond_new('PYCND')
+    if shcond == None:
+        print('could not get shared condition variable:', ret)
+        error = ret
+
+    return error
+
+def remove_locks():
+    urt.mem_delete(mem)
+    urt.shmem_delete(shmem)
+    urt.sem_delete(sem)
+    urt.mutex_delete(mutex)
+    urt.shrwlock_delete(shrwlock)
+    urt.shmutex_delete(shmutex)
+    urt.shcond_delete(shcond)
+
+def perform_test():
+    new_name, ret = urt.get_free_name()
+    if new_name == None:
+        print('Failed to get new name:', ret)
+        return ret
+
+    current_time = urt.get_time()
+    print('before sleep:', current_time)
+
+    urt.sleep(100000000)
+
+    current_time = urt.get_time()
+    print('after sleep: ', current_time)
+
+    must_stop = ctypes.c_int(0)
+    task, ret, cb_ref1 = urt.task_new(periodic_function, ctypes.byref(must_stop), urt.task_attr(soft = True, period = 1000000000))
+    if task == None:
+        print('Failed to get new task:', ret)
+        return ret
+
+    urt.task_start(task)
+
+    print('sleeping for 4 seconds')
+    urt.sleep(4000000000)
+
+    must_stop.value = 1
+    print('waiting for task to terminate')
+    while must_stop.value != 2:
+        urt.sleep(10000000)
+    print('task terminated')
+
+    urt.task_delete(task)
+
+    print('testing mem/locks for correctness of bindings')
+    error = 0;
+    ret = get_locks()
+    if ret != 0:
+        error = ret
+
+    task1_ret = (ctypes.c_int * 2)(0, 0)
+    task2_ret = (ctypes.c_int * 2)(0, 0)
+    task1, ret, cb_ref2 = urt.task_new(lock_test_function1, task1_ret, urt.task_attr(soft = True))
+    if task1 == None:
+        print('Failed to get first lock test task:', ret)
+        error = ret
+    else:
+        task2, ret, cb_ref3 = urt.task_new(lock_test_function2, task2_ret, urt.task_attr(soft = True))
+        if task2 == None:
+            print('Failed to get second lock test task:', ret)
+            error = ret
+        else:
+            urt.task_start(task1)
+            urt.task_start(task2)
+
+            while task1_ret[0] == 0 or task2_ret[0] == 0:
+                urt.sleep(10000000)
+
+            if task1_ret[1] != 0:
+                error = task1_ret[1]
+            if task2_ret[1] != 0:
+                error = task2_ret[1]
+
+    urt.task_delete(task1)
+    urt.task_delete(task2)
+
+    remove_locks()
+
+    return error
+
+
+print('initializing')
 ret = urt.init()
 
-print('Init returned ', ret)
+if ret != 0:
+    print('failed to initialize')
+    sys.exit(1)
 
-urt.exit()
+ret = 0
+try:
+    ret = perform_test()
+    if ret == 0:
+        print('successful execution')
+    else:
+        print('error in execution:', ret)
+except Exception as e:
+    print('exception!', e)
+    ret = -1
+finally:
+    print('exiting')
+    urt.exit()
+
+sys.exit(ret)
