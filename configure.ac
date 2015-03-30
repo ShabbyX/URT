@@ -106,9 +106,12 @@ AS_IF([test x"$functions_to_check" != x""],
 
 # Check for URT suffix
 # A suffix is useful for having multiple URT installations.  Esentially, everywhere a file name has
-# urt in it, it becomes urt$suffix
+# urt in it, it becomes urt$suffix.  Supporting whitespace in suffix is unnecessarily painful, so it's
+# not allowed.
 suffix=
 SH_GET_CONFIG_STR(suffix, suffix, [A suffix to append to urt in every file name], "")
+AS_CASE(["$suffix"],
+  [*@<:@@<:@:space:@:>@@:>@*], [AC_MSG_ERROR(Whitespace in suffix is not allowed)])
 
 # Sanitize the suffix for use with a python module name
 python_suffix=
@@ -172,7 +175,6 @@ AC_SUBST(URT_CFLAGS_KERNEL, [$extra_cflags_kernel])
 AC_SUBST(URT_SYMBOLS_KERNEL, [$extra_symbols_kernel])
 AC_SUBST(URT_VERSION, [$PACKAGE_VERSION])
 AC_SUBST(URT_SUFFIX, [$suffix])
-AC_SUBST(URT_SUFFIX_NOWS, [${suffix//@<:@@<:@:space:@:>@@:>@/}])
 AC_SUBST(URT_SUFFIX_PYTHON, [$python_suffix])
 AC_SUBST(URT_KERNEL_INVOKE, [$kernel_invoke])
 AC_SUBST(URT_KERNEL_MODULE_PATH, [$kernel_module_path])
