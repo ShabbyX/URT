@@ -5,11 +5,11 @@ _urt = CDLL("liburt@URT_SUFFIX@.so")
 
 # types
 
-_urt_time = c_longlong
+time = c_longlong
 
 class task_attr(Structure):
-    _fields_ = [("period", _urt_time),
-                ("start_time", _urt_time),
+    _fields_ = [("period", time),
+                ("start_time", time),
                 ("stack_size", c_size_t),
                 ("priority", c_int),
                 ("uses_fpu", c_bool),
@@ -22,12 +22,12 @@ class task_attr(Structure):
                                     # then remove the "soft" field from the structure.  Might as well
                                     # remove uses_fpu too since it affects only kernel space
 
-_urt_task = c_void_p
-_urt_sem = c_void_p
-_urt_mutex = c_void_p
-_urt_rwlock = c_void_p
-_urt_cond = c_void_p
-_sig_atomic_t = c_void_p
+task = c_void_p
+sem = c_void_p
+mutex = c_void_p
+rwlock = c_void_p
+cond = c_void_p
+sig_atomic_t = c_void_p
 
 # constants
 
@@ -78,19 +78,19 @@ is_nonrt_context = _urt.urt_is_nonrt_context
 
 # urt_time
 
-_urt.urt_get_time.restype = _urt_time
+_urt.urt_get_time.restype = time
 get_time = _urt.urt_get_time
 
-_urt.urt_sleep.argtypes = [_urt_time]
+_urt.urt_sleep.argtypes = [time]
 sleep = _urt.urt_sleep
 
-_urt.urt_get_exec_time.restype = _urt_time
+_urt.urt_get_exec_time.restype = time
 get_exec_time = _urt.urt_get_exec_time
 
 # urt_task
 
-_urt.urt_task_new.argtypes = [CFUNCTYPE(None, _urt_task, c_void_p), c_void_p, POINTER(task_attr), POINTER(c_int)]
-_urt.urt_task_new.restype = _urt_task
+_urt.urt_task_new.argtypes = [CFUNCTYPE(None, task, c_void_p), c_void_p, POINTER(task_attr), POINTER(c_int)]
+_urt.urt_task_new.restype = task
 def task_new(func, data, attr):
     """Create a real-time task
 
@@ -101,26 +101,26 @@ def task_new(func, data, attr):
     urt.task_new returns the reference to the callback object as the last element of the return value
     tuple.  It is important that you keep a reference to this object until the task exits."""
     error = c_int(0)
-    callback = CFUNCTYPE(None, _urt_task, c_void_p)(func)
+    callback = CFUNCTYPE(None, task, c_void_p)(func)
     task = _urt.urt_task_new(callback, data, byref(attr), byref(error))
     return task, error, callback
 
-_urt.urt_task_delete.argtypes = [_urt_task]
+_urt.urt_task_delete.argtypes = [task]
 task_delete = _urt.urt_task_delete
 
-_urt.urt_task_start.argtypes = [_urt_task]
+_urt.urt_task_start.argtypes = [task]
 _urt.urt_task_start.restype = c_int
 task_start = _urt.urt_task_start
 
-_urt.urt_task_wait_period.argtypes = [_urt_task]
+_urt.urt_task_wait_period.argtypes = [task]
 task_wait_period = _urt.urt_task_wait_period
 
-_urt.urt_task_next_period.argtypes = [_urt_task]
-_urt.urt_task_next_period.restype = _urt_time
+_urt.urt_task_next_period.argtypes = [task]
+_urt.urt_task_next_period.restype = time
 task_next_period = _urt.urt_task_next_period
 
-_urt.urt_task_period_time_left.argtypes = [_urt_task]
-_urt.urt_task_period_time_left.restype = _urt_time
+_urt.urt_task_period_time_left.argtypes = [task]
+_urt.urt_task_period_time_left.restype = time
 task_period_time_left = _urt.urt_task_period_time_left
 
 _urt.urt_priority_is_valid.argtypes = [c_int]
@@ -179,243 +179,243 @@ shmem_delete = _urt.urt_shmem_delete
 # urt_lock semaphores
 
 _urt.urt_sem_new.argtypes = [c_uint, POINTER(c_int)]
-_urt.urt_sem_new.restype = _urt_sem
+_urt.urt_sem_new.restype = sem
 def sem_new(init_value):
     error = c_int(0)
     sem = _urt.urt_sem_new(init_value, byref(error))
     return sem, error
 
-_urt.urt_sem_delete.argtypes = [_urt_sem]
+_urt.urt_sem_delete.argtypes = [sem]
 sem_delete = _urt.urt_sem_delete
 
 _urt.urt_shsem_new.argtypes = [c_char_p, c_uint, POINTER(c_int)]
-_urt.urt_shsem_new.restype = _urt_sem
+_urt.urt_shsem_new.restype = sem
 def shsem_new(name, init_value):
     error = c_int(0)
     sem = _urt.urt_shsem_new(name, init_value, byref(error))
     return sem, error
 
 _urt.urt_shsem_attach.argtypes = [c_char_p, POINTER(c_int)]
-_urt.urt_shsem_attach.restype = _urt_sem
+_urt.urt_shsem_attach.restype = sem
 def shsem_attach(name):
     error = c_int(0)
     sem = _urt.urt_shsem_attach(name, byref(error))
     return sem, error
 
-_urt.urt_shsem_detach.argtypes = [_urt_sem]
+_urt.urt_shsem_detach.argtypes = [sem]
 shsem_detach = _urt.urt_shsem_detach
 
-_urt.urt_shsem_delete.argtypes = [_urt_sem]
+_urt.urt_shsem_delete.argtypes = [sem]
 shsem_delete = _urt.urt_shsem_delete
 
-_urt.urt_sem_wait.argtypes = [_urt_sem, _sig_atomic_t]
+_urt.urt_sem_wait.argtypes = [sem, sig_atomic_t]
 _urt.urt_sem_wait.restype = c_int
 def sem_wait(sem, stop = None):
     return _urt.urt_sem_wait(sem, stop)
 
-_urt.urt_sem_waitf.argtypes = [_urt_sem, CFUNCTYPE(c_bool, c_void_p), c_void_p]
+_urt.urt_sem_waitf.argtypes = [sem, CFUNCTYPE(c_bool, c_void_p), c_void_p]
 _urt.urt_sem_waitf.restype = c_int
 def sem_waitf(sem, func, data):
     callback = CFUNCTYPE(c_bool, c_void_p)(func)
     return _urt.urt_sem_waitf(sem, callback, data)
 
-_urt.urt_sem_timed_wait.argtypes = [_urt_sem, _urt_time]
+_urt.urt_sem_timed_wait.argtypes = [sem, time]
 _urt.urt_sem_timed_wait.restype = c_int
 sem_timed_wait = _urt.urt_sem_timed_wait
 
-_urt.urt_sem_try_wait.argtypes = [_urt_sem]
+_urt.urt_sem_try_wait.argtypes = [sem]
 _urt.urt_sem_try_wait.restype = c_int
 sem_try_wait = _urt.urt_sem_try_wait
 
-_urt.urt_sem_post.argtypes = [_urt_sem]
+_urt.urt_sem_post.argtypes = [sem]
 _urt.urt_sem_post.restype = c_int
 sem_post = _urt.urt_sem_post
 
 # urt_lock mutexes
 
 _urt.urt_mutex_new.argtypes = [POINTER(c_int)]
-_urt.urt_mutex_new.restype = _urt_mutex
+_urt.urt_mutex_new.restype = mutex
 def mutex_new():
     error = c_int(0)
     mutex = _urt.urt_mutex_new(byref(error))
     return mutex, error
 
-_urt.urt_mutex_delete.argtypes = [_urt_mutex]
+_urt.urt_mutex_delete.argtypes = [mutex]
 mutex_delete = _urt.urt_mutex_delete
 
 _urt.urt_shmutex_new.argtypes = [c_char_p, POINTER(c_int)]
-_urt.urt_shmutex_new.restype = _urt_mutex
+_urt.urt_shmutex_new.restype = mutex
 def shmutex_new(name):
     error = c_int(0)
     mutex = _urt.urt_shmutex_new(name, byref(error))
     return mutex, error
 
 _urt.urt_shmutex_attach.argtypes = [c_char_p, POINTER(c_int)]
-_urt.urt_shmutex_attach.restype = _urt_mutex
+_urt.urt_shmutex_attach.restype = mutex
 def shmutex_attach(name):
     error = c_int(0)
     mutex = _urt.urt_shmutex_attach(name, byref(error))
     return mutex, error
 
-_urt.urt_shmutex_detach.argtypes = [_urt_mutex]
+_urt.urt_shmutex_detach.argtypes = [mutex]
 shmutex_detach = _urt.urt_shmutex_detach
 
-_urt.urt_shmutex_delete.argtypes = [_urt_mutex]
+_urt.urt_shmutex_delete.argtypes = [mutex]
 shmutex_delete = _urt.urt_shmutex_delete
 
-_urt.urt_mutex_lock.argtypes = [_urt_mutex, _sig_atomic_t]
+_urt.urt_mutex_lock.argtypes = [mutex, sig_atomic_t]
 _urt.urt_mutex_lock.restype = c_int
 def mutex_lock(mutex, stop = None):
     return _urt.urt_mutex_lock(mutex, stop)
 
-_urt.urt_mutex_lockf.argtypes = [_urt_mutex, CFUNCTYPE(c_bool, c_void_p), c_void_p]
+_urt.urt_mutex_lockf.argtypes = [mutex, CFUNCTYPE(c_bool, c_void_p), c_void_p]
 _urt.urt_mutex_lockf.restype = c_int
 def mutex_lockf(mutex, func, data):
     callback = CFUNCTYPE(c_bool, c_void_p)(func)
     return _urt.urt_mutex_lockf(mutex, callback, data)
 
-_urt.urt_mutex_timed_lock.argtypes = [_urt_mutex, _urt_time]
+_urt.urt_mutex_timed_lock.argtypes = [mutex, time]
 _urt.urt_mutex_timed_lock.restype = c_int
 mutex_timed_lock = _urt.urt_mutex_timed_lock
 
-_urt.urt_mutex_try_lock.argtypes = [_urt_mutex]
+_urt.urt_mutex_try_lock.argtypes = [mutex]
 _urt.urt_mutex_try_lock.restype = c_int
 mutex_try_lock = _urt.urt_mutex_try_lock
 
-_urt.urt_mutex_unlock.argtypes = [_urt_mutex]
+_urt.urt_mutex_unlock.argtypes = [mutex]
 _urt.urt_mutex_unlock.restype = c_int
 mutex_unlock = _urt.urt_mutex_unlock
 
 # urt_lock reader-writer locks
 
 _urt.urt_rwlock_new.argtypes = [POINTER(c_int)]
-_urt.urt_rwlock_new.restype = _urt_rwlock
+_urt.urt_rwlock_new.restype = rwlock
 def rwlock_new():
     error = c_int(0)
     rwlock = _urt.urt_rwlock_new(byref(error))
     return rwlock, error
 
-_urt.urt_rwlock_delete.argtypes = [_urt_rwlock]
+_urt.urt_rwlock_delete.argtypes = [rwlock]
 rwlock_delete = _urt.urt_rwlock_delete
 
 _urt.urt_shrwlock_new.argtypes = [c_char_p, POINTER(c_int)]
-_urt.urt_shrwlock_new.restype = _urt_rwlock
+_urt.urt_shrwlock_new.restype = rwlock
 def shrwlock_new(name):
     error = c_int(0)
     rwlock = _urt.urt_shrwlock_new(name, byref(error))
     return rwlock, error
 
 _urt.urt_shrwlock_attach.argtypes = [c_char_p, POINTER(c_int)]
-_urt.urt_shrwlock_attach.restype = _urt_rwlock
+_urt.urt_shrwlock_attach.restype = rwlock
 def shrwlock_attach(name):
     error = c_int(0)
     rwlock = _urt.urt_shrwlock_attach(name, byref(error))
     return rwlock, error
 
-_urt.urt_shrwlock_detach.argtypes = [_urt_rwlock]
+_urt.urt_shrwlock_detach.argtypes = [rwlock]
 shrwlock_detach = _urt.urt_shrwlock_detach
 
-_urt.urt_shrwlock_delete.argtypes = [_urt_rwlock]
+_urt.urt_shrwlock_delete.argtypes = [rwlock]
 shrwlock_delete = _urt.urt_shrwlock_delete
 
-_urt.urt_rwlock_read_lock.argtypes = [_urt_rwlock, _sig_atomic_t]
+_urt.urt_rwlock_read_lock.argtypes = [rwlock, sig_atomic_t]
 _urt.urt_rwlock_read_lock.restype = c_int
 def rwlock_read_lock(rwlock, stop = None):
     return _urt.urt_rwlock_read_lock(rwlock, stop)
 
-_urt.urt_rwlock_read_lockf.argtypes = [_urt_rwlock, CFUNCTYPE(c_bool, c_void_p), c_void_p]
+_urt.urt_rwlock_read_lockf.argtypes = [rwlock, CFUNCTYPE(c_bool, c_void_p), c_void_p]
 _urt.urt_rwlock_read_lockf.restype = c_int
 def rwlock_read_lockf(rwlock, func, data):
     callback = CFUNCTYPE(c_bool, c_void_p)(func)
     return _urt.urt_rwlock_read_lockf(rwlock, callback, data)
 
-_urt.urt_rwlock_timed_read_lock.argtypes = [_urt_rwlock, _urt_time]
+_urt.urt_rwlock_timed_read_lock.argtypes = [rwlock, time]
 _urt.urt_rwlock_timed_read_lock.restype = c_int
 rwlock_timed_read_lock = _urt.urt_rwlock_timed_read_lock
 
-_urt.urt_rwlock_try_read_lock.argtypes = [_urt_rwlock]
+_urt.urt_rwlock_try_read_lock.argtypes = [rwlock]
 _urt.urt_rwlock_try_read_lock.restype = c_int
 rwlock_try_read_lock = _urt.urt_rwlock_try_read_lock
 
-_urt.urt_rwlock_read_unlock.argtypes = [_urt_rwlock]
+_urt.urt_rwlock_read_unlock.argtypes = [rwlock]
 _urt.urt_rwlock_read_unlock.restype = c_int
 rwlock_read_unlock = _urt.urt_rwlock_read_unlock
 
-_urt.urt_rwlock_write_lock.argtypes = [_urt_rwlock, _sig_atomic_t]
+_urt.urt_rwlock_write_lock.argtypes = [rwlock, sig_atomic_t]
 _urt.urt_rwlock_write_lock.restype = c_int
 def rwlock_write_lock(rwlock, stop = None):
     return _urt.urt_rwlock_write_lock(rwlock, stop)
 
-_urt.urt_rwlock_write_lockf.argtypes = [_urt_rwlock, CFUNCTYPE(c_bool, c_void_p), c_void_p]
+_urt.urt_rwlock_write_lockf.argtypes = [rwlock, CFUNCTYPE(c_bool, c_void_p), c_void_p]
 _urt.urt_rwlock_write_lockf.restype = c_int
 def rwlock_write_lockf(rwlock, func, data):
     callback = CFUNCTYPE(c_bool, c_void_p)(func)
     return _urt.urt_rwlock_write_lockf(rwlock, callback, data)
 
-_urt.urt_rwlock_timed_write_lock.argtypes = [_urt_rwlock, _urt_time]
+_urt.urt_rwlock_timed_write_lock.argtypes = [rwlock, time]
 _urt.urt_rwlock_timed_write_lock.restype = c_int
 rwlock_timed_write_lock = _urt.urt_rwlock_timed_write_lock
 
-_urt.urt_rwlock_try_write_lock.argtypes = [_urt_rwlock]
+_urt.urt_rwlock_try_write_lock.argtypes = [rwlock]
 _urt.urt_rwlock_try_write_lock.restype = c_int
 rwlock_try_write_lock = _urt.urt_rwlock_try_write_lock
 
-_urt.urt_rwlock_write_unlock.argtypes = [_urt_rwlock]
+_urt.urt_rwlock_write_unlock.argtypes = [rwlock]
 _urt.urt_rwlock_write_unlock.restype = c_int
 rwlock_write_unlock = _urt.urt_rwlock_write_unlock
 
 # urt_lock condition variables
 
 _urt.urt_cond_new.argtypes = [POINTER(c_int)]
-_urt.urt_cond_new.restype = _urt_cond
+_urt.urt_cond_new.restype = cond
 def cond_new():
     error = c_int(0)
     cond = _urt.urt_cond_new(byref(error))
     return cond, error
 
-_urt.urt_cond_delete.argtypes = [_urt_cond]
+_urt.urt_cond_delete.argtypes = [cond]
 cond_delete = _urt.urt_cond_delete
 
 _urt.urt_shcond_new.argtypes = [c_char_p, POINTER(c_int)]
-_urt.urt_shcond_new.restype = _urt_cond
+_urt.urt_shcond_new.restype = cond
 def shcond_new(name):
     error = c_int(0)
     cond = _urt.urt_shcond_new(name, byref(error))
     return cond, error
 
 _urt.urt_shcond_attach.argtypes = [c_char_p, POINTER(c_int)]
-_urt.urt_shcond_attach.restype = _urt_cond
+_urt.urt_shcond_attach.restype = cond
 def shcond_attach(name):
     error = c_int(0)
     cond = _urt.urt_shcond_attach(name, byref(error))
     return cond, error
 
-_urt.urt_shcond_detach.argtypes = [_urt_cond]
+_urt.urt_shcond_detach.argtypes = [cond]
 shcond_detach = _urt.urt_shcond_detach
 
-_urt.urt_shcond_delete.argtypes = [_urt_cond]
+_urt.urt_shcond_delete.argtypes = [cond]
 shcond_delete = _urt.urt_shcond_delete
 
-_urt.urt_cond_wait.argtypes = [_urt_cond, _urt_mutex, _sig_atomic_t]
+_urt.urt_cond_wait.argtypes = [cond, mutex, sig_atomic_t]
 _urt.urt_cond_wait.restype = c_int
 def cond_wait(cond, mutex, stop = None):
     return _urt.urt_cond_wait(cond, mutex, stop)
 
-_urt.urt_cond_waitf.argtypes = [_urt_cond, _urt_mutex, CFUNCTYPE(c_bool, c_void_p), c_void_p]
+_urt.urt_cond_waitf.argtypes = [cond, mutex, CFUNCTYPE(c_bool, c_void_p), c_void_p]
 _urt.urt_cond_waitf.restype = c_int
 def cond_waitf(cond, mutex, func, data):
     callback = CFUNCTYPE(c_bool, c_void_p)(func)
     return _urt.urt_cond_waitf(cond, mutex, callback, data)
 
-_urt.urt_cond_timed_wait.argtypes = [_urt_cond, _urt_mutex, _urt_time]
+_urt.urt_cond_timed_wait.argtypes = [cond, mutex, time]
 _urt.urt_cond_timed_wait.restype = c_int
 cond_timed_wait = _urt.urt_cond_timed_wait
 
-_urt.urt_cond_signal.argtypes = [_urt_cond]
+_urt.urt_cond_signal.argtypes = [cond]
 _urt.urt_cond_signal.restype = c_int
 cond_signal = _urt.urt_cond_signal
 
-_urt.urt_cond_broadcast.argtypes = [_urt_cond]
+_urt.urt_cond_broadcast.argtypes = [cond]
 _urt.urt_cond_broadcast.restype = c_int
 cond_broadcast = _urt.urt_cond_broadcast
 
