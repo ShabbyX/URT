@@ -9,8 +9,8 @@ if NEED_ROOT
   needs_root=y; export needs_root;
 endif
 
-EXTRA_DIST = test.py
-
 TESTS = run.sh
 
 check_SCRIPTS = $(TESTS)
+
+EXTRA_DIST = test.py $(check_SCRIPTS)

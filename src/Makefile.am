@@ -13,29 +13,35 @@ SOURCE_FILES = \
                task_common.c \
                inline_common.c
 
-SOURCE_FILES += \
-               ../sys/@URT_SYS@/src/lock.c \
-               ../sys/@URT_SYS@/src/mem.c \
-               ../sys/@URT_SYS@/src/setup.c \
-               ../sys/@URT_SYS@/src/task.c \
-               ../sys/@URT_SYS@/src/inline.c
-
 HEADER_FILES = \
                urt_internal.h \
                urt_reserved.h
 
 if HAVE_SYS_POSIX
   SOURCE_FILES += \
-                  ../sys/@URT_SYS@/src/names.c
+                  ../sys/posix/src/lock.c \
+                  ../sys/posix/src/mem.c \
+                  ../sys/posix/src/setup.c \
+                  ../sys/posix/src/task.c \
+                  ../sys/posix/src/inline.c \
+                  ../sys/posix/src/names.c
   HEADER_FILES += \
-                  ../sys/@URT_SYS@/src/mem_internal.h \
-                  ../sys/@URT_SYS@/src/names.h \
-                  ../sys/@URT_SYS@/src/time_internal.h
+                  ../sys/posix/include/urt_sys_internal.h \
+                  ../sys/posix/src/mem_internal.h \
+                  ../sys/posix/src/names.h \
+                  ../sys/posix/src/time_internal.h
 endif
 
 if HAVE_SYS_RTAI
+  SOURCE_FILES += \
+                  ../sys/rtai/src/lock.c \
+                  ../sys/rtai/src/mem.c \
+                  ../sys/rtai/src/setup.c \
+                  ../sys/rtai/src/task.c \
+                  ../sys/rtai/src/inline.c
   HEADER_FILES += \
-                  ../sys/@URT_SYS@/include/urt_sys_rtai.h
+                  ../sys/rtai/include/urt_sys_internal.h \
+                  ../sys/rtai/include/urt_sys_rtai.h
 endif
 
 if HAVE_USER

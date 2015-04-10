@@ -7,3 +7,5 @@ if HAVE_PYTHON
 endif
 
 check_SCRIPTS = execute_test.sh
+
+EXTRA_DIST = $(check_SCRIPTS)

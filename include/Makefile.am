@@ -17,11 +17,24 @@ include_HEADERS = \
                   urt_param.h \
                   urt_debug.h
 
+if HAVE_SYS_POSIX
 include_HEADERS += \
-                   ../sys/$(URT_SYS)/include/urt_sys_lock.h \
-                   ../sys/$(URT_SYS)/include/urt_sys_log.h \
-                   ../sys/$(URT_SYS)/include/urt_sys_mem.h \
-                   ../sys/$(URT_SYS)/include/urt_sys_setup.h \
-                   ../sys/$(URT_SYS)/include/urt_sys_task.h \
-                   ../sys/$(URT_SYS)/include/urt_sys_time.h \
-                   ../sys/$(URT_SYS)/include/urt_sys_utils.h
+                   ../sys/posix/include/urt_sys_lock.h \
+                   ../sys/posix/include/urt_sys_log.h \
+                   ../sys/posix/include/urt_sys_mem.h \
+                   ../sys/posix/include/urt_sys_setup.h \
+                   ../sys/posix/include/urt_sys_task.h \
+                   ../sys/posix/include/urt_sys_time.h \
+                   ../sys/posix/include/urt_sys_utils.h
+endif
+
+if HAVE_SYS_RTAI
+include_HEADERS += \
+                   ../sys/rtai/include/urt_sys_lock.h \
+                   ../sys/rtai/include/urt_sys_log.h \
+                   ../sys/rtai/include/urt_sys_mem.h \
+                   ../sys/rtai/include/urt_sys_setup.h \
+                   ../sys/rtai/include/urt_sys_task.h \
+                   ../sys/rtai/include/urt_sys_time.h \
+                   ../sys/rtai/include/urt_sys_utils.h
+endif

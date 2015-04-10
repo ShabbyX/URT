@@ -102,8 +102,8 @@ def task_new(func, data, attr):
     tuple.  It is important that you keep a reference to this object until the task exits."""
     error = c_int(0)
     callback = CFUNCTYPE(None, task, c_void_p)(func)
-    task = _urt.urt_task_new(callback, data, byref(attr), byref(error))
-    return task, error, callback
+    tsk = _urt.urt_task_new(callback, data, byref(attr), byref(error))
+    return tsk, error, callback
 
 _urt.urt_task_delete.argtypes = [task]
 task_delete = _urt.urt_task_delete

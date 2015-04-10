@@ -26,6 +26,8 @@ API_FILES = \
             $(DOCDIR)/urt_log \
             $(DOCDIR)/urt_utils
 
+EXTRA_DIST = $(DOCDIR)/index $(DOCDIR)/constants $(DOCDIR)/globals $(DOCDIR)/Style $(API_FILES) $(DOCDIR)/notices
+
 V_DOCTHIS = $(V_DOCTHIS_@AM_V@)
 V_DOCTHIS_ = $(V_DOCTHIS_@AM_DEFAULT_V@)
 V_DOCTHIS_0 = @echo "  DOCTHIS " $@;

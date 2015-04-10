@@ -1,6 +1,7 @@
 import urt@URT_SUFFIX_PYTHON@ as urt
 import ctypes
 import sys
+import traceback
 
 # TODO: the lock functions should be given a sig_atomic_t "interrupted"
 # as received from urt_glue, so that the test could be cleanly interrupted
@@ -269,6 +270,7 @@ try:
         print('error in execution:', ret)
 except Exception as e:
     print('exception!', e)
+    traceback.print_exc()
     ret = -1
 finally:
     print('exiting')
