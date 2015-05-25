@@ -48,6 +48,7 @@ if HAVE_USER
 lib_LTLIBRARIES = liburt@URT_SUFFIX@.la
 liburt@URT_SUFFIX@_la_SOURCES = $(SOURCE_FILES) $(HEADER_FILES)
 liburt@URT_SUFFIX@_la_CFLAGS = $(URT_CFLAGS_USER) -I"$(top_srcdir)/include" -I"$(top_srcdir)/sys/$(URT_SYS)/include"
+liburt@URT_SUFFIX@_la_LIBADD = $(URT_LDFLAGS_USER)
 liburt@URT_SUFFIX@_la_LDFLAGS = -version-info 0:0:0
 endif
 

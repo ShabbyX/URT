@@ -73,15 +73,11 @@ AS_CASE(["$backend"],
             AS_CASE(["$host_os"],
               [*linux*], [AC_CHECK_LIB([rt], [clock_gettime])])],
   [rtai], [extra_cflags_user=$($rtai_config_tool --lxrt-cflags)
-           extra_ldflags_user=$($rtai_config_tool --lxrt-ldflags)" -llxrt"
+           extra_ldflags_user=$($rtai_config_tool --lxrt-ldflags)
            extra_cflags_kernel=$($rtai_config_tool --module-cflags)
            extra_symbols_kernel=$($rtai_config_tool --module-dir)/Module.symvers
            tests_need_urt_ko=y]
 )
-dnl TODO: in the above, RTAI's extra_ldflags_user is augmented with -llxrt, to account for
-dnl the override of eager inlining configuration of RTAI (which removes -llxrt from --lxrt-ldflags).
-dnl This solution is probably not the best (since -lpthread now comes before -llxrt), but until the
-dnl issue is addressed in RTAI, it works.
 
 # Check for python if building user lib
 AS_IF([test x"$build_user_lib" = xy],
