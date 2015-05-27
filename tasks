@@ -1,6 +1,9 @@
 TODO
 - See if there's a way to store URT_MODULE_* in user-space so that when printing help, they would be mentioned.
 - See if RTAI's exectime is correct
+- Use mlockall in POSIX as well.  This is to avoid page-fault in POSIX systems.  The wiki of RT-PREEMPT suggests this (and also to touch all pages of the stack of each thread.  See here: https://rt.wiki.kernel.org/index.php/Frequently_Asked_Questions#What_are_important_things_to_keep_in_mind_while_writing_realtime_applications.3F
+- In the documentation, indicate that /etc/security/limits.conf can be modified to allow a user to use mlockall and use RT priorities (on Linux), so that root is not required to run RT applications: https://rt.wiki.kernel.org/index.php/Frequently_Asked_Questions#Do_I_need_root_privileges_to_start_a_realtime_application.3F
+- In POSIX, Use sched_setscheduler to set task priority and scheduler type. See here: https://rt.wiki.kernel.org/index.php/RT_PREEMPT_HOWTO
 
 Known issues
 - with all

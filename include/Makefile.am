@@ -30,6 +30,7 @@ endif
 
 if HAVE_SYS_RTAI
 include_HEADERS += \
+                   ../sys/rtai/include/urt_sys_rtai.h \
                    ../sys/rtai/include/urt_sys_lock.h \
                    ../sys/rtai/include/urt_sys_log.h \
                    ../sys/rtai/include/urt_sys_mem.h \
