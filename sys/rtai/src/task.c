@@ -45,7 +45,10 @@ static void _task_wrapper(long t)
 {
 	urt_task *task = (void *)t;
 
-	/* align to start time, or set it if not set */
+	/*
+	 * align to start time, or set it if not set.  In periodic case, this should already be set
+	 * by urt_task_start, and the `else` case becomes a no-op since the argument is negative.
+	 */
 	if (task->attr.start_time == 0)
 		task->attr.start_time = urt_get_time();
 	else
@@ -112,7 +115,12 @@ int urt_task_start(urt_task *task)
 		goto exit_bad_init;
 
 	if (task->attr.period > 0)
+	{
+		/* set start time to current if not set, before declaring it to RTAI */
+		if (task->attr.start_time == 0)
+			task->attr.start_time = urt_get_time();
 		ret = rt_task_make_periodic(&task->rt_task, nano2count(task->attr.start_time), nano2count(task->attr.period));
+	}
 	else
 		ret = rt_task_resume(&task->rt_task);
 
