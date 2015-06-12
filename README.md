@@ -26,13 +26,13 @@ State
 -----
 
 Currently, the core features of URT have been outlined and implemented for POSIX, and tested under Linux (with no
-real-time constraints) as well as under RTAI both in user and kernel spaces. Other operating systems such as RT-Linux,
-and tests under QNX and VxWorks are also envisioned.
+real-time constraints) as well as under RTAI both in user and kernel spaces. Other operating systems such as RT-Preempt
+and Xenomai, and tests under QNX are also envisioned.
 
 License
 -------
 
-Copyright (C) 2013-2014  Shahbaz Youssefi <ShabbyX@gmail.com>
+Copyright (C) 2013-2015  Shahbaz Youssefi <ShabbyX@gmail.com>
 
 URT is published under the GNU General Public License
 version 2.0 or later (GPL v2.0+).
