@@ -1,6 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
 
-if HAVE_DOCTHIS
 DT = docthis
 DOCDIR = $(top_srcdir)/doc
 FILES = \
@@ -28,6 +27,7 @@ API_FILES = \
 
 EXTRA_DIST = $(DOCDIR)/index $(DOCDIR)/constants $(DOCDIR)/globals $(DOCDIR)/Style $(API_FILES) $(DOCDIR)/notices
 
+if HAVE_DOCTHIS
 V_DOCTHIS = $(V_DOCTHIS_@AM_V@)
 V_DOCTHIS_ = $(V_DOCTHIS_@AM_DEFAULT_V@)
 V_DOCTHIS_0 = @echo "  DOCTHIS " $@;

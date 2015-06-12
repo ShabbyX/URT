@@ -1,5 +1,5 @@
 AC_PREREQ([2.68])
-AC_INIT([URT], [0.4.2], [https://github.com/ShabbyX/URT/issues])
+AC_INIT([URT], [0.5.0], [https://github.com/ShabbyX/URT/issues])
 AC_CONFIG_AUX_DIR([bin])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_SYSTEM
