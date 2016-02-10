@@ -26,8 +26,8 @@ State
 -----
 
 Currently, the core features of URT have been outlined and implemented for POSIX, and tested under Linux (with no
-real-time constraints) as well as under RTAI both in user and kernel spaces. Other operating systems such as RT-Preempt
-and Xenomai, and tests under QNX are also envisioned.
+real-time constraints), RT-Linux as well as under RTAI both in user and kernel spaces. Other operating systems such as
+Xenomai, and tests under QNX are also envisioned.
 
 License
 -------
